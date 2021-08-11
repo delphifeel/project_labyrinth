@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Project Labyrinth Map</title>
+	<style type="text/css">
+		#app {
+			display: flex;
+			flex-direction: column;
+		}
+
+		#map_canvas {
+			border: 1px black solid;
+		}
+	</style>
+</head>
+<body>
+	<div id="app">
+		<input id="file_selector" type="file" onchange="onInputChange()" />
+		<canvas id="map_canvas" width="600" height="600"></canvas>
+	</div>
+
+	<script type="text/javascript">
+		var POINT_SIZE = 3;
+		var LINE_SIZE = 6;
+		var DRAWN_POINTS = {};
+
+		function onInputChange() {
+			var file = input.files[0];
+			file.text().then(fileContent => {
+				dataJson = JSON.parse(fileContent);
+				drawMap(dataJson.count);
+			});
+		}
+
+		function drawRect(x, y, width, height, fillStyle) {
+			var prevFillStyle = canvasCtx.fillStyle;
+
+			if (fillStyle !== undefined) {
+				canvasCtx.fillStyle = fillStyle;
+			}
+
+			canvasCtx.fillRect(x, y, width, height);
+
+			if (fillStyle !== undefined) {
+				canvasCtx.fillStyle = prevFillStyle;
+			}
+		}
+
+
+		function drawPoint(x, y, id) {
+			var color = 'grey';
+
+			if (dataJson.points[id].is_exit)
+				color = 'red';
+			else if (dataJson.points[id].is_spawn)
+				color = 'blue';
+
+			drawRect(x, y, POINT_SIZE, POINT_SIZE, color);
+			// canvasCtx.fillText(id, centerX + x - 4, centerY + y + 2);
+		}
+
+		var __counter = 0;
+
+		function drawLink(startX, startY, direction, lineSize) {
+
+			__counter++;
+
+			var x = startX;
+			var y = startY;
+
+			canvasCtx.strokeStyle = 'grey';
+			canvasCtx.beginPath();
+			
+			switch (direction) {
+				case 'top': {
+					canvasCtx.moveTo(x + POINT_SIZE / 2, y);
+					canvasCtx.lineTo(x + POINT_SIZE / 2, y - lineSize); 
+					break;
+				}
+				case 'right': {
+					canvasCtx.moveTo(x + POINT_SIZE, y + POINT_SIZE / 2);
+					canvasCtx.lineTo(x + POINT_SIZE + lineSize, y + POINT_SIZE / 2); 
+					break;
+				}
+				case 'bottom': {
+					canvasCtx.moveTo(x + POINT_SIZE / 2, y + POINT_SIZE);
+					canvasCtx.lineTo(x + POINT_SIZE / 2, y + POINT_SIZE + lineSize); 
+					break;
+				}
+				case 'left': {
+					canvasCtx.moveTo(x, y + POINT_SIZE / 2);
+					canvasCtx.lineTo(x - lineSize, y + POINT_SIZE / 2); 
+					break;
+				}
+			}
+
+			canvasCtx.stroke();
+		}
+
+		function drawPointData(data, pointId, startX, startY) {
+			if (DRAWN_POINTS[pointId] !== undefined) {
+				return;
+			}
+
+			DRAWN_POINTS[pointId] = true;
+
+			var pointData = data.points[pointId];
+
+			drawPoint(startX, startY, pointId);
+
+			var lineSize = LINE_SIZE;
+
+			if (pointData.top_id !== 0 && !DRAWN_POINTS[pointData.top_id]) {
+				drawLink(startX, startY, 'top', lineSize);
+			}
+
+			if (pointData.right_id !== 0 && !DRAWN_POINTS[pointData.right_id]) {
+				drawLink(startX, startY, 'right', lineSize);
+			}
+
+			if (pointData.bottom_id !== 0 && !DRAWN_POINTS[pointData.bottom_id]) {
+				drawLink(startX, startY, 'bottom', lineSize);
+			}
+
+			if (pointData.left_id !== 0 && !DRAWN_POINTS[pointData.left_id]) {
+				drawLink(startX, startY, 'left', lineSize);
+			}
+		}
+
+		function drawMap(pointsCount) {
+			DRAWN_POINTS = {};
+			matrixSize = Math.sqrt(pointsCount);
+
+			canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+			for (var i = 0; i < pointsCount; i++) {
+				var x = (20) + i % matrixSize * (LINE_SIZE + POINT_SIZE);
+				var y = (20) + Math.floor(i / matrixSize) * (LINE_SIZE + POINT_SIZE);
+				drawPointData(dataJson, i + 1, x, y);
+			}
+		}
+
+		function changeActivePoint(connectionProperty) {
+			if (!dataJson) {
+				return;
+			}
+
+			var newActivePointId = dataJson[activePointId][connectionProperty];
+			if (!newActivePointId) {
+				return;
+			}
+
+			activePointId = newActivePointId;
+			drawMap(activePointId);
+		}
+
+		var input = document.getElementById("file_selector");
+		var canvas = document.getElementById("map_canvas");
+		var canvasCtx = canvas.getContext("2d");
+		// var centerX = canvas.width / 2;
+		// var centerY = canvas.height / 2;
+		var centerX = 10;
+		var centerY = 10;
+		var activePointId = null;
+		var dataJson = null;
+
+		canvasCtx.font = "10px Arial";
+
+		// document.addEventListener("keydown", keyboardEvent => {
+		// 	switch (keyboardEvent.key) {
+		// 		case "w":
+		// 			return changeActivePoint("top_id");
+		// 		case "s":
+		// 			return changeActivePoint("bottom_id");
+		// 		case "a":
+		// 			return changeActivePoint("left_id");
+		// 		case "d":
+		// 			return changeActivePoint("right_id");
+		// 	}
+		// });
+	</script>
+</body>
+</html>

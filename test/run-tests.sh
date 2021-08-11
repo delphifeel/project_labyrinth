@@ -1,0 +1,1 @@
+cc -Wall ../src/lab-point.c ../src/lab-points-map.c test-lab-point.c && ./a.out
