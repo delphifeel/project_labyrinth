@@ -1,9 +1,10 @@
 #ifndef __CORE_TYPES_H__
 #define __CORE_TYPES_H__
 
+#include <stddef.h>
+
 #define TRUE                                                    (1)
 #define FALSE                                                   (0)
-#define NULL                                                    (0)
 
 typedef unsigned char                                           uint8;                              /* unsigned */
 typedef unsigned short int                                      uint16;
