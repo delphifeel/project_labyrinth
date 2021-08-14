@@ -2,6 +2,7 @@
 #define __CORE_MEMORY_H__
 
 #include <stdlib.h>
+#include <string.h>
 
 #define CORE_MemAlloc		malloc
 #define CORE_MemCalloc		calloc

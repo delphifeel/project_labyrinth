@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#define CORE_DebugAssert 							assert
+#define CORE_DebugAssert 							printf
 #define CORE_DebugPrint 							printf
 #define CORE_DebugError 							printf
 #define CORE_DebugAbort(MESSAGE, FILE, LINE) 		(CORE_DebugError("ABORT (%s, line %d) %s\n", FILE, LINE, MESSAGE), abort())

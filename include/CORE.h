@@ -6,7 +6,7 @@
 // #include "CORE/CORE-class.h"
 #include "CORE/CORE-debug.h"
 #include "CORE/CORE-file.h"
-#include "CORE/CORE_Object.h"
-#include "CORE/CORE_String.h"
+#include "CORE/CORE-object.h"
+#include "CORE/CORE-string.h"
 
 #endif

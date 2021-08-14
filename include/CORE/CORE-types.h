@@ -16,7 +16,6 @@ typedef signed long int                                         int32;
 typedef signed long long                                        int64;
 typedef float                                                   float32;                            /* single precision floating point */
 typedef double                                                  float64;                            /* double precision floating point */
-typedef void * 													CORE_Handle;
 typedef signed long int 										CORE_Bool;
 
 #endif

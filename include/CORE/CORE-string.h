@@ -2,14 +2,13 @@
 #define __CORE_STRING_H__
 
 #include "CORE-types.h"
-#include "CORE_Object.h"
+#include "CORE-object.h"
 
 CORE_OBJECT_INTERFACE(CORE_String,
-{
 	char 	*Buffer;
 	uint32 	Size;
 	uint32	MaxSize;
-})
+)
 
 void	CORE_String_Create			(CORE_String*, uint32 CustomSize);
 void	CORE_String_Free			(CORE_String*);

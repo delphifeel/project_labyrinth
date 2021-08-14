@@ -5,24 +5,43 @@
 
 /*****************************************************************************************************************************/
 
-CORE_Bool LabPoint_SetID(CORE_Handle LabPointHandle, uint32 ID);
-CORE_Bool LabPoint_SetConnectionTop(CORE_Handle LabPointHandle, CORE_Handle ConnectionLabPointHandle);
-CORE_Bool LabPoint_SetConnectionRight(CORE_Handle LabPointHandle, CORE_Handle ConnectionLabPointHandle);
-CORE_Bool LabPoint_SetConnectionBottom(CORE_Handle LabPointHandle, CORE_Handle ConnectionLabPointHandle);
-CORE_Bool LabPoint_SetConnectionLeft(CORE_Handle LabPointHandle, CORE_Handle ConnectionLabPointHandle);
-CORE_Bool LabPoint_SetIsExit(CORE_Handle LabPointHandle, CORE_Bool Value);
-CORE_Bool LabPoint_SetIsSpawn(CORE_Handle LabPointHandle, CORE_Bool Value);
+typedef struct ConnectionsStruct ConnectionsStruct;
 
-CORE_Bool LabPoint_GetID(CORE_Handle LabPointHandle, uint32 *ID);
-CORE_Bool LabPoint_GetConnectionTop(CORE_Handle LabPointHandle, CORE_Handle *ConnectionLabPointHandle);
-CORE_Bool LabPoint_GetConnectionRight(CORE_Handle LabPointHandle, CORE_Handle *ConnectionLabPointHandle);
-CORE_Bool LabPoint_GetConnectionBottom(CORE_Handle LabPointHandle, CORE_Handle *ConnectionLabPointHandle);
-CORE_Bool LabPoint_GetConnectionLeft(CORE_Handle LabPointHandle, CORE_Handle *ConnectionLabPointHandle);
-CORE_Bool LabPoint_GetIsExit(CORE_Handle LabPointHandle, CORE_Bool *Value);
-CORE_Bool LabPoint_GetIsSpawn(CORE_Handle LabPointHandle, CORE_Bool *Value);
+CORE_OBJECT_INTERFACE(LabPoint,
+	uint32 				ID;
+	ConnectionsStruct 	*Connections;
+	CORE_Bool 			IsExit;
+	CORE_Bool 			IsSpawn;
+)
 
-CORE_Bool LabPoint_Create(CORE_Handle *LabPointHandle);
-CORE_Bool LabPoint_Delete(CORE_Handle *LabPointHandle);
+struct ConnectionsStruct
+{
+	LabPoint 	TopLabPointHandle;
+	LabPoint 	RightLabPointHandle;
+	LabPoint 	BottomLabPointHandle;
+	LabPoint 	LeftLabPointHandle;
+};
+
+/*****************************************************************************************************************************/
+
+void LabPoint_SetID(LabPoint, uint32 ID);
+void LabPoint_SetConnectionTop(LabPoint, LabPoint ConnectionLabPoint);
+void LabPoint_SetConnectionRight(LabPoint, LabPoint ConnectionLabPoint);
+void LabPoint_SetConnectionBottom(LabPoint, LabPoint ConnectionLabPoint);
+void LabPoint_SetConnectionLeft(LabPoint, LabPoint ConnectionLabPoint);
+void LabPoint_SetIsExit(LabPoint, CORE_Bool Value);
+void LabPoint_SetIsSpawn(LabPoint, CORE_Bool Value);
+
+void LabPoint_GetID(LabPoint, uint32 *ID);
+void LabPoint_GetConnectionTop(LabPoint, LabPoint *ConnectionLabPoint);
+void LabPoint_GetConnectionRight(LabPoint, LabPoint *ConnectionLabPoint);
+void LabPoint_GetConnectionBottom(LabPoint, LabPoint *ConnectionLabPoint);
+void LabPoint_GetConnectionLeft(LabPoint, LabPoint *ConnectionLabPoint);
+void LabPoint_GetIsExit(LabPoint, CORE_Bool *Value);
+void LabPoint_GetIsSpawn(LabPoint, CORE_Bool *Value);
+
+void LabPoint_Create(LabPoint*);
+void LabPoint_Free(LabPoint*);
 
 /*****************************************************************************************************************************/
 

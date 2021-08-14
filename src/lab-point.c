@@ -1,194 +1,98 @@
 #include "../include/CORE.h"
-#include "../include/labyrinth.h"
+#include "../include/labyrinth/lab-point.h"
+
+
+void LabPoint_SetID(LabPoint Instance, uint32 ID)
+{
+	Instance->ID = ID;
+}
+
+void LabPoint_GetID(LabPoint Instance, uint32 *ID)
+{
+	*ID = Instance->ID;
+}
+
+void LabPoint_SetConnectionTop(LabPoint Instance, LabPoint ConnectionLabPointHandle)
+{
+	Instance->Connections->TopLabPointHandle = ConnectionLabPointHandle;
+}
+
+void LabPoint_GetConnectionTop(LabPoint Instance, LabPoint *ConnectionLabPointHandle)
+{
+	*ConnectionLabPointHandle = Instance->Connections->TopLabPointHandle;
+}
+
+void LabPoint_SetConnectionRight(LabPoint Instance, LabPoint ConnectionLabPointHandle)
+{
+	Instance->Connections->RightLabPointHandle = ConnectionLabPointHandle;
+}
+
+void LabPoint_GetConnectionRight(LabPoint Instance, LabPoint *ConnectionLabPointHandle)
+{
+	*ConnectionLabPointHandle = Instance->Connections->RightLabPointHandle;
+}
+
+void LabPoint_SetConnectionBottom(LabPoint Instance, LabPoint ConnectionLabPointHandle)
+{
+	Instance->Connections->BottomLabPointHandle = ConnectionLabPointHandle;
+}
+
+void LabPoint_GetConnectionBottom(LabPoint Instance, LabPoint *ConnectionLabPointHandle)
+{
+	*ConnectionLabPointHandle = Instance->Connections->BottomLabPointHandle;
+}
+
+void LabPoint_SetConnectionLeft(LabPoint Instance, LabPoint ConnectionLabPointHandle)
+{
+	Instance->Connections->LeftLabPointHandle = ConnectionLabPointHandle;
+}
+
+void LabPoint_GetConnectionLeft(LabPoint Instance, LabPoint *ConnectionLabPointHandle)
+{
+	*ConnectionLabPointHandle = Instance->Connections->LeftLabPointHandle;
+}
+
+void LabPoint_SetIsExit(LabPoint Instance, CORE_Bool Value)
+{
+	Instance->IsExit = Value;
+}
+
+void LabPoint_GetIsExit(LabPoint Instance, CORE_Bool *Value)
+{
+	*Value = Instance->IsExit;
+}
+
+void LabPoint_SetIsSpawn(LabPoint Instance, CORE_Bool Value)
+{
+	Instance->IsSpawn = Value;
+}
+
+void LabPoint_GetIsSpawn(LabPoint Instance, CORE_Bool *Value)
+{
+	*Value = Instance->IsSpawn;
+}
 
 /*****************************************************************************************************************************/
 
-typedef struct ConnectionsStruct
+void LabPoint_Create(LabPoint *InstancePtr)
 {
-	CORE_Handle 	TopLabPointHandle;
-	CORE_Handle 	RightLabPointHandle;
-	CORE_Handle 	BottomLabPointHandle;
-	CORE_Handle 	LeftLabPointHandle;
-} ConnectionsStruct;
+	CORE_OBJECT_CREATE(InstancePtr, LabPoint);
 
-typedef struct LabPointStruct
-{
-	CORE_Handle 		CORE_ClassHandle;
-
-	uint32 				ID;
-	ConnectionsStruct 	*Connections;
-	CORE_Bool 			IsExit;
-	CORE_Bool 			IsSpawn;
-} LabPointStruct;
-
-/*****************************************************************************************************************************/
-
-CORE_Bool LabPoint_SetID(CORE_Handle LabPointHandle, uint32 ID)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	LabPoint->ID = ID;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_GetID(CORE_Handle LabPointHandle, uint32 *ID)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	*ID = LabPoint->ID;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_SetConnectionTop(CORE_Handle LabPointHandle, CORE_Handle ConnectionLabPointHandle)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	if (ConnectionLabPointHandle != NULL)
-		CORE_ClassCheck(ConnectionLabPointHandle, LabPointStruct);
-
-	LabPoint->Connections->TopLabPointHandle = ConnectionLabPointHandle;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_GetConnectionTop(CORE_Handle LabPointHandle, CORE_Handle *ConnectionLabPointHandle)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	*ConnectionLabPointHandle = LabPoint->Connections->TopLabPointHandle;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_SetConnectionRight(CORE_Handle LabPointHandle, CORE_Handle ConnectionLabPointHandle)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	if (ConnectionLabPointHandle != NULL)
-		CORE_ClassCheck(ConnectionLabPointHandle, LabPointStruct);
-
-	LabPoint->Connections->RightLabPointHandle = ConnectionLabPointHandle;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_GetConnectionRight(CORE_Handle LabPointHandle, CORE_Handle *ConnectionLabPointHandle)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	*ConnectionLabPointHandle = LabPoint->Connections->RightLabPointHandle;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_SetConnectionBottom(CORE_Handle LabPointHandle, CORE_Handle ConnectionLabPointHandle)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	if (ConnectionLabPointHandle != NULL)
-		CORE_ClassCheck(ConnectionLabPointHandle, LabPointStruct);
-
-	LabPoint->Connections->BottomLabPointHandle = ConnectionLabPointHandle;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_GetConnectionBottom(CORE_Handle LabPointHandle, CORE_Handle *ConnectionLabPointHandle)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	*ConnectionLabPointHandle = LabPoint->Connections->BottomLabPointHandle;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_SetConnectionLeft(CORE_Handle LabPointHandle, CORE_Handle ConnectionLabPointHandle)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	if (ConnectionLabPointHandle != NULL)
-		CORE_ClassCheck(ConnectionLabPointHandle, LabPointStruct);
+	(*InstancePtr)->Connections = CORE_MemAlloc(sizeof(ConnectionsStruct));
 	
-	LabPoint->Connections->LeftLabPointHandle = ConnectionLabPointHandle;
-	return TRUE;
+	(*InstancePtr)->Connections->TopLabPointHandle = NULL;
+	(*InstancePtr)->Connections->RightLabPointHandle = NULL;
+	(*InstancePtr)->Connections->BottomLabPointHandle = NULL;
+	(*InstancePtr)->Connections->LeftLabPointHandle = NULL;
+
+	(*InstancePtr)->IsExit = FALSE;
+	(*InstancePtr)->IsSpawn = FALSE;
 }
 
-CORE_Bool LabPoint_GetConnectionLeft(CORE_Handle LabPointHandle, CORE_Handle *ConnectionLabPointHandle)
+void LabPoint_Free(LabPoint *InstancePtr)
 {
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
+	CORE_MemFree((*InstancePtr)->Connections);
 
-
-	*ConnectionLabPointHandle = LabPoint->Connections->LeftLabPointHandle;
-	return TRUE;
+	CORE_OBJECT_FREE(InstancePtr);
 }
 
-CORE_Bool LabPoint_SetIsExit(CORE_Handle LabPointHandle, CORE_Bool Value)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	LabPoint->IsExit = Value;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_GetIsExit(CORE_Handle LabPointHandle, CORE_Bool *Value)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	*Value = LabPoint->IsExit;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_SetIsSpawn(CORE_Handle LabPointHandle, CORE_Bool Value)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	LabPoint->IsSpawn = Value;
-	return TRUE;
-}
-
-CORE_Bool LabPoint_GetIsSpawn(CORE_Handle LabPointHandle, CORE_Bool *Value)
-{
-	LabPointStruct *LabPoint = CORE_ClassCast(LabPointHandle, LabPointStruct);
-
-
-	*Value = LabPoint->IsSpawn;
-	return TRUE;
-}
-
-/*****************************************************************************************************************************/
-
-CORE_Bool LabPoint_InternalCreate(LabPointStruct *LabPoint)
-{
-	ConnectionsStruct *Connections = CORE_MemAlloc(sizeof(ConnectionsStruct));
-	Connections->TopLabPointHandle = NULL;
-	Connections->RightLabPointHandle = NULL;
-	Connections->BottomLabPointHandle = NULL;
-	Connections->LeftLabPointHandle = NULL;
-
-	LabPoint->Connections = Connections;
-
-	LabPoint->IsExit = FALSE;
-	LabPoint->IsSpawn = FALSE;
-
-	return TRUE;
-}
-
-CORE_Bool LabPoint_InternalDelete(LabPointStruct *LabPoint)
-{
-	CORE_MemFree(LabPoint->Connections);
-
-	return TRUE;
-}
-
-/*****************************************************************************************************************************/
-
-CORE_ClassMakeConstructor(LabPoint);
-CORE_ClassMakeDestructor(LabPoint);
-
-/*****************************************************************************************************************************/

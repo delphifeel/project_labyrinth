@@ -3,17 +3,25 @@
 
 #include "../CORE.h"
 
+#include "lab-point.h"
+
+CORE_OBJECT_INTERFACE(LabPointsMap,
+	LabPoint 	*LabPointsArray;
+	uint32 		Size;
+	uint32 		Capacity;
+)
+
 /*****************************************************************************************************************************/
 
-CORE_Bool LabPointsMap_ToJSON(CORE_Handle LabPointsMapHandle, char **JSON);
-CORE_Bool LabPointsMap_ToRawData(CORE_Handle LabPointsMapHandle, uint8 **RawData, uint32 *RawDataSize);
-CORE_Bool LabPointsMap_AddPoint(CORE_Handle LabPointsMapHandle, CORE_Handle LabPointHandle);
-CORE_Bool LabPointsMap_GetPointByID(CORE_Handle LabPointsMapHandle, uint32 ID, CORE_Handle *LabPointHandle);
-CORE_Bool LabPointsMap_GetSize(CORE_Handle LabPointsMapHandle, uint32 *Size);
-CORE_Bool LabPointsMap_GetCapacity(CORE_Handle LabPointsMapHandle, uint32 *Capacity);
+void LabPointsMap_ToJSON(LabPointsMap, char **JSON);
+void LabPointsMap_ToRawData(LabPointsMap, uint8 **RawData, uint32 *RawDataSize);
+void LabPointsMap_AddPoint(LabPointsMap, LabPoint LabPoint);
+void LabPointsMap_GetPointByID(LabPointsMap, uint32 ID, LabPoint *OUT_Point);
+void LabPointsMap_GetSize(LabPointsMap, uint32 *Size);
+void LabPointsMap_GetCapacity(LabPointsMap, uint32 *Capacity);
 
-CORE_Bool LabPointsMap_Create(CORE_Handle *LabPointsMapHandle);
-CORE_Bool LabPointsMap_Delete(CORE_Handle *LabPointsMapHandle);
+void LabPointsMap_Create(LabPointsMap *);
+void LabPointsMap_Free(LabPointsMap *);
 
 /*****************************************************************************************************************************/
 

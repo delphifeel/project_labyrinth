@@ -2,46 +2,31 @@
 
 /*****************************************************************************************************************************/
 
-typedef struct DisjointSetStruct
+static void DisjointSet_InternalFindSubset(DisjointSet Instance, int32 Value, int32 *Subset)
 {
-	CORE_Handle 	CORE_ClassHandle;
-
-	int32 			*MapChildToParent;
-	uint32 			MapChildToParentSize;
-	uint32 			SubsetsCount;
-} DisjointSetStruct;
-
-/*****************************************************************************************************************************/
-
-static CORE_Bool DisjointSet_InternalFindSubset(CORE_Handle DisjointSetHandle, int32 Value, int32 *Subset)
-{
-	DisjointSetStruct *DisjointSet = CORE_ClassCast(DisjointSetHandle, DisjointSetStruct);
 	int32 Parent;
 
 
-	if ((Parent = DisjointSet->MapChildToParent[Value]) != -1)
-		return DisjointSet_InternalFindSubset(DisjointSetHandle, Parent, Subset);
+	if ((Parent = Instance->MapChildToParent[Value]) != -1)
+		DisjointSet_InternalFindSubset(Instance, Parent, Subset);
 	else
 		*Subset = Value;
-
-	return TRUE;
 }
 
 /*****************************************************************************************************************************/
 
-CORE_Bool DisjointSet_Print(CORE_Handle DisjointSetHandle)
+void DisjointSet_Print(DisjointSet Instance)
 {
-	DisjointSetStruct 	*DisjointSet = CORE_ClassCast(DisjointSetHandle, DisjointSetStruct);
-	uint8 				ProcessedValues[DisjointSet->MapChildToParentSize];
+	uint8 				ProcessedValues[Instance->MapChildToParentSize];
 	int32 				CurrentParent;
 
 
 	CORE_MemSet(ProcessedValues, 0, sizeof(ProcessedValues));
 
 	CORE_DebugPrint("DisjoinSet:\n");
-	CORE_DebugPrint("Subsets Count: %ld\n", DisjointSet->SubsetsCount);
+	CORE_DebugPrint("Subsets Count: %ld\n", Instance->SubsetsCount);
 
-	for (uint32 i = 0; i < DisjointSet->MapChildToParentSize; i++)
+	for (uint32 i = 0; i < Instance->MapChildToParentSize; i++)
 		{
 		if (ProcessedValues[i] == 1)
 			continue;
@@ -50,83 +35,64 @@ CORE_Bool DisjointSet_Print(CORE_Handle DisjointSetHandle)
 		ProcessedValues[CurrentParent] = 1;
 
 		CORE_DebugPrint("{");
-		while (DisjointSet->MapChildToParent[CurrentParent] != -1)
+		while (Instance->MapChildToParent[CurrentParent] != -1)
 			{
 			CORE_DebugPrint("%ld, ", CurrentParent);
-			CurrentParent = DisjointSet->MapChildToParent[CurrentParent];
+			CurrentParent = Instance->MapChildToParent[CurrentParent];
 			ProcessedValues[CurrentParent] = 1;
 			}
 
 		CORE_DebugPrint("%ld} [%ld] \n", CurrentParent, CurrentParent);
 		}
-
-	return TRUE;
 }
 
-CORE_Bool DisjointSet_Union(CORE_Handle DisjointSetHandle, int32 Value1, int32 Value2)
+CORE_Bool DisjointSet_Union(DisjointSet Instance, int32 Value1, int32 Value2)
 {
-	DisjointSetStruct *DisjointSet = CORE_ClassCast(DisjointSetHandle, DisjointSetStruct);
 	int32 Value1Subset, Value2Subset;
 
 
-	DisjointSet_InternalFindSubset(DisjointSetHandle, Value1, &Value1Subset);
-	DisjointSet_InternalFindSubset(DisjointSetHandle, Value2, &Value2Subset);
+	DisjointSet_InternalFindSubset(Instance, Value1, &Value1Subset);
+	DisjointSet_InternalFindSubset(Instance, Value2, &Value2Subset);
 
 	if (Value1Subset == Value2Subset)
 		return FALSE;
 
-	DisjointSet->MapChildToParent[Value1Subset] = Value2Subset;
-
-	DisjointSet->SubsetsCount--;
+	Instance->MapChildToParent[Value1Subset] = Value2Subset;
+	Instance->SubsetsCount--;
 
 	return TRUE;
 }
 
-CORE_Bool DisjointSet_GetSubsetsCount(CORE_Handle DisjointSetHandle, uint32 *SubsetsCount)
+void DisjointSet_GetSubsetsCount(DisjointSet Instance, uint32 *SubsetsCount)
 {
-	DisjointSetStruct *DisjointSet = CORE_ClassCast(DisjointSetHandle, DisjointSetStruct);
-
-
-	*SubsetsCount = DisjointSet->SubsetsCount;
-	return TRUE;
+	*SubsetsCount = Instance->SubsetsCount;
 }
 
 /*****************************************************************************************************************************/
 
-CORE_Bool DisjointSet_Setup(CORE_Handle DisjointSetHandle, uint32 Size)
+void DisjointSet_Setup(DisjointSet Instance, uint32 Size)
 {
-	DisjointSetStruct *DisjointSet = CORE_ClassCast(DisjointSetHandle, DisjointSetStruct);
-
-
-	DisjointSet->MapChildToParentSize = Size;
-	DisjointSet->SubsetsCount = Size;
-	DisjointSet->MapChildToParent = CORE_MemAlloc(sizeof(int32) * Size);
-	CORE_MemSet(DisjointSet->MapChildToParent, -1, sizeof(int32) * Size);
-
-	return TRUE;
+	Instance->MapChildToParentSize = Size;
+	Instance->SubsetsCount = Size;
+	Instance->MapChildToParent = CORE_MemAlloc(sizeof(int32) * Size);
+	CORE_MemSet(Instance->MapChildToParent, -1, sizeof(int32) * Size);
 }
 
 /*****************************************************************************************************************************/
 
-CORE_Bool DisjointSet_InternalCreate(DisjointSetStruct *DisjointSet)
+void DisjointSet_Create(DisjointSet *InstancePtr)
 {
-	DisjointSet->MapChildToParentSize = 0;
-	DisjointSet->MapChildToParent = NULL;
-	DisjointSet->SubsetsCount = 0;
+	CORE_OBJECT_CREATE(InstancePtr, DisjointSet);
 
-	return TRUE;
+	(*InstancePtr)->MapChildToParentSize = 0;
+	(*InstancePtr)->MapChildToParent = NULL;
+	(*InstancePtr)->SubsetsCount = 0;
 }
 
-CORE_Bool DisjointSet_InternalDelete(DisjointSetStruct *DisjointSet)
+void DisjointSet_Free(DisjointSet *InstancePtr)
 {
-	CORE_MemFree(DisjointSet->MapChildToParent);
-
-	return TRUE;
+	CORE_MemFree((*InstancePtr)->MapChildToParent);
+	CORE_OBJECT_FREE(InstancePtr);
 }
-
-/*****************************************************************************************************************************/
-
-CORE_ClassMakeConstructor(DisjointSet);
-CORE_ClassMakeDestructor(DisjointSet);
 
 /*****************************************************************************************************************************/

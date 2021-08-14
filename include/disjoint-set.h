@@ -12,13 +12,19 @@
 
 #include "./CORE.h"
 
-CORE_Bool DisjointSet_Print(CORE_Handle DisjointSetHandle);
-CORE_Bool DisjointSet_Union(CORE_Handle DisjointSetHandle, int32 Value1, int32 Value2);
-CORE_Bool DisjointSet_GetSubsetsCount(CORE_Handle DisjointSetHandle, uint32 *SubsetsCount);
+CORE_OBJECT_INTERFACE(DisjointSet,
+	int32 			*MapChildToParent;
+	uint32 			MapChildToParentSize;
+	uint32 			SubsetsCount;
+)
 
-CORE_Bool DisjointSet_Setup(CORE_Handle DisjointSetHandle, uint32 Size);
+void 		DisjointSet_Print(DisjointSet);
+CORE_Bool 	DisjointSet_Union(DisjointSet, int32 Value1, int32 Value2);
+void 		DisjointSet_GetSubsetsCount(DisjointSet, uint32 *SubsetsCount);
 
-CORE_Bool DisjointSet_Create(CORE_Handle *DisjointSetHandle);
-CORE_Bool DisjointSet_Delete(CORE_Handle *DisjointSetHandle);
+void 		DisjointSet_Setup(DisjointSet, uint32 Size);
+
+void 		DisjointSet_Create(DisjointSet*);
+void 		DisjointSet_Free(DisjointSet*);
 
 #endif

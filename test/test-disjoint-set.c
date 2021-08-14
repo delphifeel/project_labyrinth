@@ -15,5 +15,5 @@ int main()
 
 	DisjointSet_Print(DisjointSetHandle);
 
-	DisjointSet_Delete(&DisjointSetHandle);
+	DisjointSet_Free(&DisjointSetHandle);
 }
