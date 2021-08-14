@@ -20,8 +20,8 @@ void LabPointsMap_GetPointByID(LabPointsMap, uint32 ID, LabPoint *OUT_Point);
 void LabPointsMap_GetSize(LabPointsMap, uint32 *Size);
 void LabPointsMap_GetCapacity(LabPointsMap, uint32 *Capacity);
 
-void LabPointsMap_Create(LabPointsMap *);
-void LabPointsMap_Free(LabPointsMap *);
+void LabPointsMap_Create(LabPointsMap*);
+void LabPointsMap_Free(LabPointsMap*);
 
 /*****************************************************************************************************************************/
 
