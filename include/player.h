@@ -23,7 +23,7 @@ typedef enum MoveDirection
 
 void Player_Move(Player, MoveDirection *Directions);
 
-void Player_SetId(Player, uint32 Id);
+void Player_SetId(Player,  uint32 Id);
 void Player_GetId(Player, uint32 *Id);
 void Player_SetName(Player, char *Name);
 void Player_GetName(Player, char **Name);
