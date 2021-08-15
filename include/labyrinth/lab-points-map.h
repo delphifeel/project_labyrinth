@@ -15,7 +15,7 @@ CORE_OBJECT_INTERFACE(LabPointsMap,
 
 void LabPointsMap_ToJSON(LabPointsMap, char **JSON);
 void LabPointsMap_ToRawData(LabPointsMap, uint8 **RawData, uint32 *RawDataSize);
-void LabPointsMap_AddPoint(LabPointsMap, LabPoint LabPoint);
+void LabPointsMap_AddPoint(LabPointsMap, LabPoint Point);
 void LabPointsMap_GetPointByID(LabPointsMap, uint32 ID, LabPoint *OUT_Point);
 void LabPointsMap_GetSize(LabPointsMap, uint32 *Size);
 void LabPointsMap_GetCapacity(LabPointsMap, uint32 *Capacity);
