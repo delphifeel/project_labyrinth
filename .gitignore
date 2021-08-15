@@ -2,6 +2,7 @@
 *.out
 *.a
 
+.vscode
 build
 CMakeFiles
 CMakeScripts

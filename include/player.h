@@ -1,14 +1,22 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
-#include "../CORE.h"
+#include "./CORE.h"
 
 /*****************************************************************************************************************************/
 
+typedef struct Position 
+{ 
+	uint32	positionX; 
+	uint32  positionY; 
+} *Position; 
+
+
 CORE_OBJECT_INTERFACE(Player,
-	uint32 	Id;
-	char 	Name[40];
-	// TODO: Position
+	uint32 		Id;
+	char 		Name[40];
+	Position	position; 
+	uint32		SpeedMultiplier;
 )
 
 typedef enum MoveDirection
@@ -21,14 +29,14 @@ typedef enum MoveDirection
 
 /*****************************************************************************************************************************/
 
-void Player_Move(Player, MoveDirection *Directions);
+CORE_Bool Player_Move(Player, MoveDirection *Directions, uint32 DirectionsSize);
 
 void Player_SetId(Player,  uint32 Id);
 void Player_GetId(Player, uint32 *Id);
 void Player_SetName(Player, char *Name);
-void Player_GetName(Player, char **Name);
+void Player_GetName(Player, char *Name);
 
-void Player_Create(Player*);
+void Player_Create(Player*, Position);
 void Player_Free(Player*);
 
 /*****************************************************************************************************************************/
