@@ -2,94 +2,74 @@
 #include "../include/player.h"
 
 
+static const PositionStruct Mock_Position   = {.X = 42, .Y = 71};
+static const uint32         Mock_Id         = 999;
+
 void Test_PlayerInit()
 {
-    Player player; 
-    Position position; 
+    Player          Instance; 
+    PositionStruct  PlayerPosition;
 
-    position = CORE_MemAlloc(sizeof(Position)); 
+    Player_Create(&Instance); 
+    Player_Setup(Instance, Mock_Position);
 
-    (*position).positionX = 42; 
-    (*position).positionY = 71; 
+    Player_GetPosition(Instance, &PlayerPosition);
+    assert(PlayerPosition.X == Mock_Position.X); 
+    assert(PlayerPosition.Y == Mock_Position.Y); 
 
-    Player_Create(&player, position); 
-
-    assert((*player).position->positionX == 42); 
-    assert((*player).position->positionY == 71); 
-
-    Player_Free(&player); 
-    CORE_MemFree(position); 
+    Player_Free(&Instance); 
 }
 
 
 void Test_PlayerSetGetName()
 {
-    Player player; 
-    Position position; 
-    char name[40] = "Labyrinth"; 
+    Player Instance; 
+    char Name[40] = "Labyrinth"; 
+    char PlayerName[40];
 
-    position = CORE_MemAlloc(sizeof(Position)); 
+    Player_Create(&Instance);
+    Player_Setup(Instance, Mock_Position);
 
-    position->positionX = 42; 
-    position->positionY = 71; 
+    Player_SetName(Instance, Name); 
+    Player_GetName(Instance, PlayerName, sizeof(PlayerName));
+    assert(strcmp(PlayerName, Name) == 0);
 
-    Player_Create(&player, position); 
-    Player_SetName(player, name); 
+    strncpy(PlayerName, "Lorem ipsum dolor", sizeof(PlayerName));   
+    Player_GetName(Instance, PlayerName, sizeof(PlayerName));
+    assert(strcmp(PlayerName, Name) == 0);
 
-    assert(strcmp((*player).Name, name) == 0);
-
-    strcpy(name, "Lorem ipsum dolor");   
-    Player_GetName(player, name); 
-
-    assert(strcmp((*player).Name, name) == 0); 
-
-    Player_Free(&player); 
-    CORE_MemFree(position);
+    Player_Free(&Instance); 
 }
 
 
 void Test_PlayerSetGetId()
 {
-    Player player; 
-    Position position; 
-    uint32 ID; 
+    Player Instance; 
+    uint32 Id; 
 
-    position = CORE_MemAlloc(sizeof(Position)); 
+    Player_Create(&Instance);
+    Player_Setup(Instance, Mock_Position);
 
-    (*position).positionX = 42; 
-    (*position).positionY = 71; 
-    Player_Create(&player, position);
+    Player_SetId(Instance, Mock_Id); 
+    Player_GetId(Instance, &Id);
+    assert(Id == Mock_Id); 
 
-    Player_SetId(player, 42); 
-    assert((*player).Id == 42); 
-
-    Player_GetId(player, &ID); 
-
-    assert(ID == 42); 
-
-    Player_Free(&player); 
-    CORE_MemFree(position)
+    Player_Free(&Instance); 
 }
 
 
 void Test_PlayerMove()
 {
-    Player player; 
-    Position position; 
-    uint32 ID; 
+    Player Instance; 
+    uint32 Id; 
 
     MoveDirection Directions[3] = {kMoveDirection_Top, kMoveDirection_Bottom, kMoveDirection_Left};  
 
-    position = CORE_MemAlloc(sizeof(Position)); 
-
-    (*position).positionX = 42; 
-    (*position).positionY = 71; 
-    Player_Create(&player, position);
-    CORE_MemFree(position)
-
+    Player_Create(&Instance);
+    Player_Setup(Instance, Mock_Position);
     // exceed required count of params
 
-
+    // TODO: implement Test_PlayerMove
 }
 
 
