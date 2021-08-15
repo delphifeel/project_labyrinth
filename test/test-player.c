@@ -7,7 +7,7 @@ void Test_PlayerInit()
     Player player; 
     Position position; 
 
-    CORE_OBJECT_CREATE(&position, Position); 
+    position = CORE_MemAlloc(sizeof(Position)); 
 
     (*position).positionX = 42; 
     (*position).positionY = 71; 
@@ -18,6 +18,7 @@ void Test_PlayerInit()
     assert((*player).position->positionY == 71); 
 
     Player_Free(&player); 
+    CORE_MemFree(position); 
 }
 
 
@@ -27,10 +28,10 @@ void Test_PlayerSetGetName()
     Position position; 
     char name[40] = "Labyrinth"; 
 
-    CORE_OBJECT_CREATE(&position, Position); 
+    position = CORE_MemAlloc(sizeof(Position)); 
 
-    (*position).positionX = 42; 
-    (*position).positionY = 71; 
+    position->positionX = 42; 
+    position->positionY = 71; 
 
     Player_Create(&player, position); 
     Player_SetName(player, name); 
@@ -43,6 +44,7 @@ void Test_PlayerSetGetName()
     assert(strcmp((*player).Name, name) == 0); 
 
     Player_Free(&player); 
+    CORE_MemFree(position);
 }
 
 
@@ -52,7 +54,7 @@ void Test_PlayerSetGetId()
     Position position; 
     uint32 ID; 
 
-    CORE_OBJECT_CREATE(&position, Position); 
+    position = CORE_MemAlloc(sizeof(Position)); 
 
     (*position).positionX = 42; 
     (*position).positionY = 71; 
@@ -66,6 +68,28 @@ void Test_PlayerSetGetId()
     assert(ID == 42); 
 
     Player_Free(&player); 
+    CORE_MemFree(position)
+}
+
+
+void Test_PlayerMove()
+{
+    Player player; 
+    Position position; 
+    uint32 ID; 
+
+    MoveDirection Directions[3] = {kMoveDirection_Top, kMoveDirection_Bottom, kMoveDirection_Left};  
+
+    position = CORE_MemAlloc(sizeof(Position)); 
+
+    (*position).positionX = 42; 
+    (*position).positionY = 71; 
+    Player_Create(&player, position);
+    CORE_MemFree(position)
+
+    // exceed required count of params
+
+
 }
 
 
@@ -74,4 +98,5 @@ int main()
     Test_PlayerInit(); 
     Test_PlayerSetGetName();
     Test_PlayerSetGetId(); 
+    Test_PlayerMove();
 }

@@ -70,7 +70,10 @@ void Player_GetName(Player Instance, char *Name)
 void Player_Create(Player *InstancePtr, Position position)
 {
     CORE_OBJECT_CREATE(InstancePtr, Player);
-    (*InstancePtr)->position = position; 
+    
+    (*InstancePtr)->position = CORE_MemAlloc(sizeof(Position)); 
+    (*InstancePtr)->position->positionX = position->positionX; 
+    (*InstancePtr)->position->positionY = position->positionY;
 }
 
 

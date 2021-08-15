@@ -5,10 +5,11 @@
 
 /*****************************************************************************************************************************/
 
-CORE_OBJECT_INTERFACE(Position, 
+typedef struct Position 
+{ 
 	uint32	positionX; 
 	uint32  positionY; 
-)
+} *Position; 
 
 
 CORE_OBJECT_INTERFACE(Player,
