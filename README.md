@@ -12,8 +12,9 @@ project_labyrinth
 # Current Tasks
 
 - Session Header - take a point from session
-- Lab Point/Map Refactoring 
+- Lab Point/Map Refactoring [@D-Hatz]
 - Player tests 
-- Cmake configuration 
+- Cmake configuration [@D-Hatz]
 - In/Out System
 - Command / Comand Service
+- Player refactoring - remove position. take a point from session
