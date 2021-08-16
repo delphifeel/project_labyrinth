@@ -14,20 +14,18 @@ typedef enum CommandType
 
 typedef struct CommandPayload_PlayerMove
 {
-	uint32 PlayerId;
-	uint32 Direction;
+	uint32 DirectionsSize;
+	uint32 *Directions;
 } CommandPayload_PlayerMove;
 
 typedef struct CommandStruct 
 {
 	CommandType 	Type;
-	
-	union 
+	uint32			PlayerId;
+	union
 	{
-		CommandPayload_PlayerMove 	PlayerMovePayload;
+		CommandPayload_PlayerMove	PlayerMovePayload;
 	};
 } CommandStruct;
-
-/*****************************************************************************************************************************/
 
 #endif
