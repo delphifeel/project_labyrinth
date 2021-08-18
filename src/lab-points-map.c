@@ -39,7 +39,7 @@ void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 
 	int32 				JSONSizeLeft;
 	uint32 				MaxJSON;
-	LabPointStruct		LabPoint; 
+	LabPointStruct		CurrentLabPoint; 
 	char 				LabPointRawJSONObject[RAW_JSON_OBJECT_MAX_SIZE];
 	uint32 				LabPointRawJSONObject_CharCount;
 
@@ -60,16 +60,16 @@ void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 	for (uint32 i = 0; i < Instance->Size; i++)
 	{
 		
-		LabPoint = Instance->LabPointsArray[i];
-		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, "\"%ld\": ", LabPoint.Id);
+		CurrentLabPoint = Instance->LabPointsArray[i];
+		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, "\"%ld\": ", CurrentLabPoint.Id);
 		strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
 		DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
 
 		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, 
-															"{\"top_id\": %ld, \"right_id\": %ld, \"bottom_id\": %ld, \"left_id\": %ld, \"is_exit\": %ld, \"is_spawn\": %ld}",
-															LabPoint.TopConnectionId, LabPoint.RightConnectionId, 
-															LabPoint.BottomConnectionId, LabPoint.LeftConnectionId,
-															LabPoint.IsExit, LabPoint.IsSpawn);
+												  "{\"top_id\": %ld, \"right_id\": %ld, \"bottom_id\": %ld, \"left_id\": %ld, \"is_exit\": %ld, \"is_spawn\": %ld}",
+												  CurrentLabPoint.TopConnectionId, CurrentLabPoint.RightConnectionId, 
+												  CurrentLabPoint.BottomConnectionId, CurrentLabPoint.LeftConnectionId,
+												  CurrentLabPoint.IsExit, CurrentLabPoint.IsSpawn);
 
 		strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
 		DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
