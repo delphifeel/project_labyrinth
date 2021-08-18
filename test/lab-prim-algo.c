@@ -16,8 +16,8 @@ typedef struct Edge
 
 void FillRectangleLab(LabPointsMap LabPointsMapHandle)
 {
-	LabPoint CurrentLabPointHandle, CurrentConnectionLabPointHandle;
-	int32 TempConnectionID, ID, P;
+	LabPointStruct CurrentLabPointHandle;
+	int32 ConnectionID, ID, P;
 
 	if (MATRIX_SIZE < 7)
 		CORE_DebugAssert("MATRIX_SIZE need to be >= 7\n");
@@ -28,11 +28,11 @@ void FillRectangleLab(LabPointsMap LabPointsMapHandle)
 	// create all points
 	P = MATRIX_SIZE * MATRIX_SIZE;
 	for (uint32 i = 0; i < P; i++)
-		{
+	{
 		LabPoint_Create(&CurrentLabPointHandle);
 		LabPoint_SetID(CurrentLabPointHandle, i + 1);
 		LabPointsMap_AddPoint(LabPointsMapHandle, CurrentLabPointHandle);
-		}
+	}
 
 	// set exit point
 	LabPointsMap_GetPointByID(LabPointsMapHandle, P / 2 + 1, &CurrentLabPointHandle);
@@ -48,35 +48,35 @@ void FillRectangleLab(LabPointsMap LabPointsMapHandle)
 
 	RowIndex = PosIndex;
 	for (ColumnIndex = PosIndex + 2; ColumnIndex < MATRIX_SIZE - PosIndex + 1; ColumnIndex++)
-		{
+	{
 		PossibleSpawnPoints[PossibleSpawnPointsSize] = RowIndex * MATRIX_SIZE + ColumnIndex;
 		PossibleSpawnPointsSize++;
-		}
+	}
 
 	ColumnIndex = MATRIX_SIZE - PosIndex;
 	for (RowIndex = PosIndex + 1; RowIndex < MATRIX_SIZE - PosIndex; RowIndex++)
-		{
+	{
 		PossibleSpawnPoints[PossibleSpawnPointsSize] = RowIndex * MATRIX_SIZE + ColumnIndex;
 		PossibleSpawnPointsSize++;
-		}
+	}
 
 	RowIndex = MATRIX_SIZE - PosIndex - 1;
 	for (ColumnIndex = MATRIX_SIZE - PosIndex - 1; ColumnIndex > PosIndex; ColumnIndex--)
-		{
+	{
 		PossibleSpawnPoints[PossibleSpawnPointsSize] = RowIndex * MATRIX_SIZE + ColumnIndex;
 		PossibleSpawnPointsSize++;
-		}
+	}
 
 	ColumnIndex = PosIndex + 1;
 	for (RowIndex = MATRIX_SIZE - PosIndex - 2; RowIndex > PosIndex - 1; RowIndex--)
-		{
+	{
 		PossibleSpawnPoints[PossibleSpawnPointsSize] = RowIndex * MATRIX_SIZE + ColumnIndex;
 		PossibleSpawnPointsSize++;
-		}
+	}
 
 	AddedPoints = 0;
 	for (uint32 i = 0; i < PossibleSpawnPointsSize; i++)
-		{
+	{
 		if (i % (PossibleSpawnPointsSize / SPAWN_POINTS_COUNT) != 0)
 			continue;
 
@@ -87,46 +87,34 @@ void FillRectangleLab(LabPointsMap LabPointsMapHandle)
 
 		if (AddedPoints == SPAWN_POINTS_COUNT)
 			break;
-		}
+	}
 
 	// fill connections for every point
 	for (uint32 i = 0; i < P; i++)
-		{
+	{
 		ID = i + 1;
 		LabPointsMap_GetPointByID(LabPointsMapHandle, ID, &CurrentLabPointHandle);
 
 		// top connection
-		TempConnectionID = ID - MATRIX_SIZE;
-		if (TempConnectionID > 0)
-			{
-			LabPointsMap_GetPointByID(LabPointsMapHandle, TempConnectionID, &CurrentConnectionLabPointHandle);
-			LabPoint_SetConnectionTop(CurrentLabPointHandle, CurrentConnectionLabPointHandle);
-			}
+		ConnectionID = ID - MATRIX_SIZE;
+		if (ConnectionID > 0)
+			CurrentLabPointHandle.TopConnectionId = ConnectionID;
 
 		// right connection
-		TempConnectionID = ID + 1;
-		if (TempConnectionID % MATRIX_SIZE != 1)
-			{
-			LabPointsMap_GetPointByID(LabPointsMapHandle, TempConnectionID, &CurrentConnectionLabPointHandle);
-			LabPoint_SetConnectionRight(CurrentLabPointHandle, CurrentConnectionLabPointHandle);
-			}
+		ConnectionID = ID + 1;
+		if (ConnectionID % MATRIX_SIZE != 1)
+			CurrentLabPointHandle.RightConnectionId = ConnectionID;
 
 		// bottom connection
-		TempConnectionID = ID + MATRIX_SIZE;
-		if (TempConnectionID <= P)
-			{
-			LabPointsMap_GetPointByID(LabPointsMapHandle, TempConnectionID, &CurrentConnectionLabPointHandle);
-			LabPoint_SetConnectionBottom(CurrentLabPointHandle, CurrentConnectionLabPointHandle);
-			}
-
+		ConnectionID = ID + MATRIX_SIZE;
+		if (ConnectionID <= P)
+			CurrentLabPointHandle.BottomConnectionId = ConnectionID;
+		
 		// left connection
-		TempConnectionID = ID - 1;
-		if (TempConnectionID % MATRIX_SIZE != 0)
-			{
-			LabPointsMap_GetPointByID(LabPointsMapHandle, TempConnectionID, &CurrentConnectionLabPointHandle);
-			LabPoint_SetConnectionLeft(CurrentLabPointHandle, CurrentConnectionLabPointHandle);
-			}
-		}
+		ConnectionID = ID - 1;
+		if (ConnectionID % MATRIX_SIZE != 0)
+			CurrentLabPointHandle.LeftConnectionId = ConnectionID; 
+	}
 }
 
 void PrintEdges(Edge *Edges, uint32 EdgesSize)
@@ -157,7 +145,7 @@ int SortEdgesRandomly(const void *left, const void *right)
 
 void CopyConnectionsAccordingToEdge(LabPointsMap LabPointsMapHandle, LabPointsMap ResultLabPointsMapHandle, uint32 LabPointID, uint32 ConnectionLabPointID)
 {
-	LabPoint LabPointHandle, ConnectionLabPointHandle, ResultLabPointHandle, ResultConnectionLabPointHandle;
+	LabPointStruct LabPointHandle, ConnectionLabPointHandle, ResultLabPointHandle, ResultConnectionLabPointHandle;
 	uint32 CurrentConnectionID;
 
 

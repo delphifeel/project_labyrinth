@@ -104,7 +104,6 @@ void LabPointsMap_AddPoint(LabPointsMap Instance, LabPointStruct Point)
 {
 	uint32 LabPointID;
 
-
 	LabPoint_GetID(Point, &LabPointID);
 
 	if (Instance->Size == Instance->Capacity)		// if TRUE, double capacity. 
