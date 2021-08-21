@@ -13,24 +13,41 @@
 
 static void LabPointsMap_InternalPrint(LabPointsMap Instance)
 {
-	LabPointStruct 		CurrentLabPoint;
+	LabPointStruct 	*CurrentLabPoint;
 
 	CORE_DebugPrint("*** MAP START ***\n");
 	for (uint32 i = 0; i < Instance->Size; i++)
 	{
 		
 		LabPointsMap_GetPointByID(Instance, i + 1, &CurrentLabPoint);
-		CORE_DebugPrint("[%ld]", CurrentLabPoint.Id);
-		CORE_DebugPrint(" %ld (top)", CurrentLabPoint.TopConnectionId);
-		CORE_DebugPrint(" %ld (right)", CurrentLabPoint.RightConnectionId);
-		CORE_DebugPrint(" %ld (bottom)", CurrentLabPoint.BottomConnectionId);
-		CORE_DebugPrint(" %ld (left)", CurrentLabPoint.LeftConnectionId);
+		CORE_DebugPrint("[%ld]", CurrentLabPoint->Id);
+		CORE_DebugPrint(" %ld (top)", CurrentLabPoint->TopConnectionId);
+		CORE_DebugPrint(" %ld (right)", CurrentLabPoint->RightConnectionId);
+		CORE_DebugPrint(" %ld (bottom)", CurrentLabPoint->BottomConnectionId);
+		CORE_DebugPrint(" %ld (left)", CurrentLabPoint->LeftConnectionId);
 		CORE_DebugPrint("\n");
 	}
 	CORE_DebugPrint("*** MAP END ***\n");
 }
 
 /*****************************************************************************************************************************/
+
+static void LabPointsMap_InternalLabPointToRawLabPoint(LabPointStruct *Point, LabPointStruct *LabPointRaw)
+ {
+ 	uint32 ID, TopID, RightID, BottomID, LeftID;
+ 	LabPointStruct Connection;
+
+
+ 	ID = TopID = RightID = BottomID = LeftID = 0;
+
+ 	LabPointRaw->Id = Point->Id;
+ 	LabPointRaw->TopConnectionId = Point->TopConnectionId;
+ 	LabPointRaw->RightConnectionId = Point->RightConnectionId;
+ 	LabPointRaw->BottomConnectionId = Point->BottomConnectionId;
+ 	LabPointRaw->LeftConnectionId = Point->LeftConnectionId;
+	LabPointRaw->IsExit = Point->IsExit; 
+	LabPointRaw->IsSpawn = Point->IsSpawn; 
+ }
 
 void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 {
@@ -39,7 +56,7 @@ void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 
 	int32 				JSONSizeLeft;
 	uint32 				MaxJSON;
-	LabPointStruct		CurrentLabPoint; 
+	LabPointStruct		*CurrentLabPoint; 
 	char 				LabPointRawJSONObject[RAW_JSON_OBJECT_MAX_SIZE];
 	uint32 				LabPointRawJSONObject_CharCount;
 
@@ -61,15 +78,15 @@ void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 	{
 		
 		CurrentLabPoint = Instance->LabPointsArray[i];
-		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, "\"%ld\": ", CurrentLabPoint.Id);
+		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, "\"%ld\": ", CurrentLabPoint->Id);
 		strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
 		DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
 
 		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, 
 												  "{\"top_id\": %ld, \"right_id\": %ld, \"bottom_id\": %ld, \"left_id\": %ld, \"is_exit\": %ld, \"is_spawn\": %ld}",
-												  CurrentLabPoint.TopConnectionId, CurrentLabPoint.RightConnectionId, 
-												  CurrentLabPoint.BottomConnectionId, CurrentLabPoint.LeftConnectionId,
-												  CurrentLabPoint.IsExit, CurrentLabPoint.IsSpawn);
+												  CurrentLabPoint->TopConnectionId, CurrentLabPoint->RightConnectionId, 
+												  CurrentLabPoint->BottomConnectionId, CurrentLabPoint->LeftConnectionId,
+												  CurrentLabPoint->IsExit, CurrentLabPoint->IsSpawn);
 
 		strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
 		DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
@@ -100,11 +117,8 @@ void LabPointsMap_ToRawData(LabPointsMap Instance, uint8 **RawData, uint32 *RawD
 	*RawData = (uint8 *) LabPointData;
 }
 
-void LabPointsMap_AddPoint(LabPointsMap Instance, LabPointStruct Point)
+void LabPointsMap_AddPoint(LabPointsMap Instance, LabPointStruct *Point)
 {
-	uint32 LabPointID;
-
-	LabPoint_GetID(Point, &LabPointID);
 
 	if (Instance->Size == Instance->Capacity)		// if TRUE, double capacity. 
 	{
@@ -112,11 +126,11 @@ void LabPointsMap_AddPoint(LabPointsMap Instance, LabPointStruct Point)
 		Instance->LabPointsArray = CORE_MemRealloc(Instance->LabPointsArray, sizeof(LabPointStruct) * Instance->Capacity);
 	}
 
-	Instance->LabPointsArray[LabPointID - 1] = Point;
+	Instance->LabPointsArray[Point->Id - 1] = Point;
 	Instance->Size++;
 }
 
-void LabPointsMap_GetPointByID(LabPointsMap Instance, uint32 ID, LabPointStruct *Point)
+void LabPointsMap_GetPointByID(LabPointsMap Instance, uint32 ID, LabPointStruct **Point)
 {
 	*Point = Instance->LabPointsArray[ID - 1];
 }
@@ -145,11 +159,12 @@ void LabPointsMap_Create(LabPointsMap *InstancePtr)
 
 void LabPointsMap_Free(LabPointsMap *InstancePtr)
 {
+	/*	free allocated memory 
 	for (uint32 i = 0; i < (*InstancePtr)->Size; i++)
-		{
-		LabPoint_Free(&(*InstancePtr)->LabPointsArray[i]);
-		}
-
+	{
+		CORE_MemFree(&(*InstancePtr)->LabPointsArray[i]);
+	}
+	*/
 	CORE_MemFree((*InstancePtr)->LabPointsArray);
 	CORE_OBJECT_FREE(InstancePtr);
 }

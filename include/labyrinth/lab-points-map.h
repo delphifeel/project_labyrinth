@@ -6,17 +6,17 @@
 #include "lab-point.h"
 
 CORE_OBJECT_INTERFACE(LabPointsMap,
-	LabPoint 	*LabPointsArray;
-	uint32 		Size;
-	uint32 		Capacity;
+	LabPointStruct 	**LabPointsArray;
+	uint32 			Size;
+	uint32 			Capacity;
 )
 
 /*****************************************************************************************************************************/
 
 void LabPointsMap_ToJSON(LabPointsMap, char **JSON);
 void LabPointsMap_ToRawData(LabPointsMap, uint8 **RawData, uint32 *RawDataSize);
-void LabPointsMap_AddPoint(LabPointsMap, LabPointStruct LabPoint);
-void LabPointsMap_GetPointByID(LabPointsMap, uint32 ID, LabPointStruct *OUT_Point);
+void LabPointsMap_AddPoint(LabPointsMap, LabPointStruct *LabPoint);
+void LabPointsMap_GetPointByID(LabPointsMap, uint32 ID, LabPointStruct **OUT_Point);
 void LabPointsMap_GetSize(LabPointsMap, uint32 *Size);
 void LabPointsMap_GetCapacity(LabPointsMap, uint32 *Capacity);
 

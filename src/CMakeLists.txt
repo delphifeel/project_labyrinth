@@ -1,1 +1,1 @@
-add_library(src lab-point.c lab-points-map.c)
+add_library(src lab-points-map.c)

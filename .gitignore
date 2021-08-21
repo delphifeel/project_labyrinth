@@ -2,6 +2,7 @@
 *.out
 
 .vscode
+build
 CMakeFiles
 CMakeScripts
 CMakeCache.txt
