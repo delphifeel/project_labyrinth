@@ -20,7 +20,7 @@ CORE_OBJECT_INTERFACE(LabSession,
 	LabPointsMap 	LabyrinthMap;
 
 	/* players that currently in this session */
-	Player 			*PlayerList;
+	Player 			*PlayersMap;
 	uint32  		PlayerListSize;
 
 	/* etc */
@@ -29,6 +29,10 @@ CORE_OBJECT_INTERFACE(LabSession,
 /*****************************************************************************************************************************/
 
 void LabSession_GetLabPointById(LabSession, uint32 Id, LabPoint *OUT_LabPoint);
+
+void LabSession_Setup(LabSession, uint32 PlayersCount,);
+
+void LabSession_Create(LabSession*);
 
 /*****************************************************************************************************************************/
 
