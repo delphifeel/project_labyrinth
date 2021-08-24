@@ -147,7 +147,6 @@ void LabPointsMap_Create(LabPointsMap *InstancePtr)
 
 	(*InstancePtr)->Capacity = LABPOINTSMAP_DEFAULTCAPACITY;
 	(*InstancePtr)->Size = 0;
-	(*InstancePtr)->LabPointsArray = NULL;
 	(*InstancePtr)->LabPointsArray = CORE_MemAlloc(sizeof(LabPointStruct *) * ((*InstancePtr)->Capacity));
 }
 

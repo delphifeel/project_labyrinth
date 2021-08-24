@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define MATRIX_SIZE 		(141)
+#define MATRIX_SIZE 		(41)
 #define SPAWN_POINTS_COUNT 	(20)
 
 typedef struct Edge
@@ -14,7 +14,7 @@ typedef struct Edge
 	uint32 To;
 } Edge;
 
-void FillRectangleLab(LabPointsMap LabPointsMapHandle)
+void FillRectangleLab(LabPointsMap MainPointsMap)
 {
 	LabPointStruct *CurrentLabPointHandle;
 	int32 ConnectionID, ID, P;
@@ -31,11 +31,19 @@ void FillRectangleLab(LabPointsMap LabPointsMapHandle)
 	{
 		CurrentLabPointHandle = (LabPointStruct *) CORE_MemAlloc(sizeof(LabPointStruct)); 
 		CurrentLabPointHandle->Id = i + 1;
-		LabPointsMap_AddPoint(LabPointsMapHandle, CurrentLabPointHandle);
+		
+		CurrentLabPointHandle->TopConnectionId = 0;
+		CurrentLabPointHandle->RightConnectionId = 0;
+		CurrentLabPointHandle->LeftConnectionId = 0;
+		CurrentLabPointHandle->BottomConnectionId = 0;
+		CurrentLabPointHandle->IsExit = FALSE;
+		CurrentLabPointHandle->IsSpawn = FALSE;
+
+		LabPointsMap_AddPoint(MainPointsMap, CurrentLabPointHandle);
 	}
 
 	// set exit point
-	LabPointsMap_GetPointByID(LabPointsMapHandle, P / 2 + 1, &CurrentLabPointHandle);
+	LabPointsMap_GetPointByID(MainPointsMap, P / 2 + 1, &CurrentLabPointHandle);
 	CORE_DebugPrint("Set %ld as exit\n", P / 2 + 1);
 	CurrentLabPointHandle->IsExit = TRUE; 
 	// set spawn points (center square of matrix)
@@ -79,7 +87,7 @@ void FillRectangleLab(LabPointsMap LabPointsMapHandle)
 		if (i % (PossibleSpawnPointsSize / SPAWN_POINTS_COUNT) != 0)
 			continue;
 
-		LabPointsMap_GetPointByID(LabPointsMapHandle, PossibleSpawnPoints[i], &CurrentLabPointHandle);
+		LabPointsMap_GetPointByID(MainPointsMap, PossibleSpawnPoints[i], &CurrentLabPointHandle);
 
 		CurrentLabPointHandle->IsSpawn = TRUE; 
 		AddedPoints++;
@@ -92,7 +100,7 @@ void FillRectangleLab(LabPointsMap LabPointsMapHandle)
 	for (uint32 i = 0; i < P; i++)
 	{
 		ID = i + 1;
-		LabPointsMap_GetPointByID(LabPointsMapHandle, ID, &CurrentLabPointHandle);
+		LabPointsMap_GetPointByID(MainPointsMap, ID, &CurrentLabPointHandle);
 
 		// top connection
 		ConnectionID = ID - MATRIX_SIZE;
@@ -142,12 +150,13 @@ int SortEdgesRandomly(const void *left, const void *right)
 	return 0;
 }
 
-void CopyConnectionsAccordingToEdge(LabPointsMap LabPointsMapHandle, LabPointsMap ResultLabPointsMapHandle, uint32 LabPointID, uint32 ConnectionLabPointID)
+void CopyConnectionsAccordingToEdge(LabPointsMap MainPointsMap, LabPointsMap ResultLabPointsMapHandle, uint32 LabPointID, uint32 ConnectionLabPointID)
 {
 	LabPointStruct *LabPointHandle, *ResultLabPointHandle, *ResultConnectionLabPointHandle;
 	uint32 CurrentConnectionID;
 
-	LabPointsMap_GetPointByID(LabPointsMapHandle, LabPointID, &LabPointHandle);
+
+	LabPointsMap_GetPointByID(MainPointsMap, LabPointID, &LabPointHandle);
 	if (LabPointHandle == NULL)
 		return;
 
@@ -185,23 +194,26 @@ void CopyConnectionsAccordingToEdge(LabPointsMap LabPointsMapHandle, LabPointsMa
 	
 }
 
-void BuildMSTMaze(LabPointsMap LabPointsMapHandle, LabPointsMap MSTPointsMapHandle)
+static void BuildMSTMaze(LabPointsMap MainPointsMap, LabPointsMap MSTPointsMapHandle)
 {
 	LabPointStruct 	*CurrentLabPointHandle, *TempLabPointHandle, *CurrentConnectionLabPointHandle; 
 	DisjointSet 	DisjointSetHadle;
 	uint32 			VertexCount, CurrentLabPointID, ID;
-	Edge 			SortedEdges[MATRIX_SIZE * MATRIX_SIZE * 4], MSTEdges[MATRIX_SIZE * MATRIX_SIZE * 4];
+	Edge 			*SortedEdges, *MSTEdges;
 	uint32 			SortedEdgesSize, MSTEdgesSize, SubsetsLeft;
 	CORE_Bool		TempBoolValue;
 
 
+	SortedEdges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);
+	MSTEdges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);
+
 	// get all possible edges
 	SortedEdgesSize = 0;
-	LabPointsMap_GetSize(LabPointsMapHandle, &VertexCount);
+	LabPointsMap_GetSize(MainPointsMap, &VertexCount);
 	for (uint32 i = 0; i < VertexCount; i++)
 	{
 		ID = i + 1;
-		LabPointsMap_GetPointByID(LabPointsMapHandle, ID, &CurrentLabPointHandle);
+		LabPointsMap_GetPointByID(MainPointsMap, ID, &CurrentLabPointHandle);
 		if (CurrentLabPointHandle == NULL)
 			continue;
 
@@ -258,7 +270,7 @@ void BuildMSTMaze(LabPointsMap LabPointsMapHandle, LabPointsMap MSTPointsMapHand
 		CurrentLabPointHandle = (LabPointStruct * ) CORE_MemAlloc(sizeof(LabPointStruct)); 
 		CurrentLabPointHandle->Id = i + 1; 
 
-		LabPointsMap_GetPointByID(LabPointsMapHandle, i + 1, &TempLabPointHandle);
+		LabPointsMap_GetPointByID(MainPointsMap, i + 1, &TempLabPointHandle);
 		CurrentLabPointHandle->IsExit = TempLabPointHandle->IsExit;
 		CurrentLabPointHandle->IsSpawn = TempLabPointHandle->IsSpawn;
 
@@ -267,23 +279,26 @@ void BuildMSTMaze(LabPointsMap LabPointsMapHandle, LabPointsMap MSTPointsMapHand
 
 	for (uint32 i = 0; i < MSTEdgesSize; i++)
 	{
-		CopyConnectionsAccordingToEdge(LabPointsMapHandle, MSTPointsMapHandle, MSTEdges[i].From, MSTEdges[i].To);
-		CopyConnectionsAccordingToEdge(LabPointsMapHandle, MSTPointsMapHandle, MSTEdges[i].To, MSTEdges[i].From);
+		CopyConnectionsAccordingToEdge(MainPointsMap, MSTPointsMapHandle, MSTEdges[i].From, MSTEdges[i].To);
+		CopyConnectionsAccordingToEdge(MainPointsMap, MSTPointsMapHandle, MSTEdges[i].To, MSTEdges[i].From);
 	}
+
+	CORE_MemFree(SortedEdges);
+	CORE_MemFree(MSTEdges);
 }
 
-void BuildLabyrinth()
+void BuildLabyrinth(void)
 {
-	LabPointsMap 		LabPointsMapHandle, MSTPointsMapHandle;
+	LabPointsMap 		MainPointsMap, MSTPointsMapHandle;
 	CORE_FileHandle 	FileToWrite;
 	char 				*JSON;
 
 
-	LabPointsMap_Create(&LabPointsMapHandle);
+	LabPointsMap_Create(&MainPointsMap);
 	LabPointsMap_Create(&MSTPointsMapHandle);
-	FillRectangleLab(LabPointsMapHandle);
-	BuildMSTMaze(LabPointsMapHandle, MSTPointsMapHandle);
-	LabPointsMap_Free(&LabPointsMapHandle);
+	FillRectangleLab(MainPointsMap);
+	BuildMSTMaze(MainPointsMap, MSTPointsMapHandle);
+	LabPointsMap_Free(&MainPointsMap);
 	LabPointsMap_ToJSON(MSTPointsMapHandle, &JSON);
 
 	FileToWrite = CORE_FileOpen("data-prim.json", "w");
