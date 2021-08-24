@@ -2,6 +2,7 @@
 #define __COMMAND_H_
 
 #include "../CORE.h"
+#include "common.h"
 
 /*****************************************************************************************************************************/
 
@@ -14,8 +15,8 @@ typedef enum CommandType
 
 typedef struct CommandPayload_PlayerMove
 {
-	uint32 DirectionsSize;
-	uint32 *Directions;
+	uint32 			DirectionsSize;
+	MoveDirection 	*Directions;
 } CommandPayload_PlayerMove;
 
 typedef struct CommandStruct 

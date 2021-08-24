@@ -2,6 +2,7 @@
 #define __PLAYER_H__
 
 #include "./CORE.h"
+#include "common.h"
 
 /*****************************************************************************************************************************/
 
@@ -19,13 +20,7 @@ CORE_OBJECT_INTERFACE(Player,
 	uint32				SpeedMultiplier;
 )
 
-typedef enum MoveDirection
-{
-	kMoveDirection_Top,
-	kMoveDirection_Right,
-	kMoveDirection_Bottom,
-	kMoveDirection_Left,
-} MoveDirection;
+
 
 /*****************************************************************************************************************************/
 
