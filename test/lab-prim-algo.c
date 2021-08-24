@@ -31,6 +31,14 @@ void FillRectangleLab(LabPointsMap LabPointsMapHandle)
 	{
 		CurrentLabPointHandle = (LabPointStruct *) CORE_MemAlloc(sizeof(LabPointStruct)); 
 		CurrentLabPointHandle->Id = i + 1;
+		
+		CurrentLabPointHandle->TopConnectionId = 0;
+		CurrentLabPointHandle->RightConnectionId = 0;
+		CurrentLabPointHandle->LeftConnectionId = 0;
+		CurrentLabPointHandle->BottomConnectionId = 0;
+		CurrentLabPointHandle->IsExit = FALSE;
+		CurrentLabPointHandle->IsSpawn = FALSE;
+
 		LabPointsMap_AddPoint(LabPointsMapHandle, CurrentLabPointHandle);
 	}
 
@@ -282,7 +290,7 @@ void BuildLabyrinth()
 	LabPointsMap_Create(&LabPointsMapHandle);
 	LabPointsMap_Create(&MSTPointsMapHandle);
 	FillRectangleLab(LabPointsMapHandle);
-	BuildMSTMaze(LabPointsMapHandle, MSTPointsMapHandle);
+	BuildMSTMaze(LabPointsMapHandle, MSTPointsMapHandle); 
 	LabPointsMap_Free(&LabPointsMapHandle);
 	LabPointsMap_ToJSON(MSTPointsMapHandle, &JSON);
 
