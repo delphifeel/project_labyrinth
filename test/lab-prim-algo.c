@@ -269,6 +269,12 @@ static void BuildMSTMaze(LabPointsMap MainPointsMap, LabPointsMap MSTPointsMapHa
 	{
 		CurrentLabPointHandle = (LabPointStruct * ) CORE_MemAlloc(sizeof(LabPointStruct)); 
 		CurrentLabPointHandle->Id = i + 1; 
+		CurrentLabPointHandle->TopConnectionId = 0;
+		CurrentLabPointHandle->RightConnectionId = 0;
+		CurrentLabPointHandle->LeftConnectionId = 0;
+		CurrentLabPointHandle->BottomConnectionId = 0;
+		CurrentLabPointHandle->IsExit = FALSE;
+		CurrentLabPointHandle->IsSpawn = FALSE;
 
 		LabPointsMap_GetPointByID(MainPointsMap, i + 1, &TempLabPointHandle);
 		CurrentLabPointHandle->IsExit = TempLabPointHandle->IsExit;
