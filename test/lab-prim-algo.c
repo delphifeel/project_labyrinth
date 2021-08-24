@@ -29,7 +29,7 @@ void FillRectangleLab(LabPointsMap LabPointsMapHandle)
 	P = MATRIX_SIZE * MATRIX_SIZE;
 	for (uint32 i = 0; i < P; i++)
 	{
-		CurrentLabPointHandle = CORE_MemAlloc(sizeof(LabPointStruct)); 
+		CurrentLabPointHandle = (LabPointStruct *) CORE_MemAlloc(sizeof(LabPointStruct)); 
 		CurrentLabPointHandle->Id = i + 1;
 		LabPointsMap_AddPoint(LabPointsMapHandle, CurrentLabPointHandle);
 	}
@@ -194,12 +194,6 @@ void BuildMSTMaze(LabPointsMap LabPointsMapHandle, LabPointsMap MSTPointsMapHand
 	uint32 			SortedEdgesSize, MSTEdgesSize, SubsetsLeft;
 	CORE_Bool		TempBoolValue;
 
-	#define ADD_SORTED_EDGE_BY_CONNECTION(CONNECTION_DIRECTION) do { 											\
-			SortedEdges[SortedEdgesSize].From = ID; 															\
-			SortedEdges[SortedEdgesSize].To = CurrentLabPointHandle->Id; 										\
-			SortedEdgesSize++; 																					\
-	} while (0) 																								\
-
 
 	// get all possible edges
 	SortedEdgesSize = 0;
@@ -211,10 +205,21 @@ void BuildMSTMaze(LabPointsMap LabPointsMapHandle, LabPointsMap MSTPointsMapHand
 		if (CurrentLabPointHandle == NULL)
 			continue;
 
-		ADD_SORTED_EDGE_BY_CONNECTION(Top);
-		ADD_SORTED_EDGE_BY_CONNECTION(Right);
-		ADD_SORTED_EDGE_BY_CONNECTION(Bottom);
-		ADD_SORTED_EDGE_BY_CONNECTION(Left);
+		SortedEdges[SortedEdgesSize].From = ID; 
+		SortedEdges[SortedEdgesSize].To = CurrentLabPointHandle->TopConnectionId;
+		SortedEdgesSize++;
+		
+		SortedEdges[SortedEdgesSize].From = ID; 
+		SortedEdges[SortedEdgesSize].To = CurrentLabPointHandle->RightConnectionId;
+		SortedEdgesSize++;
+
+		SortedEdges[SortedEdgesSize].From = ID; 
+		SortedEdges[SortedEdgesSize].To = CurrentLabPointHandle->BottomConnectionId;
+		SortedEdgesSize++;
+
+		SortedEdges[SortedEdgesSize].From = ID; 
+		SortedEdges[SortedEdgesSize].To = CurrentLabPointHandle->LeftConnectionId;
+		SortedEdgesSize++;
 	}
 
 
@@ -249,8 +254,8 @@ void BuildMSTMaze(LabPointsMap LabPointsMapHandle, LabPointsMap MSTPointsMapHand
 
 	// create new lab points map accordoing to MSTEdges
 	for (uint32 i = 0; i < VertexCount; i++)
-		{
-		CurrentLabPointHandle = CORE_MemAlloc(sizeof(LabPointStruct)); 
+	{
+		CurrentLabPointHandle = (LabPointStruct * ) CORE_MemAlloc(sizeof(LabPointStruct)); 
 		CurrentLabPointHandle->Id = i + 1; 
 
 		LabPointsMap_GetPointByID(LabPointsMapHandle, i + 1, &TempLabPointHandle);
@@ -258,13 +263,13 @@ void BuildMSTMaze(LabPointsMap LabPointsMapHandle, LabPointsMap MSTPointsMapHand
 		CurrentLabPointHandle->IsSpawn = TempLabPointHandle->IsSpawn;
 
 		LabPointsMap_AddPoint(MSTPointsMapHandle, CurrentLabPointHandle);
-		}
+	}
 
 	for (uint32 i = 0; i < MSTEdgesSize; i++)
-		{
+	{
 		CopyConnectionsAccordingToEdge(LabPointsMapHandle, MSTPointsMapHandle, MSTEdges[i].From, MSTEdges[i].To);
 		CopyConnectionsAccordingToEdge(LabPointsMapHandle, MSTPointsMapHandle, MSTEdges[i].To, MSTEdges[i].From);
-		}
+	}
 }
 
 void BuildLabyrinth()

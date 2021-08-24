@@ -34,12 +34,6 @@ static void LabPointsMap_InternalPrint(LabPointsMap Instance)
 
 static void LabPointsMap_InternalLabPointToRawLabPoint(LabPointStruct *Point, LabPointStruct *LabPointRaw)
  {
- 	uint32 ID, TopID, RightID, BottomID, LeftID;
- 	LabPointStruct Connection;
-
-
- 	ID = TopID = RightID = BottomID = LeftID = 0;
-
  	LabPointRaw->Id = Point->Id;
  	LabPointRaw->TopConnectionId = Point->TopConnectionId;
  	LabPointRaw->RightConnectionId = Point->RightConnectionId;
@@ -56,7 +50,7 @@ void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 
 	int32 				JSONSizeLeft;
 	uint32 				MaxJSON;
-	LabPointStruct		*CurrentLabPoint; 
+	LabPointStruct		CurrentLabPoint; 
 	char 				LabPointRawJSONObject[RAW_JSON_OBJECT_MAX_SIZE];
 	uint32 				LabPointRawJSONObject_CharCount;
 
@@ -77,16 +71,16 @@ void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 	for (uint32 i = 0; i < Instance->Size; i++)
 	{
 		
-		CurrentLabPoint = Instance->LabPointsArray[i];
-		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, "\"%ld\": ", CurrentLabPoint->Id);
+		LabPointsMap_InternalLabPointToRawLabPoint(Instance->LabPointsArray[i], &CurrentLabPoint); 
+		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, "\"%ld\": ", CurrentLabPoint.Id);
 		strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
 		DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
 
 		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, 
 												  "{\"top_id\": %ld, \"right_id\": %ld, \"bottom_id\": %ld, \"left_id\": %ld, \"is_exit\": %ld, \"is_spawn\": %ld}",
-												  CurrentLabPoint->TopConnectionId, CurrentLabPoint->RightConnectionId, 
-												  CurrentLabPoint->BottomConnectionId, CurrentLabPoint->LeftConnectionId,
-												  CurrentLabPoint->IsExit, CurrentLabPoint->IsSpawn);
+												  CurrentLabPoint.TopConnectionId, CurrentLabPoint.RightConnectionId, 
+												  CurrentLabPoint.BottomConnectionId, CurrentLabPoint.LeftConnectionId,
+												  CurrentLabPoint.IsExit, CurrentLabPoint.IsSpawn);
 
 		strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
 		DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
@@ -123,7 +117,7 @@ void LabPointsMap_AddPoint(LabPointsMap Instance, LabPointStruct *Point)
 	if (Instance->Size == Instance->Capacity)		// if TRUE, double capacity. 
 	{
 		Instance->Capacity += Instance->Capacity;
-		Instance->LabPointsArray = CORE_MemRealloc(Instance->LabPointsArray, sizeof(LabPointStruct) * Instance->Capacity);
+		Instance->LabPointsArray = CORE_MemRealloc(Instance->LabPointsArray, sizeof(LabPointStruct *) * Instance->Capacity);
 	}
 
 	Instance->LabPointsArray[Point->Id - 1] = Point;
@@ -154,17 +148,15 @@ void LabPointsMap_Create(LabPointsMap *InstancePtr)
 	(*InstancePtr)->Capacity = LABPOINTSMAP_DEFAULTCAPACITY;
 	(*InstancePtr)->Size = 0;
 	(*InstancePtr)->LabPointsArray = NULL;
-	(*InstancePtr)->LabPointsArray = CORE_MemAlloc(sizeof(LabPointStruct) * ((*InstancePtr)->Capacity));
+	(*InstancePtr)->LabPointsArray = CORE_MemAlloc(sizeof(LabPointStruct *) * ((*InstancePtr)->Capacity));
 }
 
 void LabPointsMap_Free(LabPointsMap *InstancePtr)
-{
-	/*	free allocated memory 
+{ 
 	for (uint32 i = 0; i < (*InstancePtr)->Size; i++)
 	{
-		CORE_MemFree(&(*InstancePtr)->LabPointsArray[i]);
+		CORE_MemFree((*InstancePtr)->LabPointsArray[i]);
 	}
-	*/
 	CORE_MemFree((*InstancePtr)->LabPointsArray);
 	CORE_OBJECT_FREE(InstancePtr);
 }
