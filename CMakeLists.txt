@@ -8,7 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory(src)
 add_subdirectory(lib)
-add_executable(ProjectLabyrinth test/lab-prim-algo.c)
+add_executable(ProjectLabyrinth test/test-player.c)
 
 target_link_libraries(ProjectLabyrinth PUBLIC src lib)
 target_include_directories(ProjectLabyrinth PUBLIC "${PROJECT_SOURCE_DIR}/include" "${PROJECT_SOURCE_DIR}/include/labyrinth")
