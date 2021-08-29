@@ -6,7 +6,7 @@
 #include "lab-point.h"
 
 CORE_OBJECT_INTERFACE(LabPointsMap,
-	LabPointStruct 	**LabPointsArray;
+	LabPointStruct 	*LabPointsArray;
 	uint32 			Size;
 	uint32 			Capacity;
 )

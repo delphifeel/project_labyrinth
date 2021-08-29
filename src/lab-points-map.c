@@ -71,7 +71,7 @@ void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 	for (uint32 i = 0; i < Instance->Size; i++)
 	{
 		
-		LabPointsMap_InternalLabPointToRawLabPoint(Instance->LabPointsArray[i], &CurrentLabPoint); 
+		CurrentLabPoint = Instance->LabPointsArray[i]; 
 		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, "\"%ld\": ", CurrentLabPoint.Id);
 		strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
 		DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
@@ -105,13 +105,13 @@ void LabPointsMap_AddPoint(LabPointsMap Instance, LabPointStruct Point)
 		Instance->LabPointsArray = CORE_MemRealloc(Instance->LabPointsArray, sizeof(LabPointStruct) * Instance->Capacity);
 	}
 
-	(*Instance->LabPointsArray[Point.Id - 1]) = Point;
+	Instance->LabPointsArray[Point.Id - 1] = Point;
 	Instance->Size++;
 }
 
 void LabPointsMap_GetPointByID(LabPointsMap Instance, uint32 ID, LabPointStruct *Point)
 {
-	(*Point) = (*Instance->LabPointsArray[ID - 1]);
+	(*Point) = Instance->LabPointsArray[ID - 1];
 }
 
 void LabPointsMap_GetSize(LabPointsMap Instance, uint32 *Size)
