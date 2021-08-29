@@ -19,6 +19,8 @@ void FillRectangleLab(LabPointsMap MainPointsMap)
 	LabPointStruct CurrentLabPointHandle, *LabPoint;
 	int32 ConnectionID, ID, P;
 
+	LabPoint = (LabPointStruct *) CORE_MemAlloc(sizeof(LabPointStruct));
+
 	if (MATRIX_SIZE < 7)
 		CORE_DebugAssert("MATRIX_SIZE need to be >= 7\n");
 
