@@ -123,6 +123,8 @@ void FillRectangleLab(LabPointsMap MainPointsMap)
 		if (ConnectionID % MATRIX_SIZE != 0)
 			LabPoint->LeftConnectionId = ConnectionID; 
 	}
+
+	CORE_MemFree(LabPoint);
 }
 
 void PrintEdges(Edge *Edges, uint32 EdgesSize)
