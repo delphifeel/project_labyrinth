@@ -156,7 +156,6 @@ int SortEdgesRandomly(const void *left, const void *right)
 void CopyConnectionsAccordingToEdge(LabPointsMap MainPointsMap, LabPointsMap ResultLabPointsMapHandle, uint32 LabPointID, uint32 ConnectionLabPointID)
 {
 	LabPointStruct LabPointHandle, ResultLabPointHandle, ResultConnectionLabPointHandle;
-	uint32 CurrentConnectionID;
 
 	LabPointsMap_GetPointByID(MainPointsMap, LabPointID, &LabPointHandle);
 	LabPointsMap_GetPointByID(ResultLabPointsMapHandle, LabPointID, &ResultLabPointHandle);
@@ -190,12 +189,11 @@ void CopyConnectionsAccordingToEdge(LabPointsMap MainPointsMap, LabPointsMap Res
 
 static void BuildMSTMaze(LabPointsMap MainPointsMap, LabPointsMap MSTPointsMapHandle)
 {
-	LabPointStruct 	CurrentLabPointHandle, TempLabPointHandle, *CurrentConnectionLabPointHandle, LabPoint; 
+	LabPointStruct 	CurrentLabPointHandle, TempLabPointHandle, LabPoint; 
 	DisjointSet 	DisjointSetHadle;
-	uint32 			VertexCount, CurrentLabPointID, ID;
+	uint32 			VertexCount, ID;
 	Edge 			*SortedEdges, *MSTEdges;
 	uint32 			SortedEdgesSize, MSTEdgesSize, SubsetsLeft;
-	CORE_Bool		TempBoolValue;
 
 
 	SortedEdges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);

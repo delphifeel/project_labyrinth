@@ -32,17 +32,6 @@ static void LabPointsMap_InternalPrint(LabPointsMap Instance)
 
 /*****************************************************************************************************************************/
 
-static void LabPointsMap_InternalLabPointToRawLabPoint(LabPointStruct *Point, LabPointStruct *LabPointRaw)
- {
- 	LabPointRaw->Id = Point->Id;
- 	LabPointRaw->TopConnectionId = Point->TopConnectionId;
- 	LabPointRaw->RightConnectionId = Point->RightConnectionId;
- 	LabPointRaw->BottomConnectionId = Point->BottomConnectionId;
- 	LabPointRaw->LeftConnectionId = Point->LeftConnectionId;
-	LabPointRaw->IsExit = Point->IsExit; 
-	LabPointRaw->IsSpawn = Point->IsSpawn; 
- }
-
 void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 {
 	#define RAW_JSON_OBJECT_MAX_SIZE 	(120)
