@@ -7,10 +7,10 @@
 
 #define CORE_DebugAssert 							printf
 #define CORE_DebugPrint 							printf
-#define CORE_DebugError 							printf
-#define CORE_DebugAbort(MESSAGE, FILE, LINE) 		(CORE_DebugError("ABORT (%s, line %d) %s\n", FILE, LINE, MESSAGE), abort())
+#define CORE_DebugError(MESSAGE) 					(CORE_DebugPrint("ERROR (%s, line %d) %s\n", __FILE__, __LINE__, MESSAGE))
+#define CORE_DebugAbort(MESSAGE) 					(CORE_DebugPrint("ABORT (%s, line %d) %s\n", __FILE__, __LINE__, MESSAGE), abort())
 
-#define CORE_DebugAssertPointer(PTR) 				((PTR) != NULL ? TRUE : CORE_DebugAbort("Pointer is NULL", __FILE__, __LINE__))
+#define CORE_DebugAssertPointer(PTR) 				((PTR) != NULL ? TRUE : CORE_DebugAbort("Pointer is NULL"))
 #define CORE_DebugCast(TO_TYPE, VALUE) 				( (TO_TYPE) VALUE )
 
 #endif

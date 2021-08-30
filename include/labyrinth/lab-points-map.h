@@ -3,12 +3,21 @@
 
 #include "../CORE.h"
 
-#include "lab-point.h"
+
+typedef struct LabPointStruct {
+	uint32			Id; 
+	uint32 			TopConnectionId; 
+	uint32 			RightConnectionId; 
+	uint32 			BottomConnectionId; 
+	uint32 			LeftConnectionId; 
+	CORE_Bool 		IsExit; 
+	CORE_Bool 		IsSpawn;
+} LabPointStruct;
 
 CORE_OBJECT_INTERFACE(LabPointsMap,
-	LabPoint 	*LabPointsArray;
-	uint32 		Size;
-	uint32 		Capacity;
+	LabPointStruct 	*LabPointsArray;
+	uint32 			Size;
+	uint32 			Capacity;
 )
 
 /*****************************************************************************************************************************/
@@ -16,7 +25,7 @@ CORE_OBJECT_INTERFACE(LabPointsMap,
 void LabPointsMap_ToJSON(LabPointsMap, char **JSON);
 void LabPointsMap_ToRawData(LabPointsMap, uint8 **RawData, uint32 *RawDataSize);
 void LabPointsMap_AddPoint(LabPointsMap, LabPoint Point);
-void LabPointsMap_GetPointByID(LabPointsMap, uint32 ID, LabPoint *OUT_Point);
+void LabPointsMap_GetPointByID(LabPointsMap, uint32 ID, LabPointStruct *OUT_Point);
 void LabPointsMap_GetSize(LabPointsMap, uint32 *Size);
 void LabPointsMap_GetCapacity(LabPointsMap, uint32 *Capacity);
 

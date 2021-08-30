@@ -5,44 +5,47 @@
 
 /*****************************************************************************************************************************/
 
-#define MAX_DIRECTON_SIZE   (2)
-#define SPEED               (1)
+#define MAX_DIRECTION_SIZE      (2)
+#define SPEED                   (1)
 
 /*****************************************************************************************************************************/
 
 CORE_Bool Player_Move(Player Instance, MoveDirection *Directions, uint32 DirectionsSize)
 {
-    uint32          Speed; 
-    PositionStruct  *Position;
+    LabPointStruct      ResultLabPoint;
+    uint32              ResultPointId;
 
 
-    if (DirectionsSize > MAX_DIRECTON_SIZE) 
+    if (DirectionsSize > MAX_DIRECTION_SIZE) 
     {
-        CORE_DebugError("Player_Move: Directions applies %d params got %ld", MAX_DIRECTON_SIZE, DirectionsSize); 
+        CORE_DebugError("Directions max size is 2\n"); 
         return FALSE; 
     }
 
-    Speed = Instance->SpeedMultiplier * SPEED; 
-    Position = &Instance->Position;
+    ResultPointId = Instance->PositionPointId;
 
     for (uint32 i = 0; i < DirectionsSize; i++)
     {
-        switch(Directions[i])
+        LabSession_GetLabPointById(Instance->Session, ResultPointId, &ResultLabPoint);
+
+        switch (Directions[i])
         {
             case kMoveDirection_Top: 
-                Position->Y += Speed; 
+                ResultPointId = ResultLabPoint.TopConnectionId;
                 break; 
             case kMoveDirection_Right:
-                Position->X += Speed;
+                ResultPointId = ResultLabPoint.RightConnectionId;
                 break;
             case kMoveDirection_Bottom:  
-                Position->Y -= Speed;
+                ResultPointId = ResultLabPoint.BottomConnectionId;
                 break; 
             case kMoveDirection_Left:
-                Position->X -= Speed; 
+                ResultPointId = ResultLabPoint.LeftConnectionId;
                 break; 
         }
     }
+
+    Instance->PositionPointId = ResultPointId;
 
     return TRUE; 
 }
@@ -67,15 +70,19 @@ void Player_GetName(Player Instance, char *Name, uint32 NameSize)
     strncpy(Name, Instance->Name, NameSize); 
 }
 
-void Player_GetPosition(Player Instance, PositionStruct *Position)
+void Player_GetPositionInsideLabPoint(Player Instance, PositionStruct *Position)
 {
-    Position->X = Instance->Position.X; 
-    Position->Y = Instance->Position.Y; 
+    *Position = Instance->PositionInsideLabPoint;
 }
 
-void Player_Setup(Player Instance, PositionStruct Position)
+/*****************************************************************************************************************************/
+
+void Player_Setup(Player Instance, LabSession Session, uint32 SpawnPointId)
 {
-    Instance->Position = Position;
+    Instance->PositionInsideLabPoint = {0, 0};
+    Instance->SpeedMultiplier = 1;
+    Instance->Session = Session;
+    Instance->PositionPointId = SpawnPointId;
 }
 
 /*****************************************************************************************************************************/

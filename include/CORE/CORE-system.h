@@ -1,21 +1,15 @@
-#ifndef __COMMON_H__
-#define __COMMON_H__
+#ifndef __CORE_SYSTEM_H__
+#define __CORE_SYSTEM_H__
 
-#include "CORE/CORE-types.h"
-
-/*****************************************************************************************************************************/
-
-#define ID_HASH(ID) 	(ID-1)
+#include "CORE-types.h"
 
 /*****************************************************************************************************************************/
 
-typedef enum MoveDirection
-{
-	kMoveDirection_Top,
-	kMoveDirection_Right,
-	kMoveDirection_Bottom,
-	kMoveDirection_Left,
-} MoveDirection;
+#define UID_SIZE 	(16)
+
+/*****************************************************************************************************************************/
+
+CORE_Bool CORE_CreateUID(uint8 *OUT_UID);
 
 /*****************************************************************************************************************************/
 
