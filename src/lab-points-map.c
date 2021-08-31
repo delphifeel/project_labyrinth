@@ -2,7 +2,6 @@
 
 #include "../include/CORE.h"
 
-#include "../include/labyrinth/lab-point.h"
 #include "../include/labyrinth/lab-points-map.h"
 
 /*****************************************************************************************************************************/
@@ -92,10 +91,20 @@ void LabPointsMap_AddPoint(LabPointsMap Instance, LabPointStruct Point)
 	{
 		Instance->Capacity += Instance->Capacity;
 		Instance->LabPointsArray = CORE_MemRealloc(Instance->LabPointsArray, sizeof(LabPointStruct) * Instance->Capacity);
+		if (Instance->LabPointsArray == NULL)
+		{
+			CORE_DebugError("Instance->LabPointsArray == NULL\n");
+			return;
+		}
 	}
 
 	Instance->LabPointsArray[Point.Id - 1] = Point;
 	Instance->Size++;
+}
+
+void LabPointsMap_ChangePoint(LabPointsMap Instance, LabPointStruct Point)
+{
+	Instance->LabPointsArray[Point.Id - 1] = Point;
 }
 
 void LabPointsMap_GetPointByID(LabPointsMap Instance, uint32 ID, LabPointStruct *Point)

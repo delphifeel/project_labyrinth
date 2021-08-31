@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define MATRIX_SIZE 		(41)
-#define SPAWN_POINTS_COUNT 	(20)
+#define MATRIX_SIZE 		(141)
+#define SPAWN_POINTS_COUNT 	(40)
 
 typedef struct Edge
 {
@@ -16,10 +16,9 @@ typedef struct Edge
 
 void FillRectangleLab(LabPointsMap MainPointsMap)
 {
-	LabPointStruct CurrentLabPointHandle, *LabPoint;
+	LabPointStruct LabPoint;
 	int32 ConnectionID, ID, P;
 
-	LabPoint = (LabPointStruct *) CORE_MemAlloc(sizeof(LabPointStruct));
 
 	if (MATRIX_SIZE < 7)
 		CORE_DebugAssert("MATRIX_SIZE need to be >= 7\n");
@@ -27,26 +26,31 @@ void FillRectangleLab(LabPointsMap MainPointsMap)
 	if (MATRIX_SIZE % 2 == 0)
 		CORE_DebugAssert("MATRIX_SIZE need to be odd\n");
 
+
 	// create all points
 	P = MATRIX_SIZE * MATRIX_SIZE;
 	for (uint32 i = 0; i < P; i++)
 	{
-		CurrentLabPointHandle.Id = i + 1;
+		LabPoint.Id = i + 1;
 		
-		CurrentLabPointHandle.TopConnectionId = 0;
-		CurrentLabPointHandle.RightConnectionId = 0;
-		CurrentLabPointHandle.LeftConnectionId = 0;
-		CurrentLabPointHandle.BottomConnectionId = 0;
-		CurrentLabPointHandle.IsExit = FALSE;
-		CurrentLabPointHandle.IsSpawn = FALSE;
+		LabPoint.TopConnectionId = 0;
+		LabPoint.RightConnectionId = 0;
+		LabPoint.LeftConnectionId = 0;
+		LabPoint.BottomConnectionId = 0;
+		LabPoint.IsExit = FALSE;
+		LabPoint.IsSpawn = FALSE;
 
-		LabPointsMap_AddPoint(MainPointsMap, CurrentLabPointHandle);
+		LabPointsMap_AddPoint(MainPointsMap, LabPoint);
 	}
 
+
 	// set exit point
-	LabPointsMap_GetPointByID(MainPointsMap, P / 2 + 1, LabPoint);
+	LabPointsMap_GetPointByID(MainPointsMap, P / 2 + 1, &LabPoint);
 	CORE_DebugPrint("Set %ld as exit\n", P / 2 + 1);
-	LabPoint->IsExit = TRUE; 
+	LabPoint.IsExit = TRUE;
+	LabPointsMap_ChangePoint(MainPointsMap, LabPoint);
+
+
 	// set spawn points (center square of matrix)
 	uint32 PossibleSpawnPoints[P / 2];
 	uint32 PossibleSpawnPointsSize = 0;
@@ -88,43 +92,45 @@ void FillRectangleLab(LabPointsMap MainPointsMap)
 		if (i % (PossibleSpawnPointsSize / SPAWN_POINTS_COUNT) != 0)
 			continue;
 
-		LabPointsMap_GetPointByID(MainPointsMap, PossibleSpawnPoints[i], LabPoint);
+		LabPointsMap_GetPointByID(MainPointsMap, PossibleSpawnPoints[i], &LabPoint);
 
-		LabPoint->IsSpawn = TRUE; 
+		LabPoint.IsSpawn = TRUE; 
+		LabPointsMap_ChangePoint(MainPointsMap, LabPoint);
 		AddedPoints++;
 
 		if (AddedPoints == SPAWN_POINTS_COUNT)
 			break;
 	}
 
+
 	// fill connections for every point
 	for (uint32 i = 0; i < P; i++)
 	{
 		ID = i + 1;
-		LabPointsMap_GetPointByID(MainPointsMap, ID, LabPoint);
+		LabPointsMap_GetPointByID(MainPointsMap, ID, &LabPoint);
 
 		// top connection
 		ConnectionID = ID - MATRIX_SIZE;
 		if (ConnectionID > 0)
-			LabPoint->TopConnectionId = ConnectionID;
+			LabPoint.TopConnectionId = ConnectionID;
 
 		// right connection
 		ConnectionID = ID + 1;
 		if (ConnectionID % MATRIX_SIZE != 1)
-			LabPoint->RightConnectionId = ConnectionID;
+			LabPoint.RightConnectionId = ConnectionID;
 
 		// bottom connection
 		ConnectionID = ID + MATRIX_SIZE;
 		if (ConnectionID <= P)
-			LabPoint->BottomConnectionId = ConnectionID;
+			LabPoint.BottomConnectionId = ConnectionID;
 		
 		// left connection
 		ConnectionID = ID - 1;
 		if (ConnectionID % MATRIX_SIZE != 0)
-			LabPoint->LeftConnectionId = ConnectionID; 
-	}
+			LabPoint.LeftConnectionId = ConnectionID; 
 
-	CORE_MemFree(LabPoint);
+		LabPointsMap_ChangePoint(MainPointsMap, LabPoint);
+	}
 }
 
 void PrintEdges(Edge *Edges, uint32 EdgesSize)
@@ -155,36 +161,29 @@ int SortEdgesRandomly(const void *left, const void *right)
 
 void CopyConnectionsAccordingToEdge(LabPointsMap MainPointsMap, LabPointsMap ResultLabPointsMapHandle, uint32 LabPointID, uint32 ConnectionLabPointID)
 {
-	LabPointStruct LabPointHandle, ResultLabPointHandle, ResultConnectionLabPointHandle;
+	LabPointStruct SourcePoint, ResultPoint;
 
-	LabPointsMap_GetPointByID(MainPointsMap, LabPointID, &LabPointHandle);
-	LabPointsMap_GetPointByID(ResultLabPointsMapHandle, LabPointID, &ResultLabPointHandle);
-	LabPointsMap_GetPointByID(ResultLabPointsMapHandle, ConnectionLabPointID, &ResultConnectionLabPointHandle);
+	LabPointsMap_GetPointByID(MainPointsMap, LabPointID, &SourcePoint);
+	LabPointsMap_GetPointByID(ResultLabPointsMapHandle, LabPointID, &ResultPoint);
 
-	if (LabPointHandle.TopConnectionId == ConnectionLabPointID)
+	if (SourcePoint.TopConnectionId == ConnectionLabPointID)
 	{
-		ResultLabPointHandle.TopConnectionId = ResultConnectionLabPointHandle.Id;
-		return;
+		ResultPoint.TopConnectionId = ConnectionLabPointID;
+	}
+	else if (SourcePoint.RightConnectionId == ConnectionLabPointID)
+	{
+		ResultPoint.RightConnectionId = ConnectionLabPointID;
+	}
+	else if (SourcePoint.BottomConnectionId == ConnectionLabPointID)
+	{
+		ResultPoint.BottomConnectionId = ConnectionLabPointID;
+	}
+	else if (SourcePoint.LeftConnectionId == ConnectionLabPointID)
+	{
+		ResultPoint.LeftConnectionId = ConnectionLabPointID;
 	}
 
-	if (LabPointHandle.RightConnectionId == ConnectionLabPointID)
-	{
-		ResultLabPointHandle.RightConnectionId = ResultConnectionLabPointHandle.Id;
-		return;
-	}
-
-	if (LabPointHandle.BottomConnectionId == ConnectionLabPointID)
-	{
-		ResultLabPointHandle.BottomConnectionId = ResultConnectionLabPointHandle.Id;
-		return;
-	}
-
-	if (LabPointHandle.LeftConnectionId == ConnectionLabPointID)
-	{
-			ResultLabPointHandle.LeftConnectionId = ResultConnectionLabPointHandle.Id;
-			return;
-	}
-	
+	LabPointsMap_ChangePoint(ResultLabPointsMapHandle, ResultPoint);
 }
 
 static void BuildMSTMaze(LabPointsMap MainPointsMap, LabPointsMap MSTPointsMapHandle)
@@ -198,6 +197,7 @@ static void BuildMSTMaze(LabPointsMap MainPointsMap, LabPointsMap MSTPointsMapHa
 
 	SortedEdges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);
 	MSTEdges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);
+
 
 	// get all possible edges
 	SortedEdgesSize = 0;
@@ -232,6 +232,7 @@ static void BuildMSTMaze(LabPointsMap MainPointsMap, LabPointsMap MSTPointsMapHa
 	CORE_DebugPrint("SortedEdgesSize: %ld\n", SortedEdgesSize);
 	// PrintEdges(SortedEdges, SortedEdgesSize);
 
+
 	// create disjoint set from edges and union all possible edges according to Kruskal's algo
 	DisjointSet_Create(&DisjointSetHadle);
 	DisjointSet_Setup(DisjointSetHadle, VertexCount + 1);
@@ -254,18 +255,17 @@ static void BuildMSTMaze(LabPointsMap MainPointsMap, LabPointsMap MSTPointsMapHa
 	CORE_DebugPrint("MSTEdgesSize: %ld\n", MSTEdgesSize);
 	// PrintEdges(MSTEdges, MSTEdgesSize);
 
+
 	// create new lab points map accordoing to MSTEdges
 	for (uint32 i = 0; i < VertexCount; i++)
 	{
+		LabPointsMap_GetPointByID(MainPointsMap, i + 1, &TempLabPointHandle);
+
 		LabPoint.Id = i + 1; 
 		LabPoint.TopConnectionId = 0;
 		LabPoint.RightConnectionId = 0;
 		LabPoint.LeftConnectionId = 0;
 		LabPoint.BottomConnectionId = 0;
-		LabPoint.IsExit = FALSE;
-		LabPoint.IsSpawn = FALSE;
-
-		LabPointsMap_GetPointByID(MainPointsMap, i + 1, &TempLabPointHandle);
 		LabPoint.IsExit = TempLabPointHandle.IsExit;
 		LabPoint.IsSpawn = TempLabPointHandle.IsSpawn;
 
@@ -274,6 +274,9 @@ static void BuildMSTMaze(LabPointsMap MainPointsMap, LabPointsMap MSTPointsMapHa
 
 	for (uint32 i = 0; i < MSTEdgesSize; i++)
 	{
+		if ((MSTEdges[i].From == 0) || (MSTEdges[i].To == 0))
+			continue;
+
 		CopyConnectionsAccordingToEdge(MainPointsMap, MSTPointsMapHandle, MSTEdges[i].From, MSTEdges[i].To);
 		CopyConnectionsAccordingToEdge(MainPointsMap, MSTPointsMapHandle, MSTEdges[i].To, MSTEdges[i].From);
 	}
