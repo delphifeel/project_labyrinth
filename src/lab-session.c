@@ -1,12 +1,8 @@
 #include "../include/CORE.h"
-#include "../include/labyrinth/lab-point.h"
+#include "../include/labyrinth/lab-generation.h"
+#include "../include/labyrinth/lab-session.h"
 
 /*****************************************************************************************************************************/
-
-void LabSession_GetLabPointById(LabSession Instance, uint32 Id, LabPointStruct *OUT_LabPoint)
-{
-	LabPointsMap_GetPointByID(Instance->LabyrinthMap, Id, OUT_LabPoint);
-}
 
 void LabSession_AddPlayer(LabSession Instance, char *PlayerName, uint32 *OUT_AddedPlayerId)
 {
@@ -16,17 +12,16 @@ void LabSession_AddPlayer(LabSession Instance, char *PlayerName, uint32 *OUT_Add
 
 	if (Instance->PlayersMapSize == Instance->PlayersMapCapacity)
 	{
-		CODE_DebugError("PlayersMapSize == PlayersMapCapacity\n");
+		CORE_DebugError("PlayersMapSize == PlayersMapCapacity\n");
 		return;
 	}
 
 	*OUT_AddedPlayerId = Instance->PlayersMapSize + 1;
 
 	Player_Create(&NewPlayer);
-	Player_Setup(NewPlayer, Instance);
+	Player_Setup(NewPlayer, Instance->LabyrinthMap, PlayerSpawnPointId);
 	Player_SetId(NewPlayer, *OUT_AddedPlayerId);
 	Player_SetName(NewPlayer, PlayerName);
-	// TODO: Player_SetSpawnLabPointId(NewPlayer, PlayerSpawnPointId)
 
 	Instance->PlayersMap[Instance->PlayersMapSize] = NewPlayer;
 	Instance->PlayersMapSize++;
@@ -34,7 +29,7 @@ void LabSession_AddPlayer(LabSession Instance, char *PlayerName, uint32 *OUT_Add
 
 /*****************************************************************************************************************************/
 
-void LabSession_Setup(LabSession Instance, uint32 PlayersCount);
+void LabSession_Setup(LabSession Instance, uint32 PlayersCount)
 {
 	if (CORE_CreateUID(Instance->SessionUID) == FALSE)
 	{
@@ -45,6 +40,9 @@ void LabSession_Setup(LabSession Instance, uint32 PlayersCount);
 	Instance->PlayersMap = CORE_MemAlloc(sizeof(Player) * PlayersCount);
 	Instance->PlayersMapSize = 0;
 	Instance->PlayersMapCapacity = PlayersCount;
+
+	LabPointsMap_Create(&Instance->LabyrinthMap);
+	LabGeneration_Execute(Instance->LabyrinthMap);
 }
 
 /*****************************************************************************************************************************/
@@ -56,7 +54,9 @@ void LabSession_Create(LabSession* InstancePtr)
 
 void LabSession_Free(LabSession* InstancePtr)
 {
-	for (uint32 i = 0; i < (*InstancePtr->PlayersMapSize); i++)
+	LabPointsMap_Free(&(*InstancePtr)->LabyrinthMap);
+
+	for (uint32 i = 0; i < (*InstancePtr)->PlayersMapSize; i++)
 	{
 		CORE_MemFree((*InstancePtr)->PlayersMap[i]);
 	}

@@ -10,27 +10,6 @@
 
 /*****************************************************************************************************************************/
 
-static void LabPointsMap_InternalPrint(LabPointsMap Instance)
-{
-	LabPointStruct 	CurrentLabPoint;
-
-	CORE_DebugPrint("*** MAP START ***\n");
-	for (uint32 i = 0; i < Instance->Size; i++)
-	{
-		
-		LabPointsMap_GetPointByID(Instance, i + 1, &CurrentLabPoint);
-		CORE_DebugPrint("[%ld]", CurrentLabPoint.Id);
-		CORE_DebugPrint(" %ld (top)", CurrentLabPoint.TopConnectionId);
-		CORE_DebugPrint(" %ld (right)", CurrentLabPoint.RightConnectionId);
-		CORE_DebugPrint(" %ld (bottom)", CurrentLabPoint.BottomConnectionId);
-		CORE_DebugPrint(" %ld (left)", CurrentLabPoint.LeftConnectionId);
-		CORE_DebugPrint("\n");
-	}
-	CORE_DebugPrint("*** MAP END ***\n");
-}
-
-/*****************************************************************************************************************************/
-
 void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 {
 	#define RAW_JSON_OBJECT_MAX_SIZE 	(120)

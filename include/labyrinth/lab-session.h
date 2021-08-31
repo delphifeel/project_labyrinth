@@ -29,7 +29,6 @@ CORE_OBJECT_INTERFACE(LabSession,
 
 /*****************************************************************************************************************************/
 
-void LabSession_GetLabPointById(LabSession, uint32 Id, LabPointStruct *OUT_LabPoint);
 void LabSession_AddPlayer(LabSession, char *PlayerName, uint32 *OUT_AddedPlayerId);
 
 void LabSession_Setup(LabSession, uint32 PlayersCount);

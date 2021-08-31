@@ -12,6 +12,8 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json
+valgrind.log
+test/data-prim.json
 CTestTestfile.cmake
 _deps
 

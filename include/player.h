@@ -1,8 +1,9 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
-#include "./CORE.h"
+#include "CORE.h"
 #include "common.h"
+#include "labyrinth/lab-points-map.h"
 
 /*****************************************************************************************************************************/
 
@@ -18,7 +19,7 @@ CORE_OBJECT_INTERFACE(Player,
 	uint32				SpeedMultiplier;
 	uint32  			PositionPointId;
 	PositionStruct		PositionInsideLabPoint;
-	LabSession 			Session;
+	LabPointsMap 		LabyrinthMap;
 	char 				Name[40];
 )
 
@@ -32,7 +33,7 @@ void Player_SetName(Player, char *Name);
 void Player_GetName(Player, char *Name, uint32 NameSize);
 void Player_GetPositionInsideLabPoint(Player, PositionStruct *Position);
 
-void Player_Setup(Player, LabSession Session, uint32 SpawnPointId);
+void Player_Setup(Player, LabPointsMap LabyrinthMap, uint32 SpawnPointId);
 
 void Player_Create(Player*);
 void Player_Free(Player*);

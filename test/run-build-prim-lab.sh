@@ -1,1 +1,0 @@
-gcc -Wall -pedantic -g ../lib/disjoint-set.c ../src/lab-points-map.c lab-prim-algo.c && ./a.out

@@ -26,7 +26,7 @@ CORE_Bool Player_Move(Player Instance, MoveDirection *Directions, uint32 Directi
 
     for (uint32 i = 0; i < DirectionsSize; i++)
     {
-        LabSession_GetLabPointById(Instance->Session, ResultPointId, &ResultLabPoint);
+        LabPointsMap_GetPointByID(Instance->LabyrinthMap, ResultPointId, &ResultLabPoint);
 
         switch (Directions[i])
         {
@@ -77,11 +77,13 @@ void Player_GetPositionInsideLabPoint(Player Instance, PositionStruct *Position)
 
 /*****************************************************************************************************************************/
 
-void Player_Setup(Player Instance, LabSession Session, uint32 SpawnPointId)
+void Player_Setup(Player Instance, LabPointsMap LabyrinthMap, uint32 SpawnPointId)
 {
-    Instance->PositionInsideLabPoint = {0, 0};
+    Instance->PositionInsideLabPoint.X = 0;
+    Instance->PositionInsideLabPoint.Y = 0;
+    
     Instance->SpeedMultiplier = 1;
-    Instance->Session = Session;
+    Instance->LabyrinthMap = LabyrinthMap;
     Instance->PositionPointId = SpawnPointId;
 }
 
