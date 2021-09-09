@@ -1,1 +1,1 @@
-gcc -Wall -pedantic -g ../lib/CORE/CORE-system.c ../lib/disjoint-set.c ../src/lab-points-map.c ../src/lab-generation.c ../src/player.c ../src/lab-session.c test-lab-session.c && ./a.out
+gcc -Wall -pedantic -g ../lib/CORE/CORE-system.c ../lib/disjoint-set.c ../src/lab-points-map.c ../src/lab-points-map-reader.c ../src/lab-generation.c ../src/player.c ../src/lab-session.c test-lab-session.c && ./a.out

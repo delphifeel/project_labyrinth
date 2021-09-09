@@ -7,12 +7,13 @@ CORE_OBJECT_INTERFACE(LabSession,
 	uint8  			SessionUID[UID_SIZE];
 
 	/* hash map structure containing graph of LabPoint's */
-	LabPointsMap 	LabyrinthMap;
+	LabPointsMap 		LabyrinthMap;
+	LabPointsMapReader 	LabyrinthMapReader;
 
 	/* players that currently in this session */
-	Player 			*PlayersMap;
-	uint32  		PlayersMapSize;
-	uint32 			PlayersMapCapacity;
+	Player 				*PlayersMap;
+	uint32  			PlayersMapSize;
+	uint32 				PlayersMapCapacity;
 
 	/* etc */
 );
@@ -34,7 +35,7 @@ void LabSession_AddPlayer(LabSession Instance, char *PlayerName, uint32 *OUT_Add
 	*OUT_AddedPlayerId = Instance->PlayersMapSize + 1;
 
 	Player_Create(&NewPlayer);
-	Player_Setup(NewPlayer, Instance->LabyrinthMap, PlayerSpawnPointId);
+	Player_Setup(NewPlayer, Instance->LabyrinthMapReader, PlayerSpawnPointId);
 	Player_SetId(NewPlayer, *OUT_AddedPlayerId);
 	Player_SetName(NewPlayer, PlayerName);
 
@@ -57,6 +58,8 @@ void LabSession_Setup(LabSession Instance, uint32 PlayersCount)
 	Instance->PlayersMapCapacity = PlayersCount;
 
 	LabPointsMap_Create(&Instance->LabyrinthMap);
+	LabPointsMapReader_Create(&Instance->LabyrinthMapReader);
+	LabPointsMapReader_Setup(Instance->LabyrinthMapReader, Instance->LabyrinthMap);
 	LabGeneration_Execute(Instance->LabyrinthMap);
 }
 
@@ -69,6 +72,7 @@ void LabSession_Create(LabSession* InstancePtr)
 
 void LabSession_Free(LabSession* InstancePtr)
 {
+	LabPointsMapReader_Free(&(*InstancePtr)->LabyrinthMapReader);
 	LabPointsMap_Free(&(*InstancePtr)->LabyrinthMap);
 
 	for (uint32 i = 0; i < (*InstancePtr)->PlayersMapSize; i++)

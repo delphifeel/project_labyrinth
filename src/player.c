@@ -9,12 +9,12 @@
 #define SPEED                   (1)
 
 CORE_OBJECT_INTERFACE(Player,
-    uint32              Id;
-    uint32              SpeedMultiplier;
-    uint32              PositionPointId;
-    PositionStruct      PositionInsideLabPoint;
-    LabPointsMap        LabyrinthMap;
-    char                Name[40];
+    uint32                      Id;
+    uint32                      SpeedMultiplier;
+    uint32                      PositionPointId;
+    PositionStruct              PositionInsideLabPoint;
+    LabPointsMapReader          PointsReader;
+    char                        Name[40];
 );
 
 /*****************************************************************************************************************************/
@@ -35,7 +35,7 @@ CORE_Bool Player_Move(Player Instance, MoveDirection *Directions, uint32 Directi
 
     for (uint32 i = 0; i < DirectionsSize; i++)
     {
-        LabPointsMap_GetPointByID(Instance->LabyrinthMap, ResultPointId, &ResultLabPoint);
+        LabPointsMapReader_GetPointByID(Instance->PointsReader, ResultPointId, &ResultLabPoint);
 
         switch (Directions[i])
         {
@@ -86,14 +86,14 @@ void Player_GetPositionInsideLabPoint(Player Instance, PositionStruct *Position)
 
 /*****************************************************************************************************************************/
 
-void Player_Setup(Player Instance, LabPointsMap LabyrinthMap, uint32 SpawnPointId)
+void Player_Setup(Player Instance, LabPointsMapReader PointsReader, uint32 SpawnPointId)
 {
     Instance->PositionInsideLabPoint.X = 0;
     Instance->PositionInsideLabPoint.Y = 0;
     
     Instance->SpeedMultiplier = 1;
-    Instance->LabyrinthMap = LabyrinthMap;
     Instance->PositionPointId = SpawnPointId;
+    Instance->PointsReader = PointsReader;
 }
 
 /*****************************************************************************************************************************/

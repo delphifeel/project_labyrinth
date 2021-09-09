@@ -6,12 +6,13 @@ CORE_OBJECT_INTERFACE(LabSession,
 	uint8  			SessionUID[UID_SIZE];
 
 	/* hash map structure containing graph of LabPoint's */
-	LabPointsMap 	LabyrinthMap;
+	LabPointsMap 		LabyrinthMap;
+	LabPointsMapReader 	LabyrinthMapReader;
 
 	/* players that currently in this session */
-	Player 			*PlayersMap;
-	uint32  		PlayersMapSize;
-	uint32 			PlayersMapCapacity;
+	Player 				*PlayersMap;
+	uint32  			PlayersMapSize;
+	uint32 				PlayersMapCapacity;
 
 	/* etc */
 );
