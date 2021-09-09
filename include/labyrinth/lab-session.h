@@ -12,20 +12,7 @@
 	On create it's create labyrinth and spawn players on spawn points.
 	When its freed, thats mean session ended 
 */
-
-CORE_OBJECT_INTERFACE(LabSession,
-	uint8  			SessionUID[UID_SIZE];
-
-	/* hash map structure containing graph of LabPoint's */
-	LabPointsMap 	LabyrinthMap;
-
-	/* players that currently in this session */
-	Player 			*PlayersMap;
-	uint32  		PlayersMapSize;
-	uint32 			PlayersMapCapacity;
-
-	/* etc */
-)
+CORE_OBJECT_DEFINE(LabSession);
 
 /*****************************************************************************************************************************/
 

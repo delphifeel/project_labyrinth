@@ -8,6 +8,15 @@
 #define MAX_DIRECTION_SIZE      (2)
 #define SPEED                   (1)
 
+CORE_OBJECT_INTERFACE(Player,
+    uint32              Id;
+    uint32              SpeedMultiplier;
+    uint32              PositionPointId;
+    PositionStruct      PositionInsideLabPoint;
+    LabPointsMap        LabyrinthMap;
+    char                Name[40];
+);
+
 /*****************************************************************************************************************************/
 
 CORE_Bool Player_Move(Player Instance, MoveDirection *Directions, uint32 DirectionsSize)

@@ -15,11 +15,7 @@ typedef struct LabPointStruct {
 	CORE_Bool 		IsSpawn;
 } LabPointStruct;
 
-CORE_OBJECT_INTERFACE(LabPointsMap,
-	LabPointStruct 	*LabPointsArray;
-	uint32 			Size;
-	uint32 			Capacity;
-)
+CORE_OBJECT_DEFINE(LabPointsMap);
 
 /*****************************************************************************************************************************/
 

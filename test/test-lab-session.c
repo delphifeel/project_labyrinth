@@ -2,6 +2,20 @@
 #include "../include/labyrinth/lab-points-map.h"
 #include "../include/labyrinth/lab-session.h"
 
+CORE_OBJECT_INTERFACE(LabSession,
+	uint8  			SessionUID[UID_SIZE];
+
+	/* hash map structure containing graph of LabPoint's */
+	LabPointsMap 	LabyrinthMap;
+
+	/* players that currently in this session */
+	Player 			*PlayersMap;
+	uint32  		PlayersMapSize;
+	uint32 			PlayersMapCapacity;
+
+	/* etc */
+);
+
 void Test_LabSessionAddPlayers()
 {
 	LabSession Instance;

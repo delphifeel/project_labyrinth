@@ -13,15 +13,7 @@ typedef struct PositionStruct
 	uint32  Y; 
 } PositionStruct; 
 
-
-CORE_OBJECT_INTERFACE(Player,
-	uint32 				Id;
-	uint32				SpeedMultiplier;
-	uint32  			PositionPointId;
-	PositionStruct		PositionInsideLabPoint;
-	LabPointsMap 		LabyrinthMap;
-	char 				Name[40];
-)
+CORE_OBJECT_DEFINE(Player);
 
 /*****************************************************************************************************************************/
 

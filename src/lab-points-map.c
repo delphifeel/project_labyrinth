@@ -10,6 +10,14 @@
 
 /*****************************************************************************************************************************/
 
+CORE_OBJECT_INTERFACE(LabPointsMap,
+	LabPointStruct 	*LabPointsArray;
+	uint32 			Size;
+	uint32 			Capacity;
+);
+
+/*****************************************************************************************************************************/
+
 void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 {
 	#define RAW_JSON_OBJECT_MAX_SIZE 	(120)

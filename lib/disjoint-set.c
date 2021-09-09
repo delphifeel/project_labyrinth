@@ -1,5 +1,11 @@
 #include "../include/disjoint-set.h"
 
+CORE_OBJECT_INTERFACE(DisjointSet,
+	int32 			*MapChildToParent;
+	uint32 			MapChildToParentSize;
+	uint32 			SubsetsCount;
+);
+
 /*****************************************************************************************************************************/
 
 static void DisjointSet_InternalFindSubset(DisjointSet Instance, int32 Value, int32 *Subset)

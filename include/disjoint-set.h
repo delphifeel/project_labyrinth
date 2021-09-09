@@ -12,11 +12,7 @@
 
 #include "./CORE.h"
 
-CORE_OBJECT_INTERFACE(DisjointSet,
-	int32 			*MapChildToParent;
-	uint32 			MapChildToParentSize;
-	uint32 			SubsetsCount;
-)
+CORE_OBJECT_DEFINE(DisjointSet);
 
 void 		DisjointSet_Print(DisjointSet);
 CORE_Bool 	DisjointSet_Union(DisjointSet, int32 Value1, int32 Value2);

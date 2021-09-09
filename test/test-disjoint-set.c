@@ -2,7 +2,7 @@
 
 int main()
 {
-	CORE_Handle DisjointSetHandle;
+	DisjointSet DisjointSetHandle;
 
 
 	DisjointSet_Create(&DisjointSetHandle);
