@@ -53,11 +53,11 @@ void Test_CommandPlayerMove()
 
 	LabSession_GetLabPointsReader(sessions[session_index], &lab_points_reader);
 	LabPointsMapReader_GetPointByID(lab_points_reader, player1_position_point_id, &player1_point);
-	predicted_new_position_point_id = player1_point.TopConnectionId;
+	predicted_new_position_point_id = player1_point.top_connection_id;
 	if (predicted_new_position_point_id != 0)
 	{
 		LabPointsMapReader_GetPointByID(lab_points_reader, predicted_new_position_point_id, &player1_point);
-		predicted_new_position_point_id = player1_point.LeftConnectionId;
+		predicted_new_position_point_id = player1_point.left_connection_id;
 	}
 
 	is_player_moved = CommandsListener_Process(instance, &command_player_move);

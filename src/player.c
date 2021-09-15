@@ -9,109 +9,109 @@
 #define SPEED                   (1)
 
 CORE_OBJECT_INTERFACE(Player,
-    uint32                      Id;
-    uint32                      SpeedMultiplier;
-    uint32                      PositionPointId;
-    PositionStruct              PositionInsideLabPoint;
-    LabPointsMapReader          PointsReader;
-    char                        Name[40];
+    uint32                      id;
+    uint32                      speed_multiplier;
+    uint32                      position_point_id;
+    PositionStruct              position_inside_lab_point;
+    LabPointsMapReader          points_reader;
+    char                        name[40];
 );
 
 /*****************************************************************************************************************************/
 
-CORE_Bool Player_Move(Player Instance, MoveDirection *Directions, uint32 DirectionsSize)
+CORE_Bool Player_Move(Player instance, MoveDirection *directions, uint32 directions_size)
 {
-    LabPointStruct      ResultLabPoint;
-    uint32              ResultPointId;
+    LabPointStruct      result_lab_point;
+    uint32              result_point_id;
 
 
-    if (DirectionsSize > MAX_DIRECTION_SIZE) 
+    if (directions_size > MAX_DIRECTION_SIZE) 
     {
-        CORE_DebugError("Directions max size is 2\n"); 
+        CORE_DebugError("directions max size is 2\n"); 
         return FALSE; 
     }
 
-    ResultPointId = Instance->PositionPointId;
+    result_point_id = instance->position_point_id;
 
-    for (uint32 i = 0; i < DirectionsSize; i++)
+    for (uint32 i = 0; i < directions_size; i++)
     {
-        LabPointsMapReader_GetPointByID(Instance->PointsReader, ResultPointId, &ResultLabPoint);
+        LabPointsMapReader_GetPointByID(instance->points_reader, result_point_id, &result_lab_point);
 
-        switch (Directions[i])
+        switch (directions[i])
         {
             case kMoveDirection_Top: 
-                ResultPointId = ResultLabPoint.TopConnectionId;
+                result_point_id = result_lab_point.top_connection_id;
                 break; 
             case kMoveDirection_Right:
-                ResultPointId = ResultLabPoint.RightConnectionId;
+                result_point_id = result_lab_point.right_connection_id;
                 break;
             case kMoveDirection_Bottom:  
-                ResultPointId = ResultLabPoint.BottomConnectionId;
+                result_point_id = result_lab_point.bottom_connection_id;
                 break; 
             case kMoveDirection_Left:
-                ResultPointId = ResultLabPoint.LeftConnectionId;
+                result_point_id = result_lab_point.left_connection_id;
                 break; 
         }
 
-        if (ResultPointId == 0)
+        if (result_point_id == 0)
             return FALSE;
     }
 
-    Instance->PositionPointId = ResultPointId;
+    instance->position_point_id = result_point_id;
 
     return TRUE; 
 }
 
-void Player_SetId(Player Instance, uint32 Id)
+void Player_SetId(Player instance, uint32 id)
 {
-    Instance->Id = Id; 
+    instance->id = id; 
 }
 
-void Player_GetId(Player Instance, uint32 *Id)
+void Player_GetId(Player instance, uint32 *id)
 {
-    *Id = Instance->Id; 
+    *id = instance->id; 
 }
 
-void Player_SetName(Player Instance, char *Name)
+void Player_SetName(Player instance, char *name)
 {
-    strncpy(Instance->Name, Name, sizeof(Instance->Name)); 
+    strncpy(instance->name, name, sizeof(instance->name)); 
 }
 
-void Player_GetName(Player Instance, char *Name, uint32 NameSize)
+void Player_GetName(Player instance, char *name, uint32 name_size)
 {
-    strncpy(Name, Instance->Name, NameSize); 
+    strncpy(name, instance->name, name_size); 
 }
 
-void Player_GetPositionInsideLabPoint(Player Instance, PositionStruct *Position)
+void Player_GetPositionInsideLabPoint(Player instance, PositionStruct *position)
 {
-    *Position = Instance->PositionInsideLabPoint;
+    *position = instance->position_inside_lab_point;
 }
 
-void Player_GetPositionPointId(Player Instance, uint32 *OUT_PositionPointId)
+void Player_GetPositionPointId(Player instance, uint32 *out_position_point_id)
 {
-    *OUT_PositionPointId = Instance->PositionPointId;
+    *out_position_point_id = instance->position_point_id;
 }
 
 /*****************************************************************************************************************************/
 
-void Player_Setup(Player Instance, LabPointsMapReader PointsReader, uint32 SpawnPointId)
+void Player_Setup(Player instance, LabPointsMapReader points_reader, uint32 spawn_point_id)
 {
-    Instance->PositionInsideLabPoint.X = 0;
-    Instance->PositionInsideLabPoint.Y = 0;
+    instance->position_inside_lab_point.x = 0;
+    instance->position_inside_lab_point.y = 0;
     
-    Instance->SpeedMultiplier = 1;
-    Instance->PositionPointId = SpawnPointId;
-    Instance->PointsReader = PointsReader;
+    instance->speed_multiplier = 1;
+    instance->position_point_id = spawn_point_id;
+    instance->points_reader = points_reader;
 }
 
 /*****************************************************************************************************************************/
 
-void Player_Create(Player *InstancePtr)
+void Player_Create(Player *instance_ptr)
 {
-    CORE_OBJECT_CREATE(InstancePtr, Player);
+    CORE_OBJECT_CREATE(instance_ptr, Player);
 }
 
-void Player_Free(Player *InstancePtr) 
+void Player_Free(Player *instance_ptr) 
 {
-    CORE_OBJECT_FREE(InstancePtr); 
+    CORE_OBJECT_FREE(instance_ptr); 
 }

@@ -11,8 +11,8 @@ CORE_OBJECT_DEFINE(CommandsListener);
 
 /*****************************************************************************************************************************/
 
-CORE_Bool CommandsListener_Process(CommandsListener, CommandStruct *CommandToProcess);
-void CommandsListener_Setup(CommandsListener Instance, LabSession *Sessions, uint32 SessionSize);
+CORE_Bool CommandsListener_Process(CommandsListener, CommandStruct *command_to_process);
+void CommandsListener_Setup(CommandsListener instance, LabSession *sessions, uint32 sessions_size);
 
 void CommandsListener_Create(CommandsListener*);
 void CommandsListener_Free(CommandsListener*);

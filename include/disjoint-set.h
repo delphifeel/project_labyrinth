@@ -15,10 +15,10 @@
 CORE_OBJECT_DEFINE(DisjointSet);
 
 void 		DisjointSet_Print(DisjointSet);
-CORE_Bool 	DisjointSet_Union(DisjointSet, int32 Value1, int32 Value2);
-void 		DisjointSet_GetSubsetsCount(DisjointSet, uint32 *SubsetsCount);
+CORE_Bool 	DisjointSet_Union(DisjointSet, int32 value1, int32 value2);
+void 		DisjointSet_GetSubsetsCount(DisjointSet, uint32 *subsets_count);
 
-void 		DisjointSet_Setup(DisjointSet, uint32 Size);
+void 		DisjointSet_Setup(DisjointSet, uint32 size);
 
 void 		DisjointSet_Create(DisjointSet*);
 void 		DisjointSet_Free(DisjointSet*);

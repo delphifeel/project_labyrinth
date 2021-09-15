@@ -10,125 +10,125 @@
 /*****************************************************************************************************************************/
 
 CORE_OBJECT_INTERFACE(LabPointsMap,
-	LabPointStruct 	*PointsHashMap;
-	uint32 			Size;
-	uint32 			Capacity;
+	LabPointStruct 	*points_hash_map;
+	uint32 			size;
+	uint32 			capacity;
 );
 
 /*****************************************************************************************************************************/
 
-void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
+void LabPointsMap_ToJSON(LabPointsMap instance, char **json)
 {
 	#define RAW_JSON_OBJECT_MAX_SIZE 	(120)
-	#define DEC_JSON_LEFT(SIZE_TO_DEC) (JSONSizeLeft = (SIZE_TO_DEC > JSONSizeLeft ? 0 : (JSONSizeLeft - SIZE_TO_DEC))) 
+	#define DEC_JSON_LEFT(SIZE_TO_DEC) (json_size_left = (SIZE_TO_DEC > json_size_left ? 0 : (json_size_left - SIZE_TO_DEC))) 
 
-	int32 				JSONSizeLeft;
-	uint32 				MaxJSON;
-	LabPointStruct		CurrentLabPoint; 
-	char 				LabPointRawJSONObject[RAW_JSON_OBJECT_MAX_SIZE];
-	uint32 				LabPointRawJSONObject_CharCount;
+	int32 				json_size_left;
+	uint32 				max_json;
+	LabPointStruct		current_lab_point; 
+	char 				lab_point_raw_json_object[RAW_JSON_OBJECT_MAX_SIZE];
+	uint32 				lab_point_raw_json_object_char_count;
 
 
 	#ifdef CORE_DEBUGENABLED
-	LabPointsMap_InternalPrint(Instance);
+	LabPointsMap_InternalPrint(instance);
 	#endif
 
-	MaxJSON = Instance->Size * RAW_JSON_OBJECT_MAX_SIZE + 40;
-	JSONSizeLeft = MaxJSON;
-	*JSON = CORE_MemAlloc(sizeof(char) * MaxJSON + 1);
-	*JSON[0] = '\0';
+	max_json = instance->size * RAW_JSON_OBJECT_MAX_SIZE + 40;
+	json_size_left = max_json;
+	*json = CORE_MemAlloc(sizeof(char) * max_json + 1);
+	*json[0] = '\0';
 
-	LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, "{\"count\": %ld,\"points\": {", Instance->Size);
-	strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
-	DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
+	lab_point_raw_json_object_char_count = sprintf(lab_point_raw_json_object, "{\"count\": %ld,\"points\": {", instance->size);
+	strncat(*json, lab_point_raw_json_object, lab_point_raw_json_object_char_count);
+	DEC_JSON_LEFT(lab_point_raw_json_object_char_count);
 
-	for (uint32 i = 0; i < Instance->Size; i++)
+	for (uint32 i = 0; i < instance->size; i++)
 	{
 		
-		CurrentLabPoint = Instance->PointsHashMap[i]; 
-		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, "\"%ld\": ", CurrentLabPoint.Id);
-		strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
-		DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
+		current_lab_point = instance->points_hash_map[i]; 
+		lab_point_raw_json_object_char_count = sprintf(lab_point_raw_json_object, "\"%ld\": ", current_lab_point.Id);
+		strncat(*json, lab_point_raw_json_object, lab_point_raw_json_object_char_count);
+		DEC_JSON_LEFT(lab_point_raw_json_object_char_count);
 
-		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, 
+		lab_point_raw_json_object_char_count = sprintf(lab_point_raw_json_object, 
 												  "{\"top_id\": %ld, \"right_id\": %ld, \"bottom_id\": %ld, \"left_id\": %ld, \"is_exit\": %ld, \"is_spawn\": %ld}",
-												  CurrentLabPoint.TopConnectionId, CurrentLabPoint.RightConnectionId, 
-												  CurrentLabPoint.BottomConnectionId, CurrentLabPoint.LeftConnectionId,
-												  CurrentLabPoint.IsExit, CurrentLabPoint.IsSpawn);
+												  current_lab_point.top_connection_id, current_lab_point.right_connection_id, 
+												  current_lab_point.bottom_connection_id, current_lab_point.left_connection_id,
+												  current_lab_point.is_exit, current_lab_point.is_spawn);
 
-		strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
-		DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
+		strncat(*json, lab_point_raw_json_object, lab_point_raw_json_object_char_count);
+		DEC_JSON_LEFT(lab_point_raw_json_object_char_count);
 
-		if (i != Instance->Size - 1)
+		if (i != instance->size - 1)
 		{
-			strncat(*JSON, ",", 1);
+			strncat(*json, ",", 1);
 			DEC_JSON_LEFT(1);
 		}
 	}
 
-	strncat(*JSON, "}}", 2);
+	strncat(*json, "}}", 2);
 	DEC_JSON_LEFT(2);
 }
 
-void LabPointsMap_AddPoint(LabPointsMap Instance, LabPointStruct Point)
+void LabPointsMap_AddPoint(LabPointsMap instance, LabPointStruct point)
 {
 
-	if (Instance->Size == Instance->Capacity)		// if TRUE, double capacity. 
+	if (instance->size == instance->capacity)		// if TRUE, double capacity. 
 	{
-		Instance->Capacity += Instance->Capacity;
-		Instance->PointsHashMap = CORE_MemRealloc(Instance->PointsHashMap, sizeof(LabPointStruct) * Instance->Capacity);
-		if (Instance->PointsHashMap == NULL)
+		instance->capacity += instance->capacity;
+		instance->points_hash_map = CORE_MemRealloc(instance->points_hash_map, sizeof(LabPointStruct) * instance->capacity);
+		if (instance->points_hash_map == NULL)
 		{
-			CORE_DebugError("Instance->PointsHashMap == NULL\n");
+			CORE_DebugError("instance->points_hash_map == NULL\n");
 			return;
 		}
 	}
 
-	Instance->PointsHashMap[Point.Id - 1] = Point;
-	Instance->Size++;
+	instance->points_hash_map[point.Id - 1] = point;
+	instance->size++;
 }
 
-void LabPointsMap_ChangePoint(LabPointsMap Instance, LabPointStruct Point)
+void LabPointsMap_ChangePoint(LabPointsMap instance, LabPointStruct point)
 {
-	Instance->PointsHashMap[Point.Id - 1] = Point;
+	instance->points_hash_map[point.Id - 1] = point;
 }
 
-void LabPointsMap_GetPointByID(LabPointsMap Instance, uint32 ID, LabPointStruct *Point)
+void LabPointsMap_GetPointByID(LabPointsMap instance, uint32 id, LabPointStruct *point)
 {
-	if (ID == 0)
+	if (id == 0)
 	{
-		CORE_DebugError("ID cannot be 0\n");
+		CORE_DebugError("id cannot be 0\n");
 		return;
 	}
 
-	*Point = Instance->PointsHashMap[ID - 1];
+	*point = instance->points_hash_map[id - 1];
 }
 
-void LabPointsMap_GetSize(LabPointsMap Instance, uint32 *Size)
+void LabPointsMap_GetSize(LabPointsMap instance, uint32 *size)
 {
-	*Size = Instance->Size;
+	*size = instance->size;
 }
 
-void LabPointsMap_GetCapacity(LabPointsMap Instance, uint32 *Capacity)
+void LabPointsMap_GetCapacity(LabPointsMap instance, uint32 *capacity)
 {
-	*Capacity = Instance->Capacity;
+	*capacity = instance->capacity;
 }
 
 /*****************************************************************************************************************************/
 
-void LabPointsMap_Create(LabPointsMap *InstancePtr)
+void LabPointsMap_Create(LabPointsMap *instance_ptr)
 {
-	CORE_OBJECT_CREATE(InstancePtr, LabPointsMap);
+	CORE_OBJECT_CREATE(instance_ptr, LabPointsMap);
 
-	(*InstancePtr)->Capacity = LABPOINTSMAP_DEFAULTCAPACITY;
-	(*InstancePtr)->Size = 0;
-	(*InstancePtr)->PointsHashMap = CORE_MemAlloc(sizeof(LabPointStruct) * ((*InstancePtr)->Capacity));
+	(*instance_ptr)->capacity = LABPOINTSMAP_DEFAULTCAPACITY;
+	(*instance_ptr)->size = 0;
+	(*instance_ptr)->points_hash_map = CORE_MemAlloc(sizeof(LabPointStruct) * ((*instance_ptr)->capacity));
 }
 
-void LabPointsMap_Free(LabPointsMap *InstancePtr)
+void LabPointsMap_Free(LabPointsMap *instance_ptr)
 {
-	CORE_MemFree((*InstancePtr)->PointsHashMap);
-	CORE_OBJECT_FREE(InstancePtr);
+	CORE_MemFree((*instance_ptr)->points_hash_map);
+	CORE_OBJECT_FREE(instance_ptr);
 }
 
 /*****************************************************************************************************************************/

@@ -3,24 +3,24 @@
 
 /*****************************************************************************************************************************/
 
-CORE_Bool CORE_CreateUID(uint8 *OUT_UID)
+CORE_Bool CORE_CreateUID(uint8 *out_uid)
 {
-	CORE_FileHandle File;
-	uint32  		ReadSize;
+	CORE_FileHandle file;
+	uint32  		read_size;
 
 
-	File = CORE_FileOpen("/dev/urandom", "r");
-	if (File == NULL)
+	file = CORE_FileOpen("/dev/urandom", "r");
+	if (file == NULL)
 		return FALSE;
 
-	ReadSize = CORE_FileRead(OUT_UID, sizeof(uint8), UID_SIZE, File);
-	if (ReadSize < UID_SIZE)
+	read_size = CORE_FileRead(out_uid, sizeof(uint8), UID_SIZE, file);
+	if (read_size < UID_SIZE)
 	{
-		CORE_FileClose(File);
+		CORE_FileClose(file);
 		return FALSE;
 	}
 
-	CORE_FileClose(File);
+	CORE_FileClose(file);
 	return TRUE;
 }
 

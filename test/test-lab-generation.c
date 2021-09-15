@@ -13,16 +13,16 @@ static void INTERNAL_ValidateGeneratedMap(LabPointsMap generated_map)
 
 
 		// every point has AT LEAST ONE connection
-		if (point.TopConnectionId != 0)
+		if (point.top_connection_id != 0)
 			continue;
 
-		if (point.RightConnectionId != 0)
+		if (point.right_connection_id != 0)
 			continue;
 
-		if (point.BottomConnectionId != 0)
+		if (point.bottom_connection_id != 0)
 			continue;
 
-		if (point.LeftConnectionId != 0)
+		if (point.left_connection_id != 0)
 			continue;
 
 		CORE_DebugAbort("[%ld] Need to have AT LEAST ONE connection\n", i + 1);

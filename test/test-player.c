@@ -7,66 +7,66 @@ static const uint32         Mock_Id         = 999;
 
 void Test_PlayerInit()
 {
-    Player          Instance; 
+    Player          instance; 
     PositionStruct  PlayerPosition;
 
-    Player_Create(&Instance); 
-    Player_Setup(Instance, Mock_Position);
+    Player_Create(&instance); 
+    Player_Setup(instance, Mock_Position);
 
-    Player_GetPosition(Instance, &PlayerPosition);
+    Player_GetPosition(instance, &PlayerPosition);
     assert(PlayerPosition.X == Mock_Position.X); 
     assert(PlayerPosition.Y == Mock_Position.Y); 
 
-    Player_Free(&Instance); 
+    Player_Free(&instance); 
 }
 
 
 void Test_PlayerSetGetName()
 {
-    Player Instance; 
+    Player instance; 
     char Name[40] = "Labyrinth"; 
-    char PlayerName[40];
+    char player_name[40];
 
-    Player_Create(&Instance);
-    Player_Setup(Instance, Mock_Position);
+    Player_Create(&instance);
+    Player_Setup(instance, Mock_Position);
 
-    Player_SetName(Instance, Name); 
-    Player_GetName(Instance, PlayerName, sizeof(PlayerName));
-    assert(strcmp(PlayerName, Name) == 0);
+    Player_SetName(instance, Name); 
+    Player_GetName(instance, player_name, sizeof(player_name));
+    assert(strcmp(player_name, Name) == 0);
 
-    strncpy(PlayerName, "Lorem ipsum dolor", sizeof(PlayerName));   
-    Player_GetName(Instance, PlayerName, sizeof(PlayerName));
-    assert(strcmp(PlayerName, Name) == 0);
+    strncpy(player_name, "Lorem ipsum dolor", sizeof(player_name));   
+    Player_GetName(instance, player_name, sizeof(player_name));
+    assert(strcmp(player_name, Name) == 0);
 
-    Player_Free(&Instance); 
+    Player_Free(&instance); 
 }
 
 
 void Test_PlayerSetGetId()
 {
-    Player Instance; 
+    Player instance; 
     uint32 Id; 
 
-    Player_Create(&Instance);
-    Player_Setup(Instance, Mock_Position);
+    Player_Create(&instance);
+    Player_Setup(instance, Mock_Position);
 
-    Player_SetId(Instance, Mock_Id); 
-    Player_GetId(Instance, &Id);
+    Player_SetId(instance, Mock_Id); 
+    Player_GetId(instance, &Id);
     assert(Id == Mock_Id); 
 
-    Player_Free(&Instance); 
+    Player_Free(&instance); 
 }
 
 
 void Test_PlayerMove()
 {
-    Player Instance; 
+    Player instance; 
     uint32 Id; 
 
     MoveDirection Directions[3] = {kMoveDirection_Top, kMoveDirection_Bottom, kMoveDirection_Left};  
 
-    Player_Create(&Instance);
-    Player_Setup(Instance, Mock_Position);
+    Player_Create(&instance);
+    Player_Setup(instance, Mock_Position);
     // exceed required count of params
 
     // TODO: implement Test_PlayerMove

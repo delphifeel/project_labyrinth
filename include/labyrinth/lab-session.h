@@ -16,12 +16,12 @@ CORE_OBJECT_DEFINE(LabSession);
 
 /*****************************************************************************************************************************/
 
-void LabSession_AddPlayer(LabSession, char *PlayerName, uint32 *OUT_AddedPlayerIndex);
-CORE_Bool LabSession_FindPlayer(LabSession, uint32 PlayerIndex, Player *OUT_Player);
+void LabSession_AddPlayer(LabSession, char *player_name, uint32 *out_added_player_index);
+CORE_Bool LabSession_FindPlayer(LabSession, uint32 player_index, Player *out_player);
 
-void LabSession_GetLabPointsReader(LabSession, LabPointsMapReader *OUT_LabPointsReader);
+void LabSession_GetLabPointsReader(LabSession, LabPointsMapReader *out_lab_points_reader);
 
-void LabSession_Setup(LabSession, uint32 PlayersCount);
+void LabSession_Setup(LabSession, uint32 players_count);
 
 void LabSession_Create(LabSession*);
 void LabSession_Free(LabSession*);

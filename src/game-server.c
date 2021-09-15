@@ -10,40 +10,40 @@
 /*****************************************************************************************************************************/
 
 CORE_OBJECT_INTERFACE(GameServer,
-	LabSession 				Sessions[SESSIONS_SIZE_CAPACITY];
-	CommandsListener 		CommandsListenerObject;
-	InOutSystem 			InOutSystemObject;
+	LabSession 				sessions[SESSIONS_SIZE_CAPACITY];
+	CommandsListener 		commands_listener;
+	InOutSystem 			in_out_system;
 );
 
 /*****************************************************************************************************************************/
 
-static void GameServer_InitSessions(GameServer Instance)
+static void GameServer_InitSessions(GameServer instance)
 {
-	LabSession CreatedLabSession;
+	LabSession created_lab_session;
 
 
 	for (uint32 i = 0; i < SESSIONS_SIZE_CAPACITY; i++)
 	{
-		LabSession_Create(&CreatedLabSession);
+		LabSession_Create(&created_lab_session);
 		// TODO: LabSession_Setup ? 
-		Instance->Sessions[i] = CreatedLabSession;
+		instance->sessions[i] = created_lab_session;
 	}
 }
 
-static void GameServer_FreeSessions(GameServer Instance)
+static void GameServer_FreeSessions(GameServer instance)
 {
 	for (uint32 i = 0; i < SESSIONS_SIZE_CAPACITY; i++)
 	{
-		LabSession_Free(&Instance->Sessions[i]);
+		LabSession_Free(&instance->sessions[i]);
 	}
 }
 
-void GameServer_Process(GameServer Instance)
+void GameServer_Process(GameServer instance)
 {
 	CORE_Bool command_process_result;
 
 
-	command_process_result = CommandsListener_Process(Instance->CommandsListenerObject);
+	command_process_result = CommandsListener_Process(instance->commands_listener);
 	if (command_process_result == FALSE)
 	{
 		CORE_DebugError("Command processing failed\n");
@@ -51,34 +51,34 @@ void GameServer_Process(GameServer Instance)
 	}
 }
 
-void GameServer_Setup(GameServer Instance)
+void GameServer_Setup(GameServer instance)
 {
-	CommandsListener_Setup(Instance->CommandsListenerObject, Instance->Sessions, SESSIONS_SIZE);
+	CommandsListener_Setup(instance->commands_listener, instance->sessions, SESSIONS_SIZE);
 }
 
 /*****************************************************************************************************************************/
 
-void GameServer_Create(GameServer *InstancePtr)
+void GameServer_Create(GameServer *instance_ptr)
 {
-	CORE_OBJECT_CREATE(InstancePtr, GameServer);
+	CORE_OBJECT_CREATE(instance_ptr, GameServer);
 
 	CORE_DebugPrint("GameServer: Init sessions\n");
-	GameServer_InitSessions(*InstancePtr);
+	GameServer_InitSessions(*instance_ptr);
 
 	CORE_DebugPrint("GameServer: Init commands listener\n");
-	CommandsListener_Create(&(*InstancePtr)->CommandsListenerObject);
+	CommandsListener_Create(&(*instance_ptr)->commands_listener);
 
 	CORE_DebugPrint("GameServer: Init in-out system\n");
-	InOutSystem_Create(&(*InstancePtr)->InOutSystemObject);
+	InOutSystem_Create(&(*instance_ptr)->in_out_system);
 }
 
-void GameServer_Free(GameServer *InstancePtr)
+void GameServer_Free(GameServer *instance_ptr)
 {
-	CORE_OBJECT_FREE(InstancePtr);
+	CORE_OBJECT_FREE(instance_ptr);
 
-	GameServer_FreeSessions(*InstancePtr);
-	CommandsListener_Free(&(*InstancePtr)->CommandsListenerObject);
-	InOutSystem_Free(&(*InstancePtr)->InOutSystemObject);
+	GameServer_FreeSessions(*instance_ptr);
+	CommandsListener_Free(&(*instance_ptr)->commands_listener);
+	InOutSystem_Free(&(*instance_ptr)->in_out_system);
 }
 
 /*****************************************************************************************************************************/

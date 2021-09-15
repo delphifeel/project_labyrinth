@@ -3,31 +3,31 @@
 /*****************************************************************************************************************************/
 
 CORE_OBJECT_INTERFACE(LabPointsMapReader,
-	LabPointsMap Source;
+	LabPointsMap source;
 );
 
 /*****************************************************************************************************************************/
 
-void LabPointsMapReader_GetPointByID(LabPointsMapReader Instance, uint32 ID, LabPointStruct *OUT_Point)
+void LabPointsMapReader_GetPointByID(LabPointsMapReader instance, uint32 id, LabPointStruct *out_point)
 {
-	LabPointsMap_GetPointByID(Instance->Source, ID, OUT_Point);
+	LabPointsMap_GetPointByID(instance->source, id, out_point);
 }
 
-void LabPointsMapReader_Setup(LabPointsMapReader Instance, LabPointsMap Source)
+void LabPointsMapReader_Setup(LabPointsMapReader instance, LabPointsMap source)
 {
-	Instance->Source = Source;
+	instance->source = source;
 }
 
 /*****************************************************************************************************************************/
 
-void LabPointsMapReader_Create(LabPointsMapReader* InstancePtr)
+void LabPointsMapReader_Create(LabPointsMapReader* instance_ptr)
 {
-	CORE_OBJECT_CREATE(InstancePtr, LabPointsMapReader);
+	CORE_OBJECT_CREATE(instance_ptr, LabPointsMapReader);
 }
 
-void LabPointsMapReader_Free(LabPointsMapReader* InstancePtr)
+void LabPointsMapReader_Free(LabPointsMapReader* instance_ptr)
 {
-	CORE_OBJECT_FREE(InstancePtr);
+	CORE_OBJECT_FREE(instance_ptr);
 }
 
 /*****************************************************************************************************************************/

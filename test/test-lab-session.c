@@ -4,59 +4,59 @@
 
 void Test_LabSessionAddPlayers()
 {
-	LabSession Instance;
-	char *Player1_Name = "Player1";	
-	char *Player2_Name = "Player2";
-	uint32 Player1_Index, Player2_Index;	
-	Player Player1, Player2;
-	char TempName[40];
-	uint32 TempId;
+	LabSession instance;
+	char *player1_name = "player1";	
+	char *player2_name = "player2";
+	uint32 player1_index, player2_index;	
+	Player player1, player2;
+	char temp_name[40];
+	uint32 temp_id;
 
 
-	LabSession_Create(&Instance);
-	LabSession_Setup(Instance, 2);
+	LabSession_Create(&instance);
+	LabSession_Setup(instance, 2);
 
-	LabSession_AddPlayer(Instance, Player1_Name, &Player1_Index);
-	LabSession_AddPlayer(Instance, Player2_Name, &Player2_Index);
+	LabSession_AddPlayer(instance, player1_name, &player1_index);
+	LabSession_AddPlayer(instance, player2_name, &player2_index);
 
-	assert(Player1_Index == 0);
-	assert(Player2_Index == 1);
+	assert(player1_index == 0);
+	assert(player2_index == 1);
 
-	LabSession_FindPlayer(Instance, Player1_Index, &Player1);
-	LabSession_FindPlayer(Instance, Player2_Index, &Player2);
+	LabSession_FindPlayer(instance, player1_index, &player1);
+	LabSession_FindPlayer(instance, player2_index, &player2);
 
-	Player_GetName(Player1, TempName, sizeof(TempName));
-	assert(strcmp(TempName, Player1_Name) == 0);
+	Player_GetName(player1, temp_name, sizeof(temp_name));
+	assert(strcmp(temp_name, player1_name) == 0);
 
-	Player_GetId(Player1, &TempId);
-	assert(TempId == Player1_Index);
+	Player_GetId(player1, &temp_id);
+	assert(temp_id == player1_index);
 
-	Player_GetName(Player2, TempName, sizeof(TempName));
-	assert(strcmp(TempName, Player2_Name) == 0);
+	Player_GetName(player2, temp_name, sizeof(temp_name));
+	assert(strcmp(temp_name, player2_name) == 0);
 
-	Player_GetId(Player2, &TempId);
-	assert(TempId == Player2_Index);
+	Player_GetId(player2, &temp_id);
+	assert(temp_id == player2_index);
 
-	LabSession_Free(&Instance);
+	LabSession_Free(&instance);
 }
 
 // void Test_LabSessionLabyrinthToJSON()
 // {
-// 	LabSession Instance;
-// 	char *JSON;
+// 	LabSession instance;
+// 	char *json;
 // 	CORE_FileHandle FileToWrite;
 
-// 	LabSession_Create(&Instance);
-// 	LabSession_Setup(Instance, 5);
+// 	LabSession_Create(&instance);
+// 	LabSession_Setup(instance, 5);
 
-// 	LabPointsMap_ToJSON(Instance->LabyrinthMap, &JSON);
+// 	LabPointsMap_ToJSON(instance->labyrinth_map, &json);
 
 // 	FileToWrite = CORE_FileOpen("data-prim.json", "w");
-// 	CORE_FileWrite(JSON, sizeof(char), strlen(JSON), FileToWrite);
+// 	CORE_FileWrite(json, sizeof(char), strlen(json), FileToWrite);
 // 	CORE_FileClose(FileToWrite);
 
-// 	LabSession_Free(&Instance);
-// 	CORE_MemFree(JSON);
+// 	LabSession_Free(&instance);
+// 	CORE_MemFree(json);
 // }
 
 int main()

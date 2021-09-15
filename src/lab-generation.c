@@ -13,14 +13,14 @@
 
 typedef struct Edge
 {
-	uint32 From;
-	uint32 To;
+	uint32 from;
+	uint32 to;
 } Edge;
 
-static void INTERNAL_FillRectangleLab(LabPointsMap TempPointsMap, uint32 *SpawnPoints)
+static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spawn_points)
 {
-	LabPointStruct LabPoint;
-	int32 ConnectionID, ID, P;
+	LabPointStruct lab_point;
+	int32 connection_id, id, p;
 
 
 	if (MATRIX_SIZE < 7)
@@ -31,119 +31,119 @@ static void INTERNAL_FillRectangleLab(LabPointsMap TempPointsMap, uint32 *SpawnP
 
 
 	// create all points
-	P = MATRIX_SIZE * MATRIX_SIZE;
-	for (uint32 i = 0; i < P; i++)
+	p = MATRIX_SIZE * MATRIX_SIZE;
+	for (uint32 i = 0; i < p; i++)
 	{
-		LabPoint.Id = i + 1;
+		lab_point.Id = i + 1;
 		
-		LabPoint.TopConnectionId = 0;
-		LabPoint.RightConnectionId = 0;
-		LabPoint.LeftConnectionId = 0;
-		LabPoint.BottomConnectionId = 0;
-		LabPoint.IsExit = FALSE;
-		LabPoint.IsSpawn = FALSE;
+		lab_point.top_connection_id = 0;
+		lab_point.right_connection_id = 0;
+		lab_point.left_connection_id = 0;
+		lab_point.bottom_connection_id = 0;
+		lab_point.is_exit = FALSE;
+		lab_point.is_spawn = FALSE;
 
-		LabPointsMap_AddPoint(TempPointsMap, LabPoint);
+		LabPointsMap_AddPoint(temp_points_map, lab_point);
 	}
 
 
 	// set exit point
-	LabPointsMap_GetPointByID(TempPointsMap, P / 2 + 1, &LabPoint);
-	CORE_DebugPrint("Set %ld as exit\n", P / 2 + 1);
-	LabPoint.IsExit = TRUE;
-	LabPointsMap_ChangePoint(TempPointsMap, LabPoint);
+	LabPointsMap_GetPointByID(temp_points_map, p / 2 + 1, &lab_point);
+	CORE_DebugPrint("Set %ld as exit\n", p / 2 + 1);
+	lab_point.is_exit = TRUE;
+	LabPointsMap_ChangePoint(temp_points_map, lab_point);
 
 
 	// set spawn points (center square of matrix)
-	uint32 PossibleSpawnPoints[P / 2];
-	uint32 PossibleSpawnPointsSize = 0;
-	uint32 RowIndex, ColumnIndex, PosIndex, AddedPoints;
+	uint32 possible_spawn_points[p / 2];
+	uint32 possible_spawn_points_size = 0;
+	uint32 row_index, column_index, pos_index, added_points;
 
-	PosIndex = MATRIX_SIZE / 4;
+	pos_index = MATRIX_SIZE / 4;
 
-	RowIndex = PosIndex;
-	for (ColumnIndex = PosIndex + 2; ColumnIndex < MATRIX_SIZE - PosIndex + 1; ColumnIndex++)
+	row_index = pos_index;
+	for (column_index = pos_index + 2; column_index < MATRIX_SIZE - pos_index + 1; column_index++)
 	{
-		PossibleSpawnPoints[PossibleSpawnPointsSize] = RowIndex * MATRIX_SIZE + ColumnIndex;
-		PossibleSpawnPointsSize++;
+		possible_spawn_points[possible_spawn_points_size] = row_index * MATRIX_SIZE + column_index;
+		possible_spawn_points_size++;
 	}
 
-	ColumnIndex = MATRIX_SIZE - PosIndex;
-	for (RowIndex = PosIndex + 1; RowIndex < MATRIX_SIZE - PosIndex; RowIndex++)
+	column_index = MATRIX_SIZE - pos_index;
+	for (row_index = pos_index + 1; row_index < MATRIX_SIZE - pos_index; row_index++)
 	{
-		PossibleSpawnPoints[PossibleSpawnPointsSize] = RowIndex * MATRIX_SIZE + ColumnIndex;
-		PossibleSpawnPointsSize++;
+		possible_spawn_points[possible_spawn_points_size] = row_index * MATRIX_SIZE + column_index;
+		possible_spawn_points_size++;
 	}
 
-	RowIndex = MATRIX_SIZE - PosIndex - 1;
-	for (ColumnIndex = MATRIX_SIZE - PosIndex - 1; ColumnIndex > PosIndex; ColumnIndex--)
+	row_index = MATRIX_SIZE - pos_index - 1;
+	for (column_index = MATRIX_SIZE - pos_index - 1; column_index > pos_index; column_index--)
 	{
-		PossibleSpawnPoints[PossibleSpawnPointsSize] = RowIndex * MATRIX_SIZE + ColumnIndex;
-		PossibleSpawnPointsSize++;
+		possible_spawn_points[possible_spawn_points_size] = row_index * MATRIX_SIZE + column_index;
+		possible_spawn_points_size++;
 	}
 
-	ColumnIndex = PosIndex + 1;
-	for (RowIndex = MATRIX_SIZE - PosIndex - 2; RowIndex > PosIndex - 1; RowIndex--)
+	column_index = pos_index + 1;
+	for (row_index = MATRIX_SIZE - pos_index - 2; row_index > pos_index - 1; row_index--)
 	{
-		PossibleSpawnPoints[PossibleSpawnPointsSize] = RowIndex * MATRIX_SIZE + ColumnIndex;
-		PossibleSpawnPointsSize++;
+		possible_spawn_points[possible_spawn_points_size] = row_index * MATRIX_SIZE + column_index;
+		possible_spawn_points_size++;
 	}
 
-	AddedPoints = 0;
-	for (uint32 i = 0; i < PossibleSpawnPointsSize; i++)
+	added_points = 0;
+	for (uint32 i = 0; i < possible_spawn_points_size; i++)
 	{
-		if (i % (PossibleSpawnPointsSize / SPAWN_POINTS_COUNT) != 0)
+		if (i % (possible_spawn_points_size / SPAWN_POINTS_COUNT) != 0)
 			continue;
 
-		LabPointsMap_GetPointByID(TempPointsMap, PossibleSpawnPoints[i], &LabPoint);
+		LabPointsMap_GetPointByID(temp_points_map, possible_spawn_points[i], &lab_point);
 
-		LabPoint.IsSpawn = TRUE; 
-		LabPointsMap_ChangePoint(TempPointsMap, LabPoint);
-		SpawnPoints[AddedPoints] = PossibleSpawnPoints[i];
-		AddedPoints++;
+		lab_point.is_spawn = TRUE; 
+		LabPointsMap_ChangePoint(temp_points_map, lab_point);
+		spawn_points[added_points] = possible_spawn_points[i];
+		added_points++;
 
-		if (AddedPoints == SPAWN_POINTS_COUNT)
+		if (added_points == SPAWN_POINTS_COUNT)
 			break;
 	}
 
 
 	// fill connections for every point
-	for (uint32 i = 0; i < P; i++)
+	for (uint32 i = 0; i < p; i++)
 	{
-		ID = i + 1;
-		LabPointsMap_GetPointByID(TempPointsMap, ID, &LabPoint);
+		id = i + 1;
+		LabPointsMap_GetPointByID(temp_points_map, id, &lab_point);
 
 		// top connection
-		ConnectionID = ID - MATRIX_SIZE;
-		if (ConnectionID > 0)
-			LabPoint.TopConnectionId = ConnectionID;
+		connection_id = id - MATRIX_SIZE;
+		if (connection_id > 0)
+			lab_point.top_connection_id = connection_id;
 
 		// right connection
-		ConnectionID = ID + 1;
-		if (ConnectionID % MATRIX_SIZE != 1)
-			LabPoint.RightConnectionId = ConnectionID;
+		connection_id = id + 1;
+		if (connection_id % MATRIX_SIZE != 1)
+			lab_point.right_connection_id = connection_id;
 
 		// bottom connection
-		ConnectionID = ID + MATRIX_SIZE;
-		if (ConnectionID <= P)
-			LabPoint.BottomConnectionId = ConnectionID;
+		connection_id = id + MATRIX_SIZE;
+		if (connection_id <= p)
+			lab_point.bottom_connection_id = connection_id;
 		
 		// left connection
-		ConnectionID = ID - 1;
-		if (ConnectionID % MATRIX_SIZE != 0)
-			LabPoint.LeftConnectionId = ConnectionID; 
+		connection_id = id - 1;
+		if (connection_id % MATRIX_SIZE != 0)
+			lab_point.left_connection_id = connection_id; 
 
-		LabPointsMap_ChangePoint(TempPointsMap, LabPoint);
+		LabPointsMap_ChangePoint(temp_points_map, lab_point);
 	}
 }
 
 static int INTERNAL_SortEdgesRandomly(const void *left, const void *right)
 {
-	int32 RandomNumber;
+	int32 random_number;
 
 
-	RandomNumber = rand() % 3;
-	switch (RandomNumber)
+	random_number = rand() % 3;
+	switch (random_number)
 	{
 		case 0: return -1;
 		case 1: return 0;
@@ -153,157 +153,158 @@ static int INTERNAL_SortEdgesRandomly(const void *left, const void *right)
 	return 0;
 }
 
-static void INTERNAL_CopyConnectionsAccordingToEdge(LabPointsMap TempPointsMap, LabPointsMap ResultLabPointsMapHandle, uint32 LabPointID, uint32 ConnectionLabPointID)
+static void INTERNAL_CopyConnectionsAccordingToEdge(LabPointsMap temp_points_map, LabPointsMap result_lab_points_map_handle, uint32 lab_point_id, uint32 connection_lab_point_id)
 {
-	LabPointStruct SourcePoint, ResultPoint;
+	LabPointStruct source_point, result_point;
+	
 
-	LabPointsMap_GetPointByID(TempPointsMap, LabPointID, &SourcePoint);
-	LabPointsMap_GetPointByID(ResultLabPointsMapHandle, LabPointID, &ResultPoint);
+	LabPointsMap_GetPointByID(temp_points_map, lab_point_id, &source_point);
+	LabPointsMap_GetPointByID(result_lab_points_map_handle, lab_point_id, &result_point);
 
-	if (SourcePoint.TopConnectionId == ConnectionLabPointID)
+	if (source_point.top_connection_id == connection_lab_point_id)
 	{
-		ResultPoint.TopConnectionId = ConnectionLabPointID;
+		result_point.top_connection_id = connection_lab_point_id;
 	}
-	else if (SourcePoint.RightConnectionId == ConnectionLabPointID)
+	else if (source_point.right_connection_id == connection_lab_point_id)
 	{
-		ResultPoint.RightConnectionId = ConnectionLabPointID;
+		result_point.right_connection_id = connection_lab_point_id;
 	}
-	else if (SourcePoint.BottomConnectionId == ConnectionLabPointID)
+	else if (source_point.bottom_connection_id == connection_lab_point_id)
 	{
-		ResultPoint.BottomConnectionId = ConnectionLabPointID;
+		result_point.bottom_connection_id = connection_lab_point_id;
 	}
-	else if (SourcePoint.LeftConnectionId == ConnectionLabPointID)
+	else if (source_point.left_connection_id == connection_lab_point_id)
 	{
-		ResultPoint.LeftConnectionId = ConnectionLabPointID;
+		result_point.left_connection_id = connection_lab_point_id;
 	}
 
-	LabPointsMap_ChangePoint(ResultLabPointsMapHandle, ResultPoint);
+	LabPointsMap_ChangePoint(result_lab_points_map_handle, result_point);
 }
 
-static void INTERNAL_BuildMSTMaze(LabPointsMap TempPointsMap, LabPointsMap MSTPointsMapHandle)
+static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst_points_map_handle)
 {
-	LabPointStruct 	CurrentLabPointHandle, TempLabPointHandle, LabPoint; 
-	DisjointSet 	DisjointSetHadle;
-	uint32 			VertexCount, ID;
-	Edge 			*SortedEdges, *MSTEdges;
-	uint32 			SortedEdgesSize, MSTEdgesSize, SubsetsLeft;
+	LabPointStruct 	current_lab_point_handle, temp_lab_point_handle, lab_point; 
+	DisjointSet 	disjoint_set_handle;
+	uint32 			vertex_count, id;
+	Edge 			*sorted_edges, *mst_edges;
+	uint32 			sorted_edges_size, mst_edges_size, subsets_left;
 
 
-	SortedEdges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);
-	MSTEdges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);
+	sorted_edges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);
+	mst_edges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);
 
 	// get all possible edges
-	SortedEdgesSize = 0;
-	LabPointsMap_GetSize(TempPointsMap, &VertexCount);
-	for (uint32 i = 0; i < VertexCount; i++)
+	sorted_edges_size = 0;
+	LabPointsMap_GetSize(temp_points_map, &vertex_count);
+	for (uint32 i = 0; i < vertex_count; i++)
 	{
-		ID = i + 1;
-		LabPointsMap_GetPointByID(TempPointsMap, ID, &CurrentLabPointHandle);
+		id = i + 1;
+		LabPointsMap_GetPointByID(temp_points_map, id, &current_lab_point_handle);
 
-		if (CurrentLabPointHandle.TopConnectionId != 0)
+		if (current_lab_point_handle.top_connection_id != 0)
 		{
-			SortedEdges[SortedEdgesSize].From = ID; 
-			SortedEdges[SortedEdgesSize].To = CurrentLabPointHandle.TopConnectionId;
-			SortedEdgesSize++;
+			sorted_edges[sorted_edges_size].from = id; 
+			sorted_edges[sorted_edges_size].to = current_lab_point_handle.top_connection_id;
+			sorted_edges_size++;
 		}
 		
-		if (CurrentLabPointHandle.RightConnectionId != 0)
+		if (current_lab_point_handle.right_connection_id != 0)
 		{
-			SortedEdges[SortedEdgesSize].From = ID; 
-			SortedEdges[SortedEdgesSize].To = CurrentLabPointHandle.RightConnectionId;
-			SortedEdgesSize++;
+			sorted_edges[sorted_edges_size].from = id; 
+			sorted_edges[sorted_edges_size].to = current_lab_point_handle.right_connection_id;
+			sorted_edges_size++;
 		}
 
-		if (CurrentLabPointHandle.BottomConnectionId != 0)
+		if (current_lab_point_handle.bottom_connection_id != 0)
 		{
-			SortedEdges[SortedEdgesSize].From = ID; 
-			SortedEdges[SortedEdgesSize].To = CurrentLabPointHandle.BottomConnectionId;
-			SortedEdgesSize++;
+			sorted_edges[sorted_edges_size].from = id; 
+			sorted_edges[sorted_edges_size].to = current_lab_point_handle.bottom_connection_id;
+			sorted_edges_size++;
 		}
 
-		if (CurrentLabPointHandle.LeftConnectionId != 0)
+		if (current_lab_point_handle.left_connection_id != 0)
 		{
-			SortedEdges[SortedEdgesSize].From = ID; 
-			SortedEdges[SortedEdgesSize].To = CurrentLabPointHandle.LeftConnectionId;
-			SortedEdgesSize++;
+			sorted_edges[sorted_edges_size].from = id; 
+			sorted_edges[sorted_edges_size].to = current_lab_point_handle.left_connection_id;
+			sorted_edges_size++;
 		}
 	}
 
 
 	// sort edges randomly
 	srand(time(NULL));
-	qsort(SortedEdges, SortedEdgesSize, sizeof(Edge), INTERNAL_SortEdgesRandomly);
+	qsort(sorted_edges, sorted_edges_size, sizeof(Edge), INTERNAL_SortEdgesRandomly);
 
-	CORE_DebugPrint("SortedEdgesSize: %ld\n", SortedEdgesSize);
+	CORE_DebugPrint("sorted_edges_size: %ld\n", sorted_edges_size);
 
 
 	// create disjoint set from edges and union all possible edges according to Kruskal's algo
-	DisjointSet_Create(&DisjointSetHadle);
-	DisjointSet_Setup(DisjointSetHadle, VertexCount + 1);
-	MSTEdgesSize = 0;
+	DisjointSet_Create(&disjoint_set_handle);
+	DisjointSet_Setup(disjoint_set_handle, vertex_count + 1);
+	mst_edges_size = 0;
 	
-	for (uint32 i = 0; i < SortedEdgesSize; i++)
+	for (uint32 i = 0; i < sorted_edges_size; i++)
 		{
-		if (DisjointSet_Union(DisjointSetHadle, SortedEdges[i].From, SortedEdges[i].To) == FALSE)
+		if (DisjointSet_Union(disjoint_set_handle, sorted_edges[i].from, sorted_edges[i].to) == FALSE)
 			continue;
 
-		MSTEdges[MSTEdgesSize].From = SortedEdges[i].From;
-		MSTEdges[MSTEdgesSize].To = SortedEdges[i].To;
-		MSTEdgesSize++;
+		mst_edges[mst_edges_size].from = sorted_edges[i].from;
+		mst_edges[mst_edges_size].to = sorted_edges[i].to;
+		mst_edges_size++;
 		}
 
-	DisjointSet_GetSubsetsCount(DisjointSetHadle, &SubsetsLeft);
-	DisjointSet_Free(&DisjointSetHadle);
+	DisjointSet_GetSubsetsCount(disjoint_set_handle, &subsets_left);
+	DisjointSet_Free(&disjoint_set_handle);
 
-	CORE_DebugPrint("SubsetsLeft: %ld\n", SubsetsLeft);
-	CORE_DebugPrint("MSTEdgesSize: %ld\n", MSTEdgesSize);
+	CORE_DebugPrint("subsets_left: %ld\n", subsets_left);
+	CORE_DebugPrint("mst_edges_size: %ld\n", mst_edges_size);
 
 
-	// create new lab points map accordoing to MSTEdges
-	for (uint32 i = 0; i < VertexCount; i++)
+	// create new lab points map accordoing to mst_edges
+	for (uint32 i = 0; i < vertex_count; i++)
 	{
-		LabPointsMap_GetPointByID(TempPointsMap, i + 1, &TempLabPointHandle);
+		LabPointsMap_GetPointByID(temp_points_map, i + 1, &temp_lab_point_handle);
 
-		LabPoint.Id = i + 1; 
-		LabPoint.TopConnectionId = 0;
-		LabPoint.RightConnectionId = 0;
-		LabPoint.LeftConnectionId = 0;
-		LabPoint.BottomConnectionId = 0;
-		LabPoint.IsExit = TempLabPointHandle.IsExit;
-		LabPoint.IsSpawn = TempLabPointHandle.IsSpawn;
+		lab_point.Id = i + 1; 
+		lab_point.top_connection_id = 0;
+		lab_point.right_connection_id = 0;
+		lab_point.left_connection_id = 0;
+		lab_point.bottom_connection_id = 0;
+		lab_point.is_exit = temp_lab_point_handle.is_exit;
+		lab_point.is_spawn = temp_lab_point_handle.is_spawn;
 
-		LabPointsMap_AddPoint(MSTPointsMapHandle, LabPoint);
+		LabPointsMap_AddPoint(mst_points_map_handle, lab_point);
 	}
 
-	for (uint32 i = 0; i < MSTEdgesSize; i++)
+	for (uint32 i = 0; i < mst_edges_size; i++)
 	{
-		if ((MSTEdges[i].From == 0) || (MSTEdges[i].To == 0))
+		if ((mst_edges[i].from == 0) || (mst_edges[i].to == 0))
 			continue;
 
-		INTERNAL_CopyConnectionsAccordingToEdge(TempPointsMap, MSTPointsMapHandle, MSTEdges[i].From, MSTEdges[i].To);
-		INTERNAL_CopyConnectionsAccordingToEdge(TempPointsMap, MSTPointsMapHandle, MSTEdges[i].To, MSTEdges[i].From);
+		INTERNAL_CopyConnectionsAccordingToEdge(temp_points_map, mst_points_map_handle, mst_edges[i].from, mst_edges[i].to);
+		INTERNAL_CopyConnectionsAccordingToEdge(temp_points_map, mst_points_map_handle, mst_edges[i].to, mst_edges[i].from);
 	}
 
-	CORE_MemFree(SortedEdges);
-	CORE_MemFree(MSTEdges);
+	CORE_MemFree(sorted_edges);
+	CORE_MemFree(mst_edges);
 }
 
 /*****************************************************************************************************************************/
 
-void LabGeneration_Execute(LabPointsMap GeneratedLabPointsMap, uint32 **OUT_SpawnPoints, uint32 *OUT_SpawnPointsSize)
+void LabGeneration_Execute(LabPointsMap generated_lab_points_map, uint32 **out_spawn_points, uint32 *out_spawn_points_size)
 {
-	LabPointsMap 		TempPointsMap;
+	LabPointsMap 		temp_points_map;
 
 
-	LabPointsMap_Create(&TempPointsMap);
+	LabPointsMap_Create(&temp_points_map);
 
-	*OUT_SpawnPointsSize = SPAWN_POINTS_COUNT;
-	*OUT_SpawnPoints = CORE_MemAlloc(sizeof(uint32) * *OUT_SpawnPointsSize);
-	INTERNAL_FillRectangleLab(TempPointsMap, *OUT_SpawnPoints);
+	*out_spawn_points_size = SPAWN_POINTS_COUNT;
+	*out_spawn_points = CORE_MemAlloc(sizeof(uint32) * *out_spawn_points_size);
+	INTERNAL_FillRectangleLab(temp_points_map, *out_spawn_points);
 
-	INTERNAL_BuildMSTMaze(TempPointsMap, GeneratedLabPointsMap);
+	INTERNAL_BuildMSTMaze(temp_points_map, generated_lab_points_map);
 
-	LabPointsMap_Free(&TempPointsMap);
+	LabPointsMap_Free(&temp_points_map);
 }
 
 /*****************************************************************************************************************************/

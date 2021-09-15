@@ -15,7 +15,7 @@ typedef struct CommandParserStruct
 
 /*****************************************************************************************************************************/
 
-static CORE_Bool CommandsListener_HelperFindSession(LabSession *sessions, uint32 sessions_size, uint32 index, LabSession *out_session)
+static CORE_Bool INTERNAL_FindSession(LabSession *sessions, uint32 sessions_size, uint32 index, LabSession *out_session)
 {
 	if (index + 1 > sessions_size)
 	{
@@ -35,10 +35,10 @@ static CORE_Bool CommandsListener_ProcessPlayerMove(CommandsListener instance, C
 	Player 		player;
 
 
-	if (CommandsListener_HelperFindSession(instance->sessions, 
-										   instance->sessions_size, 
-										   command_to_process->session_index,
-										   &session) == FALSE)
+	if (INTERNAL_FindSession(instance->sessions, 
+							 instance->sessions_size, 
+							 command_to_process->session_index,
+							 &session) == FALSE)
 		return FALSE;
 
 	if (LabSession_FindPlayer(session, command_to_process->player_index, &player) == FALSE)
