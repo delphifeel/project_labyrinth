@@ -17,7 +17,7 @@ typedef struct Edge
 	uint32 To;
 } Edge;
 
-static void LabGeneration_InternalFillRectangleLab(LabPointsMap TempPointsMap)
+static void INTERNAL_FillRectangleLab(LabPointsMap TempPointsMap, uint32 *SpawnPoints)
 {
 	LabPointStruct LabPoint;
 	int32 ConnectionID, ID, P;
@@ -99,6 +99,7 @@ static void LabGeneration_InternalFillRectangleLab(LabPointsMap TempPointsMap)
 
 		LabPoint.IsSpawn = TRUE; 
 		LabPointsMap_ChangePoint(TempPointsMap, LabPoint);
+		SpawnPoints[AddedPoints] = PossibleSpawnPoints[i];
 		AddedPoints++;
 
 		if (AddedPoints == SPAWN_POINTS_COUNT)
@@ -136,7 +137,7 @@ static void LabGeneration_InternalFillRectangleLab(LabPointsMap TempPointsMap)
 	}
 }
 
-static int LabGeneration_InternalSortEdgesRandomly(const void *left, const void *right)
+static int INTERNAL_SortEdgesRandomly(const void *left, const void *right)
 {
 	int32 RandomNumber;
 
@@ -152,7 +153,7 @@ static int LabGeneration_InternalSortEdgesRandomly(const void *left, const void 
 	return 0;
 }
 
-static void LabGeneration_InternalCopyConnectionsAccordingToEdge(LabPointsMap TempPointsMap, LabPointsMap ResultLabPointsMapHandle, uint32 LabPointID, uint32 ConnectionLabPointID)
+static void INTERNAL_CopyConnectionsAccordingToEdge(LabPointsMap TempPointsMap, LabPointsMap ResultLabPointsMapHandle, uint32 LabPointID, uint32 ConnectionLabPointID)
 {
 	LabPointStruct SourcePoint, ResultPoint;
 
@@ -179,7 +180,7 @@ static void LabGeneration_InternalCopyConnectionsAccordingToEdge(LabPointsMap Te
 	LabPointsMap_ChangePoint(ResultLabPointsMapHandle, ResultPoint);
 }
 
-static void LabGeneration_BuildMSTMaze(LabPointsMap TempPointsMap, LabPointsMap MSTPointsMapHandle)
+static void INTERNAL_BuildMSTMaze(LabPointsMap TempPointsMap, LabPointsMap MSTPointsMapHandle)
 {
 	LabPointStruct 	CurrentLabPointHandle, TempLabPointHandle, LabPoint; 
 	DisjointSet 	DisjointSetHadle;
@@ -231,7 +232,7 @@ static void LabGeneration_BuildMSTMaze(LabPointsMap TempPointsMap, LabPointsMap 
 
 	// sort edges randomly
 	srand(time(NULL));
-	qsort(SortedEdges, SortedEdgesSize, sizeof(Edge), LabGeneration_InternalSortEdgesRandomly);
+	qsort(SortedEdges, SortedEdgesSize, sizeof(Edge), INTERNAL_SortEdgesRandomly);
 
 	CORE_DebugPrint("SortedEdgesSize: %ld\n", SortedEdgesSize);
 
@@ -279,8 +280,8 @@ static void LabGeneration_BuildMSTMaze(LabPointsMap TempPointsMap, LabPointsMap 
 		if ((MSTEdges[i].From == 0) || (MSTEdges[i].To == 0))
 			continue;
 
-		LabGeneration_InternalCopyConnectionsAccordingToEdge(TempPointsMap, MSTPointsMapHandle, MSTEdges[i].From, MSTEdges[i].To);
-		LabGeneration_InternalCopyConnectionsAccordingToEdge(TempPointsMap, MSTPointsMapHandle, MSTEdges[i].To, MSTEdges[i].From);
+		INTERNAL_CopyConnectionsAccordingToEdge(TempPointsMap, MSTPointsMapHandle, MSTEdges[i].From, MSTEdges[i].To);
+		INTERNAL_CopyConnectionsAccordingToEdge(TempPointsMap, MSTPointsMapHandle, MSTEdges[i].To, MSTEdges[i].From);
 	}
 
 	CORE_MemFree(SortedEdges);
@@ -289,15 +290,18 @@ static void LabGeneration_BuildMSTMaze(LabPointsMap TempPointsMap, LabPointsMap 
 
 /*****************************************************************************************************************************/
 
-void LabGeneration_Execute(LabPointsMap GeneratedLabPointsMap)
+void LabGeneration_Execute(LabPointsMap GeneratedLabPointsMap, uint32 **OUT_SpawnPoints, uint32 *OUT_SpawnPointsSize)
 {
 	LabPointsMap 		TempPointsMap;
 
 
 	LabPointsMap_Create(&TempPointsMap);
 
-	LabGeneration_InternalFillRectangleLab(TempPointsMap);
-	LabGeneration_BuildMSTMaze(TempPointsMap, GeneratedLabPointsMap);
+	*OUT_SpawnPointsSize = SPAWN_POINTS_COUNT;
+	*OUT_SpawnPoints = CORE_MemAlloc(sizeof(uint32) * *OUT_SpawnPointsSize);
+	INTERNAL_FillRectangleLab(TempPointsMap, *OUT_SpawnPoints);
+
+	INTERNAL_BuildMSTMaze(TempPointsMap, GeneratedLabPointsMap);
 
 	LabPointsMap_Free(&TempPointsMap);
 }

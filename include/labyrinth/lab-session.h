@@ -16,7 +16,10 @@ CORE_OBJECT_DEFINE(LabSession);
 
 /*****************************************************************************************************************************/
 
-void LabSession_AddPlayer(LabSession, char *PlayerName, uint32 *OUT_AddedPlayerId);
+void LabSession_AddPlayer(LabSession, char *PlayerName, uint32 *OUT_AddedPlayerIndex);
+CORE_Bool LabSession_FindPlayer(LabSession, uint32 PlayerIndex, Player *OUT_Player);
+
+void LabSession_GetLabPointsReader(LabSession, LabPointsMapReader *OUT_LabPointsReader);
 
 void LabSession_Setup(LabSession, uint32 PlayersCount);
 

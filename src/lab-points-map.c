@@ -10,7 +10,7 @@
 /*****************************************************************************************************************************/
 
 CORE_OBJECT_INTERFACE(LabPointsMap,
-	LabPointStruct 	*LabPointsArray;
+	LabPointStruct 	*PointsHashMap;
 	uint32 			Size;
 	uint32 			Capacity;
 );
@@ -45,7 +45,7 @@ void LabPointsMap_ToJSON(LabPointsMap Instance, char **JSON)
 	for (uint32 i = 0; i < Instance->Size; i++)
 	{
 		
-		CurrentLabPoint = Instance->LabPointsArray[i]; 
+		CurrentLabPoint = Instance->PointsHashMap[i]; 
 		LabPointRawJSONObject_CharCount = sprintf(LabPointRawJSONObject, "\"%ld\": ", CurrentLabPoint.Id);
 		strncat(*JSON, LabPointRawJSONObject, LabPointRawJSONObject_CharCount);
 		DEC_JSON_LEFT(LabPointRawJSONObject_CharCount);
@@ -76,26 +76,32 @@ void LabPointsMap_AddPoint(LabPointsMap Instance, LabPointStruct Point)
 	if (Instance->Size == Instance->Capacity)		// if TRUE, double capacity. 
 	{
 		Instance->Capacity += Instance->Capacity;
-		Instance->LabPointsArray = CORE_MemRealloc(Instance->LabPointsArray, sizeof(LabPointStruct) * Instance->Capacity);
-		if (Instance->LabPointsArray == NULL)
+		Instance->PointsHashMap = CORE_MemRealloc(Instance->PointsHashMap, sizeof(LabPointStruct) * Instance->Capacity);
+		if (Instance->PointsHashMap == NULL)
 		{
-			CORE_DebugError("Instance->LabPointsArray == NULL\n");
+			CORE_DebugError("Instance->PointsHashMap == NULL\n");
 			return;
 		}
 	}
 
-	Instance->LabPointsArray[Point.Id - 1] = Point;
+	Instance->PointsHashMap[Point.Id - 1] = Point;
 	Instance->Size++;
 }
 
 void LabPointsMap_ChangePoint(LabPointsMap Instance, LabPointStruct Point)
 {
-	Instance->LabPointsArray[Point.Id - 1] = Point;
+	Instance->PointsHashMap[Point.Id - 1] = Point;
 }
 
 void LabPointsMap_GetPointByID(LabPointsMap Instance, uint32 ID, LabPointStruct *Point)
 {
-	(*Point) = Instance->LabPointsArray[ID - 1];
+	if (ID == 0)
+	{
+		CORE_DebugError("ID cannot be 0\n");
+		return;
+	}
+
+	*Point = Instance->PointsHashMap[ID - 1];
 }
 
 void LabPointsMap_GetSize(LabPointsMap Instance, uint32 *Size)
@@ -116,12 +122,12 @@ void LabPointsMap_Create(LabPointsMap *InstancePtr)
 
 	(*InstancePtr)->Capacity = LABPOINTSMAP_DEFAULTCAPACITY;
 	(*InstancePtr)->Size = 0;
-	(*InstancePtr)->LabPointsArray = CORE_MemAlloc(sizeof(LabPointStruct) * ((*InstancePtr)->Capacity));
+	(*InstancePtr)->PointsHashMap = CORE_MemAlloc(sizeof(LabPointStruct) * ((*InstancePtr)->Capacity));
 }
 
 void LabPointsMap_Free(LabPointsMap *InstancePtr)
 {
-	CORE_MemFree((*InstancePtr)->LabPointsArray);
+	CORE_MemFree((*InstancePtr)->PointsHashMap);
 	CORE_OBJECT_FREE(InstancePtr);
 }
 

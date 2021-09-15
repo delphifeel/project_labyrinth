@@ -75,6 +75,7 @@ void Test_PlayerMove()
 
 int main()
 {
+    //TODO: FIX TEST
     Test_PlayerInit(); 
     Test_PlayerSetGetName();
     Test_PlayerSetGetId(); 

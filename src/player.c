@@ -52,6 +52,9 @@ CORE_Bool Player_Move(Player Instance, MoveDirection *Directions, uint32 Directi
                 ResultPointId = ResultLabPoint.LeftConnectionId;
                 break; 
         }
+
+        if (ResultPointId == 0)
+            return FALSE;
     }
 
     Instance->PositionPointId = ResultPointId;
@@ -82,6 +85,11 @@ void Player_GetName(Player Instance, char *Name, uint32 NameSize)
 void Player_GetPositionInsideLabPoint(Player Instance, PositionStruct *Position)
 {
     *Position = Instance->PositionInsideLabPoint;
+}
+
+void Player_GetPositionPointId(Player Instance, uint32 *OUT_PositionPointId)
+{
+    *OUT_PositionPointId = Instance->PositionPointId;
 }
 
 /*****************************************************************************************************************************/

@@ -4,7 +4,7 @@
 
 
 CORE_OBJECT_INTERFACE(LabSession,
-	uint8  			SessionUID[UID_SIZE];
+	uint8  				SessionUID[UID_SIZE];
 
 	/* hash map structure containing graph of LabPoint's */
 	LabPointsMap 		LabyrinthMap;
@@ -15,10 +15,26 @@ CORE_OBJECT_INTERFACE(LabSession,
 	uint32  			PlayersMapSize;
 	uint32 				PlayersMapCapacity;
 
+	uint32  			*SpawnPoints;
+	uint32  			SpawnPointsSize;
+	uint32  			SpawnPointsAssocWithPlayerCount;
+
 	/* etc */
 );
 
 /*****************************************************************************************************************************/
+
+CORE_Bool LabSession_FindPlayer(LabSession Instance, uint32 PlayerIndex, Player *OUT_Player)
+{
+	if (PlayerIndex + 1 > Instance->PlayersMapSize)
+	{
+		CORE_DebugError("Player index out of bounds\n");
+		return FALSE;
+	}
+
+	*OUT_Player = Instance->PlayersMap[PlayerIndex];
+	return TRUE;
+}
 
 void LabSession_AddPlayer(LabSession Instance, char *PlayerName, uint32 *OUT_AddedPlayerId)
 {
@@ -32,7 +48,15 @@ void LabSession_AddPlayer(LabSession Instance, char *PlayerName, uint32 *OUT_Add
 		return;
 	}
 
-	*OUT_AddedPlayerId = Instance->PlayersMapSize + 1;
+	*OUT_AddedPlayerId = Instance->PlayersMapSize;
+
+	if (Instance->SpawnPointsAssocWithPlayerCount == Instance->SpawnPointsSize)
+	{
+		CORE_DebugError("No more spawn points available\n");
+		return;
+	}
+
+	PlayerSpawnPointId = Instance->SpawnPoints[Instance->SpawnPointsAssocWithPlayerCount++];
 
 	Player_Create(&NewPlayer);
 	Player_Setup(NewPlayer, Instance->LabyrinthMapReader, PlayerSpawnPointId);
@@ -41,6 +65,11 @@ void LabSession_AddPlayer(LabSession Instance, char *PlayerName, uint32 *OUT_Add
 
 	Instance->PlayersMap[Instance->PlayersMapSize] = NewPlayer;
 	Instance->PlayersMapSize++;
+}
+
+void LabSession_GetLabPointsReader(LabSession Instance, LabPointsMapReader *OUT_LabPointsReader)
+{
+	*OUT_LabPointsReader = Instance->LabyrinthMapReader;
 }
 
 /*****************************************************************************************************************************/
@@ -60,7 +89,9 @@ void LabSession_Setup(LabSession Instance, uint32 PlayersCount)
 	LabPointsMap_Create(&Instance->LabyrinthMap);
 	LabPointsMapReader_Create(&Instance->LabyrinthMapReader);
 	LabPointsMapReader_Setup(Instance->LabyrinthMapReader, Instance->LabyrinthMap);
-	LabGeneration_Execute(Instance->LabyrinthMap);
+
+	Instance->SpawnPointsAssocWithPlayerCount = 0;
+	LabGeneration_Execute(Instance->LabyrinthMap, &Instance->SpawnPoints, &Instance->SpawnPointsSize);
 }
 
 /*****************************************************************************************************************************/
@@ -72,6 +103,8 @@ void LabSession_Create(LabSession* InstancePtr)
 
 void LabSession_Free(LabSession* InstancePtr)
 {
+	CORE_MemFree((*InstancePtr)->SpawnPoints);
+
 	LabPointsMapReader_Free(&(*InstancePtr)->LabyrinthMapReader);
 	LabPointsMap_Free(&(*InstancePtr)->LabyrinthMap);
 
