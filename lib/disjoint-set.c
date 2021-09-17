@@ -13,10 +13,14 @@ static void DisjointSet_InternalFindSubset(DisjointSet instance, int32 value, in
 	int32 parent;
 
 
-	if ((parent = instance->map_child_to_parent[value]) != -1)
+	if ((parent = instance->map_child_to_parent[value]) != -1) 
+	{
 		DisjointSet_InternalFindSubset(instance, parent, subset);
-	else
+	} 
+	else 
+	{
 		*subset = value;
+	}
 }
 
 /*****************************************************************************************************************************/
@@ -33,23 +37,25 @@ void DisjointSet_Print(DisjointSet instance)
 	CORE_DebugPrint("Subsets Count: %ld\n", instance->subsets_count);
 
 	for (uint32 i = 0; i < instance->map_child_to_parent_size; i++)
+	{
+		if (processed_values[i] == 1) 
 		{
-		if (processed_values[i] == 1)
 			continue;
+		}
 
 		current_parent = i;
 		processed_values[current_parent] = 1;
 
 		CORE_DebugPrint("{");
 		while (instance->map_child_to_parent[current_parent] != -1)
-			{
+		{
 			CORE_DebugPrint("%ld, ", current_parent);
 			current_parent = instance->map_child_to_parent[current_parent];
 			processed_values[current_parent] = 1;
-			}
+		}
 
 		CORE_DebugPrint("%ld} [%ld] \n", current_parent, current_parent);
-		}
+	}
 }
 
 CORE_Bool DisjointSet_Union(DisjointSet instance, int32 value1, int32 value2)
@@ -60,8 +66,10 @@ CORE_Bool DisjointSet_Union(DisjointSet instance, int32 value1, int32 value2)
 	DisjointSet_InternalFindSubset(instance, value1, &value1_subset);
 	DisjointSet_InternalFindSubset(instance, value2, &value2_subset);
 
-	if (value1_subset == value2_subset)
+	if (value1_subset == value2_subset) 
+	{
 		return FALSE;
+	}
 
 	instance->map_child_to_parent[value1_subset] = value2_subset;
 	instance->subsets_count--;

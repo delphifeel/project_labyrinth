@@ -1,4 +1,4 @@
-#ifdef __GAME_SERVER_H__
+#ifndef __GAME_SERVER_H__
 #define __GAME_SERVER_H__
 
 #include "CORE.h"

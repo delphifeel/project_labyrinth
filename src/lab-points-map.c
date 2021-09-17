@@ -93,7 +93,7 @@ void LabPointsMap_ChangePoint(LabPointsMap instance, LabPointStruct point)
 	instance->points_hash_map[point.Id - 1] = point;
 }
 
-void LabPointsMap_GetPointByID(LabPointsMap instance, uint32 id, LabPointStruct *point)
+void LabPointsMap_GetPointByID(LabPointsMap instance, uint32 id, LabPointStruct *out_point)
 {
 	if (id == 0)
 	{
@@ -101,7 +101,7 @@ void LabPointsMap_GetPointByID(LabPointsMap instance, uint32 id, LabPointStruct 
 		return;
 	}
 
-	*point = instance->points_hash_map[id - 1];
+	*out_point = instance->points_hash_map[id - 1];
 }
 
 void LabPointsMap_GetSize(LabPointsMap instance, uint32 *size)

@@ -15,6 +15,6 @@
 #define CORE_DebugAbort(...) 						(	CORE_DebugPrint("ABORT (%s, %s, line %d)\t", __FILE__, __func__, __LINE__), CORE_DebugPrint(__VA_ARGS__), abort()	)
 
 #define CORE_DebugAssertPointer(PTR) 				((PTR) != NULL ? TRUE : CORE_DebugAbort("Pointer is NULL"))
-#define CORE_DebugCast(TO_TYPE, VALUE) 				( (TO_TYPE) VALUE )
+#define CORE_DebugCast(TO_TYPE, VALUE) 				( (TO_TYPE) (VALUE) )
 
 #endif

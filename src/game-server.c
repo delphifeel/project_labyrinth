@@ -38,18 +38,19 @@ static void GameServer_FreeSessions(GameServer instance)
 	}
 }
 
-void GameServer_Process(GameServer instance)
-{
-	CORE_Bool command_process_result;
+// TODO(delphifeel): Add processing
+// void GameServer_Process(GameServer instance)
+// {
+// 	CORE_Bool command_process_result;
 
 
-	command_process_result = CommandsListener_Process(instance->commands_listener);
-	if (command_process_result == FALSE)
-	{
-		CORE_DebugError("Command processing failed\n");
-		return;
-	}
-}
+// 	command_process_result = CommandsListener_Process(instance->commands_listener);
+// 	if (command_process_result == FALSE)
+// 	{
+// 		CORE_DebugError("Command processing failed\n");
+// 		return;
+// 	}
+// }
 
 void GameServer_Setup(GameServer instance)
 {
