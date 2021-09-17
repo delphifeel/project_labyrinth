@@ -23,11 +23,13 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 	int32 connection_id, id, p;
 
 
-	if (MATRIX_SIZE < 7)
+	if (MATRIX_SIZE < 7) {
 		CORE_DebugError("MATRIX_SIZE need to be >= 7\n");
+	}
 
-	if (MATRIX_SIZE % 2 == 0)
+	if (MATRIX_SIZE % 2 == 0) {
 		CORE_DebugError("MATRIX_SIZE need to be odd\n");
+	}
 
 
 	// create all points
@@ -92,8 +94,9 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 	added_points = 0;
 	for (uint32 i = 0; i < possible_spawn_points_size; i++)
 	{
-		if (i % (possible_spawn_points_size / SPAWN_POINTS_COUNT) != 0)
+		if (i % (possible_spawn_points_size / SPAWN_POINTS_COUNT) != 0) {
 			continue;
+		}
 
 		LabPointsMap_GetPointByID(temp_points_map, possible_spawn_points[i], &lab_point);
 
@@ -102,8 +105,9 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 		spawn_points[added_points] = possible_spawn_points[i];
 		added_points++;
 
-		if (added_points == SPAWN_POINTS_COUNT)
+		if (added_points == SPAWN_POINTS_COUNT) {
 			break;
+		}
 	}
 
 
@@ -115,29 +119,33 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 
 		// top connection
 		connection_id = id - MATRIX_SIZE;
-		if (connection_id > 0)
+		if (connection_id > 0) {
 			lab_point.top_connection_id = connection_id;
+		}
 
 		// right connection
 		connection_id = id + 1;
-		if (connection_id % MATRIX_SIZE != 1)
+		if (connection_id % MATRIX_SIZE != 1) {
 			lab_point.right_connection_id = connection_id;
+		}
 
 		// bottom connection
 		connection_id = id + MATRIX_SIZE;
-		if (connection_id <= p)
+		if (connection_id <= p) {
 			lab_point.bottom_connection_id = connection_id;
+		}
 		
 		// left connection
 		connection_id = id - 1;
-		if (connection_id % MATRIX_SIZE != 0)
+		if (connection_id % MATRIX_SIZE != 0) {
 			lab_point.left_connection_id = connection_id; 
+		}
 
 		LabPointsMap_ChangePoint(temp_points_map, lab_point);
 	}
 }
 
-static int INTERNAL_SortEdgesRandomly(const void *left, const void *right)
+static int INTERNAL_SortEdgesRandomly(const void *unused1, const void *unused2)
 {
 	int32 random_number;
 
@@ -244,14 +252,15 @@ static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst
 	mst_edges_size = 0;
 	
 	for (uint32 i = 0; i < sorted_edges_size; i++)
-		{
-		if (DisjointSet_Union(disjoint_set_handle, sorted_edges[i].from, sorted_edges[i].to) == FALSE)
+	{
+		if (DisjointSet_Union(disjoint_set_handle, sorted_edges[i].from, sorted_edges[i].to) == FALSE) {
 			continue;
+		}
 
 		mst_edges[mst_edges_size].from = sorted_edges[i].from;
 		mst_edges[mst_edges_size].to = sorted_edges[i].to;
 		mst_edges_size++;
-		}
+	}
 
 	DisjointSet_GetSubsetsCount(disjoint_set_handle, &subsets_left);
 	DisjointSet_Free(&disjoint_set_handle);
@@ -278,8 +287,9 @@ static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst
 
 	for (uint32 i = 0; i < mst_edges_size; i++)
 	{
-		if ((mst_edges[i].from == 0) || (mst_edges[i].to == 0))
+		if ((mst_edges[i].from == 0) || (mst_edges[i].to == 0)) {
 			continue;
+		}
 
 		INTERNAL_CopyConnectionsAccordingToEdge(temp_points_map, mst_points_map_handle, mst_edges[i].from, mst_edges[i].to);
 		INTERNAL_CopyConnectionsAccordingToEdge(temp_points_map, mst_points_map_handle, mst_edges[i].to, mst_edges[i].from);

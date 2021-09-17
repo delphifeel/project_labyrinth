@@ -29,13 +29,13 @@ void Test_LabSessionAddPlayers()
 	assert(strcmp(temp_name, player1_name) == 0);
 
 	Player_GetId(player1, &temp_id);
-	assert(temp_id == player1_index);
+	assert(temp_id - 1 == player1_index);
 
 	Player_GetName(player2, temp_name, sizeof(temp_name));
 	assert(strcmp(temp_name, player2_name) == 0);
 
 	Player_GetId(player2, &temp_id);
-	assert(temp_id == player2_index);
+	assert(temp_id - 1 == player2_index);
 
 	LabSession_Free(&instance);
 }

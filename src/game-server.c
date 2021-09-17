@@ -53,7 +53,7 @@ void GameServer_Process(GameServer instance)
 
 void GameServer_Setup(GameServer instance)
 {
-	CommandsListener_Setup(instance->commands_listener, instance->sessions, SESSIONS_SIZE);
+	CommandsListener_Setup(instance->commands_listener, instance->sessions, SESSIONS_SIZE_CAPACITY);
 }
 
 /*****************************************************************************************************************************/

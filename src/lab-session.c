@@ -36,7 +36,7 @@ CORE_Bool LabSession_FindPlayer(LabSession instance, uint32 player_index, Player
 	return TRUE;
 }
 
-void LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_added_player_id)
+void LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_added_player_index)
 {
 	Player new_player;
 	uint32 player_spawn_point_id;
@@ -48,7 +48,7 @@ void LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_ad
 		return;
 	}
 
-	*out_added_player_id = instance->players_map_size;
+	*out_added_player_index = instance->players_map_size;
 
 	if (instance->spawn_points_assoc_with_player_count == instance->spawn_points_size)
 	{
@@ -60,7 +60,7 @@ void LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_ad
 
 	Player_Create(&new_player);
 	Player_Setup(new_player, instance->labyrinth_map_reader, player_spawn_point_id);
-	Player_SetId(new_player, *out_added_player_id);
+	Player_SetId(new_player, *out_added_player_index + 1);
 	Player_SetName(new_player, player_name);
 
 	instance->players_map[instance->players_map_size] = new_player;

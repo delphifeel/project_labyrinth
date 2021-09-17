@@ -1,4 +1,4 @@
-gcc -Wall -pedantic -g \
+clang -Wall -pedantic -g \
 	../lib/disjoint-set.c 	\
 	../lib/CORE/CORE-system.c 	\
 	../src/lab-session.c 	\

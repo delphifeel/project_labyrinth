@@ -1,4 +1,4 @@
-gcc -Wall -pedantic -g \
+clang -Wall -pedantic -g \
 	../lib/disjoint-set.c 	\
 	test-disjoint-set.c 	\
 && ./a.out
