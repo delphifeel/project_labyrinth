@@ -1,8 +1,8 @@
 #ifndef __LAB_SESSION_H__
 #define __LAB_SESSION_H__
 
-#include "../CORE.h"
-#include "../player.h"
+#include "CORE.h"
+#include "player.h"
 #include "lab-points-map.h"
 
 /*****************************************************************************************************************************/

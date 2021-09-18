@@ -1,4 +1,4 @@
-#include "../include/disjoint-set.h"
+#include "CORE/disjoint-set.h"
 
 CORE_OBJECT_INTERFACE(DisjointSet,
 	int32 			*map_child_to_parent;

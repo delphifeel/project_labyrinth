@@ -1,4 +1,4 @@
-#include "../include/labyrinth/lab-points-map-reader.h"
+#include "game-server/lab-points-map-reader.h"
 
 /*****************************************************************************************************************************/
 

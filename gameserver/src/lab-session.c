@@ -1,6 +1,6 @@
-#include "../include/CORE.h"
-#include "../include/labyrinth/lab-generation.h"
-#include "../include/labyrinth/lab-session.h"
+#include "CORE.h"
+#include "game-server/lab-generation.h"
+#include "game-server/lab-session.h"
 
 
 CORE_OBJECT_INTERFACE(LabSession,

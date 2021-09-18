@@ -1,4 +1,4 @@
-#include "../include/labyrinth/lab-generation.h"
+#include "game-server/lab-generation.h"
 
 static void INTERNAL_ValidateGeneratedMap(LabPointsMap generated_map)
 {

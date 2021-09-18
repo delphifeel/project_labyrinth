@@ -1,1 +1,0 @@
-add_library(lib disjoint-set.c)

@@ -1,7 +1,7 @@
-#include "../include/game-server.h"
-#include "../include/labyrinth/lab-session.h"
-#include "../include/commands-listener.h"
-#include "../include/in-out-system.h"
+#include "game-server/game-server.h"
+#include "game-server/lab-session.h"
+#include "game-server/commands-listener.h"
+#include "game-server/in-out-system.h"
 
 /*****************************************************************************************************************************/
 

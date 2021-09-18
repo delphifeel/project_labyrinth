@@ -1,7 +1,7 @@
 #include <string.h>
 
-#include "../include/CORE.h"
-#include "../include/labyrinth/lab-points-map.h"
+#include "CORE.h"
+#include "game-server/lab-points-map.h"
 
 /*****************************************************************************************************************************/
 

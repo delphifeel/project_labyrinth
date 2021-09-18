@@ -1,5 +1,5 @@
-#include "../../include/CORE/CORE-system.h"
-#include "../../include/CORE/CORE-file.h"
+#include "CORE/CORE-system.h"
+#include "CORE/CORE-file.h"
 
 /*****************************************************************************************************************************/
 

@@ -1,6 +1,6 @@
-#include "../include/CORE.h"
-#include "../include/labyrinth/lab-points-map.h"
-#include "../include/labyrinth/lab-session.h"
+#include "CORE.h"
+#include "game-server/lab-points-map.h"
+#include "game-server/lab-session.h"
 
 void Test_LabSessionAddPlayers()
 {

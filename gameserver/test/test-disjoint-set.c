@@ -1,4 +1,4 @@
-#include "../include/disjoint-set.h"
+#include "CORE/disjoint-set.h"
 
 int main()
 {

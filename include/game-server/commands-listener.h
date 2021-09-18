@@ -3,7 +3,7 @@
 
 #include "CORE.h"
 #include "command.h"
-#include "labyrinth/lab-session.h"
+#include "lab-session.h"
 
 /*****************************************************************************************************************************/
 

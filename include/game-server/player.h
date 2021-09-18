@@ -3,7 +3,7 @@
 
 #include "CORE.h"
 #include "common.h"
-#include "labyrinth/lab-points-map-reader.h"
+#include "lab-points-map-reader.h"
 
 /*****************************************************************************************************************************/
 

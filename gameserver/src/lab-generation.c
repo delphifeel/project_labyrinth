@@ -1,10 +1,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "../include/labyrinth/lab-generation.h"
-#include "../include/CORE.h"
-#include "../include/labyrinth.h"
-#include "../include/disjoint-set.h"
+#include "game-server/lab-generation.h"
+#include "CORE.h"
+#include "CORE/disjoint-set.h"
 
 /*****************************************************************************************************************************/
 

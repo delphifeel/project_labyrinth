@@ -1,7 +1,7 @@
 #ifndef __LAB_POINTS_MAP_READER_H__
 #define __LAB_POINTS_MAP_READER_H__
 
-#include "../CORE.h"
+#include "CORE.h"
 #include "lab-points-map.h"
 
 /*****************************************************************************************************************************/
