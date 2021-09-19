@@ -1,8 +1,8 @@
 #include "CORE.h"
-#include "game-server/lab-points-map.h"
-#include "game-server/lab-session.h"
+#include "gameserver/lab-points-map.h"
+#include "gameserver/lab-session.h"
 
-void Test_LabSessionAddPlayers()
+static void Test_LabSessionAddPlayers()
 {
 	LabSession instance;
 	char *player1_name = "player1";	
@@ -59,7 +59,7 @@ void Test_LabSessionAddPlayers()
 // 	CORE_MemFree(json);
 // }
 
-int main()
+void Test_LabSession()
 {
 	Test_LabSessionAddPlayers();
 	// Test_LabSessionLabyrinthToJSON();

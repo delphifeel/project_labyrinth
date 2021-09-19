@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "game-server/lab-generation.h"
+#include "gameserver/lab-generation.h"
 #include "CORE.h"
 #include "CORE/disjoint-set.h"
 

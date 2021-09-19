@@ -1,5 +1,5 @@
 #include "CORE.h"
-#include "game-server/player.h"
+#include "gameserver/player.h"
 
 
 static const PositionStruct Mock_Position   = {.X = 42, .Y = 71};

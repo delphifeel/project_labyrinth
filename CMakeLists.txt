@@ -6,7 +6,8 @@ add_compile_options(-Wall -pedantic)
 
 add_subdirectory(gameserver)
 add_subdirectory(CORE)
-add_executable(ProjectLabyrinth gameserver/test/test-lab-session.c)
+add_subdirectory(test)
 
-target_include_directories(ProjectLabyrinth PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(ProjectLabyrinth PUBLIC gameserver CORE)
+add_executable(ProjectLabyrinthTest test/gameserver/all-tests.c)
+
+target_link_libraries(ProjectLabyrinthTest PUBLIC GameServer CORE GameServerTest)

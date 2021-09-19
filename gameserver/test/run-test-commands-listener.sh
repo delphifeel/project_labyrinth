@@ -1,1 +1,0 @@
-clang -Wall -pedantic -g -static -I../../include -lgameserver  test-commands-listener.c

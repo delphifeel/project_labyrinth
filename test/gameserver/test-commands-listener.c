@@ -1,4 +1,4 @@
-#include "game-server/commands-listener.h"
+#include "gameserver/commands-listener.h"
 
 #define SESSION_SIZE 	(2)
 
@@ -6,7 +6,7 @@ static CommandsListener 	instance;
 static LabSession 			sessions[SESSION_SIZE];
 static uint32  				player1_index, player2_index;
 
-void Init()
+static void Init()
 {
 	LabSession_Create(&sessions[0]);
 	LabSession_Setup(sessions[0], 1);
@@ -20,14 +20,14 @@ void Init()
 	CommandsListener_Setup(instance, sessions, SESSION_SIZE);
 }
 
-void Free()
+static void Free()
 {
 	LabSession_Free(&sessions[0]);
 	LabSession_Free(&sessions[1]);
 	CommandsListener_Free(&instance);	
 }
 
-void Test_CommandPlayerMove()
+static void Test_CommandPlayerMove()
 {
 	uint32 			player1_directions_size = 2;
 	MoveDirection 	player1_directions[] = {kMoveDirection_Top, kMoveDirection_Left};
@@ -71,7 +71,7 @@ void Test_CommandPlayerMove()
 	assert(player1_position_point_id == predicted_new_position_point_id);
 }
 
-int main()
+int Test_CommandsListener()
 {
 	Init();
 	Test_CommandPlayerMove();

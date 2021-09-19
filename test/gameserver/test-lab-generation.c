@@ -1,4 +1,4 @@
-#include "game-server/lab-generation.h"
+#include "gameserver/lab-generation.h"
 
 static void INTERNAL_ValidateGeneratedMap(LabPointsMap generated_map)
 {
@@ -29,7 +29,7 @@ static void INTERNAL_ValidateGeneratedMap(LabPointsMap generated_map)
 	}
 }
 
-void Test_GenerateLab()
+static void Test_GenerateLab()
 {
 	LabPointsMap 	generated_map;
 	uint32  		*spawn_points;
@@ -45,7 +45,7 @@ void Test_GenerateLab()
 	LabPointsMap_Free(&generated_map);
 }
 
-int main()
+void Test_LabGeneration()
 {
 	Test_GenerateLab();
 }

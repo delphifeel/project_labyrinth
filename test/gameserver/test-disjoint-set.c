@@ -1,6 +1,6 @@
 #include "CORE/disjoint-set.h"
 
-int main()
+void Test_DisjointSet()
 {
 	DisjointSet disjoint_set_handle;
 

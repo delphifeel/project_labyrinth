@@ -1,1 +1,0 @@
-clang -Wall -pedantic -g ../lib/CORE/CORE-system.c ../lib/disjoint-set.c ../src/lab-points-map.c ../src/lab-generation.c ../src/player.c ../src/lab-session.c test-player.c && ./a.out

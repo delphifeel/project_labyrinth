@@ -1,7 +1,7 @@
 #include <string.h> 
 
 #include "CORE.h"
-#include "game-server/player.h"
+#include "gameserver/player.h"
 
 /*****************************************************************************************************************************/
 

@@ -1,7 +1,7 @@
-#include "game-server/game-server.h"
-#include "game-server/lab-session.h"
-#include "game-server/commands-listener.h"
-#include "game-server/in-out-system.h"
+#include "gameserver/game-server.h"
+#include "gameserver/lab-session.h"
+#include "gameserver/commands-listener.h"
+#include "gameserver/in-out-system.h"
 
 /*****************************************************************************************************************************/
 

@@ -1,5 +1,5 @@
 #include "CORE.h"
-#include "game-server/game-server.h"
+#include "gameserver/game-server.h"
 
 static GameServer Server;
 

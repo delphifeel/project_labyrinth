@@ -1,4 +1,4 @@
-#include "game-server/lab-points-map-reader.h"
+#include "gameserver/lab-points-map-reader.h"
 
 /*****************************************************************************************************************************/
 
