@@ -10,7 +10,7 @@
 #ifndef __DISJOINT_SET_H__
 #define __DISJOINT_SET_H__
 
-#include "./CORE.h"
+#include "../CORE.h"
 
 CORE_OBJECT_DEFINE(DisjointSet);
 

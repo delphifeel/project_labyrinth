@@ -10,12 +10,12 @@ CORE_OBJECT_DEFINE(LabPointsMapReader);
 
 /*****************************************************************************************************************************/
 
-void LabPointsMapReader_GetPointByID(LabPointsMapReader, uint32 id, LabPointStruct *out_point);
+void LabPointsMapReader_GetPointByID(LabPointsMapReader instance, uint32 id, LabPointStruct *out_point);
 
-void LabPointsMapReader_Setup(LabPointsMapReader, LabPointsMap source);
+void LabPointsMapReader_Setup(LabPointsMapReader instance, LabPointsMap source);
 
-void LabPointsMapReader_Create(LabPointsMapReader*);
-void LabPointsMapReader_Free(LabPointsMapReader*);
+void LabPointsMapReader_Create(LabPointsMapReader* instance_ptr);
+void LabPointsMapReader_Free(LabPointsMapReader* instance_ptr);
 
 /*****************************************************************************************************************************/
 

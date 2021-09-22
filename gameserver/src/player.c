@@ -19,7 +19,7 @@ CORE_OBJECT_INTERFACE(Player,
 
 /*****************************************************************************************************************************/
 
-CORE_Bool Player_Move(Player instance, MoveDirection *directions, uint32 directions_size)
+CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 directions_size)
 {
     LabPointStruct      result_lab_point;
     uint32              result_point_id;
@@ -54,7 +54,9 @@ CORE_Bool Player_Move(Player instance, MoveDirection *directions, uint32 directi
         }
 
         if (result_point_id == 0)
+        {
             return FALSE;
+        }
     }
 
     instance->position_point_id = result_point_id;

@@ -71,7 +71,7 @@ static void Test_CommandPlayerMove()
 	assert(player1_position_point_id == predicted_new_position_point_id);
 }
 
-int Test_CommandsListener()
+void Test_CommandsListener()
 {
 	Init();
 	Test_CommandPlayerMove();

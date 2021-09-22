@@ -19,16 +19,16 @@ CORE_OBJECT_DEFINE(LabPointsMap);
 
 /*****************************************************************************************************************************/
 
-void LabPointsMap_ToJSON(LabPointsMap, char **json);
+void LabPointsMap_ToJSON(LabPointsMap instance, char **json);
 void LabPointsMap_ToRawData(LabPointsMap, uint8 **raw_data, uint32 *raw_data_size);
-void LabPointsMap_AddPoint(LabPointsMap, LabPointStruct point);
-void LabPointsMap_ChangePoint(LabPointsMap, LabPointStruct point);
-void LabPointsMap_GetPointByID(LabPointsMap, uint32 id, LabPointStruct *out_point);
-void LabPointsMap_GetSize(LabPointsMap, uint32 *size);
-void LabPointsMap_GetCapacity(LabPointsMap, uint32 *capacity);
+void LabPointsMap_AddPoint(LabPointsMap instance, LabPointStruct point);
+void LabPointsMap_ChangePoint(LabPointsMap instance, LabPointStruct point);
+void LabPointsMap_GetPointByID(LabPointsMap instance, uint32 id, LabPointStruct *out_point);
+void LabPointsMap_GetSize(LabPointsMap instance, uint32 *size);
+void LabPointsMap_GetCapacity(LabPointsMap instance, uint32 *capacity);
 
-void LabPointsMap_Create(LabPointsMap*);
-void LabPointsMap_Free(LabPointsMap*);
+void LabPointsMap_Create(LabPointsMap* instance_ptr);
+void LabPointsMap_Free(LabPointsMap* instance_ptr);
 
 /*****************************************************************************************************************************/
 

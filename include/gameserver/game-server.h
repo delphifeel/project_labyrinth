@@ -11,10 +11,10 @@ CORE_OBJECT_DEFINE(GameServer);
 
 void GameServer_Process(GameServer);
 
-void GameServer_Setup(GameServer);
+void GameServer_Setup(GameServer instance);
 
-void GameServer_Create(GameServer*);
-void GameServer_Free(GameServer*);
+void GameServer_Create(GameServer* instance_ptr);
+void GameServer_Free(GameServer* instance_ptr);
 
 /*****************************************************************************************************************************/
 

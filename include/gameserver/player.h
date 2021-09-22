@@ -17,19 +17,19 @@ CORE_OBJECT_DEFINE(Player);
 
 /*****************************************************************************************************************************/
 
-CORE_Bool Player_Move(Player, MoveDirection *directions, uint32 directions_size);
+CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 directions_size);
 
-void Player_SetId(Player,  uint32 id);
-void Player_GetId(Player, uint32 *id);
-void Player_SetName(Player, char *name);
-void Player_GetName(Player, char *name, uint32 name_size);
-void Player_GetPositionInsideLabPoint(Player, PositionStruct *position);
-void Player_GetPositionPointId(Player, uint32 *out_position_point_id);
+void Player_SetId(Player instance,  uint32 id);
+void Player_GetId(Player instance, uint32 *id);
+void Player_SetName(Player instance, char *name);
+void Player_GetName(Player instance, char *name, uint32 name_size);
+void Player_GetPositionInsideLabPoint(Player instance, PositionStruct *position);
+void Player_GetPositionPointId(Player instance, uint32 *out_position_point_id);
 
-void Player_Setup(Player, LabPointsMapReader points_reader, uint32 spawn_point_id);
+void Player_Setup(Player instance, LabPointsMapReader points_reader, uint32 spawn_point_id);
 
-void Player_Create(Player*);
-void Player_Free(Player*);
+void Player_Create(Player* instance_ptr);
+void Player_Free(Player* instance_ptr);
 
 /*****************************************************************************************************************************/
 

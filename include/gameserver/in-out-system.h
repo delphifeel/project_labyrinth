@@ -9,8 +9,8 @@ CORE_OBJECT_DEFINE(InOutSystem);
 
 /*****************************************************************************************************************************/
 
-void InOutSystem_Create(InOutSystem*);
-void InOutSystem_Free(InOutSystem*);
+void InOutSystem_Create(InOutSystem* instance_ptr);
+void InOutSystem_Free(InOutSystem* instance_ptr);
 
 /*****************************************************************************************************************************/
 
