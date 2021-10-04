@@ -1,5 +1,5 @@
-#ifndef __COMMON_H__
-#define __COMMON_H__
+#ifndef _COMMON_H_
+#define _COMMON_H_
 
 #include "CORE/CORE-types.h"
 

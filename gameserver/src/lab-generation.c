@@ -18,8 +18,10 @@ typedef struct Edge
 
 static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spawn_points)
 {
-	LabPointStruct lab_point;
-	int32 connection_id, id, p;
+	LabPointStruct 	lab_point;
+	int32 			connection_id;
+	int32 			id;
+	int32 			p;
 
 
 	if (MATRIX_SIZE < 7) {
@@ -58,7 +60,10 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 	// set spawn points (center square of matrix)
 	uint32 possible_spawn_points[p / 2];
 	uint32 possible_spawn_points_size = 0;
-	uint32 row_index, column_index, pos_index, added_points;
+	uint32 row_index;
+	uint32 column_index;
+	uint32 pos_index;
+	uint32 added_points;
 
 	pos_index = MATRIX_SIZE / 4;
 
@@ -152,9 +157,10 @@ static int INTERNAL_SortEdgesRandomly(const void *unused1, const void *unused2)
 	random_number = rand() % 3;
 	switch (random_number)
 	{
-		case 0: return -1;
-		case 1: return 0;
-		case 2: return 1;
+		case 0: 	return -1;
+		case 1: 	return 0;
+		case 2: 	return 1;
+		default: 	return 0;
 	}
 
 	return 0;
@@ -162,7 +168,8 @@ static int INTERNAL_SortEdgesRandomly(const void *unused1, const void *unused2)
 
 static void INTERNAL_CopyConnectionsAccordingToEdge(LabPointsMap temp_points_map, LabPointsMap result_lab_points_map_handle, uint32 lab_point_id, uint32 connection_lab_point_id)
 {
-	LabPointStruct source_point, result_point;
+	LabPointStruct source_point;
+	LabPointStruct result_point;
 	
 
 	LabPointsMap_GetPointByID(temp_points_map, lab_point_id, &source_point);
@@ -190,11 +197,17 @@ static void INTERNAL_CopyConnectionsAccordingToEdge(LabPointsMap temp_points_map
 
 static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst_points_map_handle)
 {
-	LabPointStruct 	current_lab_point_handle, temp_lab_point_handle, lab_point; 
+	LabPointStruct 	current_lab_point_handle;
+	LabPointStruct 	temp_lab_point_handle;
+	LabPointStruct 	lab_point; 
 	DisjointSet 	disjoint_set_handle;
-	uint32 			vertex_count, id;
-	Edge 			*sorted_edges, *mst_edges;
-	uint32 			sorted_edges_size, mst_edges_size, subsets_left;
+	uint32 			vertex_count;
+	uint32 			id;
+	Edge 			*sorted_edges;
+	Edge 			*mst_edges;
+	uint32 			sorted_edges_size;
+	uint32 			mst_edges_size;
+	uint32 			subsets_left;
 
 
 	sorted_edges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);

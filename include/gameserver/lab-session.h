@@ -1,5 +1,5 @@
-#ifndef __LAB_SESSION_H__
-#define __LAB_SESSION_H__
+#ifndef _LAB_SESSION_H_
+#define _LAB_SESSION_H_
 
 #include "CORE.h"
 #include "player.h"

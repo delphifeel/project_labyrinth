@@ -1,5 +1,5 @@
-#ifndef __CORE_SYSTEM_H__
-#define __CORE_SYSTEM_H__
+#ifndef _CORE_SYSTEM_H_
+#define _CORE_SYSTEM_H_
 
 #include "CORE-types.h"
 

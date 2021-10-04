@@ -39,10 +39,14 @@ static CORE_Bool CommandsListener_ProcessPlayerMove(CommandsListener instance, C
 							 instance->sessions_size, 
 							 command_to_process->session_index,
 							 &session) == FALSE)
+	{
 		return FALSE;
+	}
 
 	if (LabSession_FindPlayer(session, command_to_process->player_index, &player) == FALSE)
+	{
 		return FALSE;
+	}
 
 	return Player_Move(player, 
 					   command_to_process->player_move_payload.directions, 

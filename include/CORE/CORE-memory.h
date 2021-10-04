@@ -1,5 +1,5 @@
-#ifndef __CORE_MEMORY_H__
-#define __CORE_MEMORY_H__
+#ifndef _CORE_MEMORY_H_
+#define _CORE_MEMORY_H_
 
 #include <stdlib.h>
 #include <string.h>

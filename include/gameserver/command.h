@@ -1,5 +1,5 @@
-#ifndef __COMMAND_H_
-#define __COMMAND_H_
+#ifndef _COMMAND_H_
+#define _COMMAND_H_
 
 #include "CORE.h"
 #include "common.h"

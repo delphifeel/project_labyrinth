@@ -9,7 +9,7 @@ CORE_Bool CORE_CreateUID(uint8 *out_uid)
 	uint32  		read_size;
 
 
-	file = CORE_FileOpen("/dev/urandom", "r");
+	file = CORE_FileOpen("/dev/urandom", "re");
 	if (file == NULL) 
 	{
 		return FALSE;

@@ -1,5 +1,5 @@
-#ifndef __CORE_H__
-#define __CORE_H__
+#ifndef _CORE_H_
+#define _CORE_H_
 
 #include "CORE/CORE-types.h"
 #include "CORE/CORE-memory.h"

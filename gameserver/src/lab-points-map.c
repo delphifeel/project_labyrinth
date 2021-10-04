@@ -20,7 +20,7 @@ CORE_OBJECT_INTERFACE(LabPointsMap,
 void LabPointsMap_ToJSON(LabPointsMap instance, char **json)
 {
 	#define RAW_JSON_OBJECT_MAX_SIZE 	(120)
-	#define DEC_JSON_LEFT(SIZE_TO_DEC) (json_size_left = (SIZE_TO_DEC > json_size_left ? 0 : (json_size_left - SIZE_TO_DEC))) 
+	#define DEC_JSON_LEFT(SIZE_TO_DEC) (json_size_left = ((SIZE_TO_DEC) > json_size_left ? 0 : (json_size_left - (SIZE_TO_DEC)))) 
 
 	int32 				json_size_left;
 	uint32 				max_json;

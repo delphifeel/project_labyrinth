@@ -1,5 +1,5 @@
-#ifndef __CORE_TYPES_H__
-#define __CORE_TYPES_H__
+#ifndef _CORE_TYPES_H_
+#define _CORE_TYPES_H_
 
 #include <stddef.h>
 

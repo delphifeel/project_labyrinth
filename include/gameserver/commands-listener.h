@@ -1,5 +1,5 @@
-#ifndef __COMMANDS_LISTENER_H__
-#define __COMMANDS_LISTENER_H__
+#ifndef _COMMANDS_LISTENER_H_
+#define _COMMANDS_LISTENER_H_
 
 #include "CORE.h"
 #include "command.h"

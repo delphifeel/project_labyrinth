@@ -25,7 +25,7 @@ static void GameServer_InitSessions(GameServer instance)
 	for (uint32 i = 0; i < SESSIONS_SIZE_CAPACITY; i++)
 	{
 		LabSession_Create(&created_lab_session);
-		// TODO: LabSession_Setup ? 
+		// TODO(delphifeel): LabSession_Setup ? 
 		instance->sessions[i] = created_lab_session;
 	}
 }

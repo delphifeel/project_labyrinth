@@ -1,5 +1,5 @@
-#ifndef __IN_OUT_SYSTEM_H__
-#define __IN_OUT_SYSTEM_H__
+#ifndef _IN_OUT_SYSTEM_H_
+#define _IN_OUT_SYSTEM_H_
 
 #include "CORE.h"
 
