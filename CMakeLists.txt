@@ -10,10 +10,9 @@ add_subdirectory(test)
 
 
 # third-party libraries 
-add_subdirectory(libuv)
-include_directories(libuv/include, libuv/src)
+add_subdirectory(third-party-libraries/libuv)
+include_directories(third-party-libraries/libuv, third-party-libraries/libuv)
 
 
-add_executable(ProjectLabyrinthTest CORE/src/server.c)
-
-target_link_libraries(ProjectLabyrinthTest PUBLIC GameServer CORE GameServerTest uv)
+add_executable(ProjectLabyrinthTest test/CORE/all-tests.c)
+target_link_libraries(ProjectLabyrinthTest PUBLIC GameServer CORE GameServerTest CORETest uv)

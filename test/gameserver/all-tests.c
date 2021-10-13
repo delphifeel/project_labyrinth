@@ -1,7 +1,7 @@
-void Test_CommandsListener();
-void Test_DisjointSet();
-void Test_LabGeneration();
-void Test_LabSession();
+extern void Test_CommandsListener();
+extern void Test_DisjointSet();
+extern void Test_LabGeneration();
+extern void Test_LabSession();
 
 #include "CORE.h"
 

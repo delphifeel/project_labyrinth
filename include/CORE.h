@@ -8,4 +8,6 @@
 #include "CORE/CORE-object.h"
 #include "CORE/CORE-system.h"
 
+#include "CORE/CORE-tcp-server.h"
+
 #endif

@@ -7,3 +7,10 @@ add_library(GameServerTest
 
 target_include_directories(GameServerTest PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(GameServerTest PUBLIC GameServer CORE)
+
+add_library(CORETest 
+	CORE/test-core-tcp-server.c
+)
+
+target_include_directories(CORETest PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_link_libraries(CORETest PUBLIC CORE)
