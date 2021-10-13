@@ -6,11 +6,9 @@
 CORE_OBJECT_INTERFACE(LabSession,
 	uint8  				session_uid[UID_SIZE];
 
-	/* hash map structure containing graph of LabPoint's */
 	LabPointsMap 		labyrinth_map;
 	LabPointsMapReader 	labyrinth_map_reader;
 
-	/* players that currently in this session */
 	Player 				*players_map;
 	uint32  			players_map_size;
 	uint32 				players_map_capacity;
@@ -19,8 +17,33 @@ CORE_OBJECT_INTERFACE(LabSession,
 	uint32  			spawn_points_size;
 	uint32  			spawn_points_assoc_with_player_count;
 
+	CORE_Bool 			is_session_started;
+
 	/* etc */
 );
+
+/*****************************************************************************************************************************/
+
+CORE_Bool LabSession_HelperFindSession(LabSession sessions[], uint32 sessions_size, uint32 index, LabSession *out_session)
+{
+	CORE_AssertPointer(sessions);
+	CORE_AssertPointer(out_session);
+
+	if (index + 1 > sessions_size)
+	{
+		CORE_DebugError("Session index out of bounds\n");
+		return FALSE;
+	}
+
+	*out_session = sessions[index];
+	if (*out_session == NULL)
+	{
+		CORE_DebugError("Found session is NULL\n");
+		return FALSE;
+	}
+
+	return TRUE;
+}
 
 /*****************************************************************************************************************************/
 
@@ -36,16 +59,20 @@ CORE_Bool LabSession_FindPlayer(LabSession instance, uint32 player_index, Player
 	return TRUE;
 }
 
-void LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_added_player_index)
+CORE_Bool LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_added_player_index)
 {
+	CORE_AssertPointer(player_name);
+	CORE_AssertPointer(out_added_player_index);
+	CORE_Assert(instance->is_session_started == FALSE);
+
 	Player new_player;
 	uint32 player_spawn_point_id;
 
 
 	if (instance->players_map_size == instance->players_map_capacity)
 	{
-		CORE_DebugError("players_map_size == players_map_capacity\n");
-		return;
+		CORE_DebugError("No more free spots\n");
+		return FALSE;
 	}
 
 	*out_added_player_index = instance->players_map_size;
@@ -53,7 +80,7 @@ void LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_ad
 	if (instance->spawn_points_assoc_with_player_count == instance->spawn_points_size)
 	{
 		CORE_DebugError("No more spawn points available\n");
-		return;
+		return FALSE;
 	}
 
 	player_spawn_point_id = instance->spawn_points[instance->spawn_points_assoc_with_player_count++];
@@ -65,10 +92,20 @@ void LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_ad
 
 	instance->players_map[instance->players_map_size] = new_player;
 	instance->players_map_size++;
+	return TRUE;
+}
+
+void LabSession_Start(LabSession instance)
+{
+	CORE_Assert(instance->is_session_started == FALSE);
+
+	instance->is_session_started = TRUE;
 }
 
 void LabSession_GetLabPointsReader(LabSession instance, LabPointsMapReader *out_lab_points_reader)
 {
+	CORE_AssertPointer(out_lab_points_reader);
+
 	*out_lab_points_reader = instance->labyrinth_map_reader;
 }
 
@@ -82,12 +119,13 @@ void LabSession_Setup(LabSession instance, uint32 players_count)
 		return;
 	}
 
+	instance->is_session_started = FALSE;
+
 	instance->players_map = CORE_MemAlloc(sizeof(Player) * players_count);
 	instance->players_map_size = 0;
 	instance->players_map_capacity = players_count;
 
-	LabPointsMap_Create(&instance->labyrinth_map);
-	LabPointsMapReader_Create(&instance->labyrinth_map_reader);
+	
 	LabPointsMapReader_Setup(instance->labyrinth_map_reader, instance->labyrinth_map);
 
 	instance->spawn_points_assoc_with_player_count = 0;
@@ -96,12 +134,16 @@ void LabSession_Setup(LabSession instance, uint32 players_count)
 
 /*****************************************************************************************************************************/
 
-void LabSession_Create(LabSession* instance_ptr)
+void LabSession_Create(LabSession *instance_ptr)
 {
 	CORE_OBJECT_CREATE(instance_ptr, LabSession);
+	LabSession instance = *instance_ptr;
+
+	LabPointsMap_Create(&instance->labyrinth_map);
+	LabPointsMapReader_Create(&instance->labyrinth_map_reader);
 }
 
-void LabSession_Free(LabSession* instance_ptr)
+void LabSession_Free(LabSession *instance_ptr)
 {
 	CORE_MemFree((*instance_ptr)->spawn_points);
 

@@ -10,35 +10,21 @@ CORE_OBJECT_INTERFACE(CommandsListener,
 typedef struct CommandParserStruct
 {
 	CommandType command_type;
-	CORE_Bool (*func)(CommandsListener instance, CommandStruct *command_to_process);
+	CORE_Bool (*func)(CommandsListener instance, const CommandStruct *command_to_process);
 } CommandParserStruct;
 
 /*****************************************************************************************************************************/
 
-static CORE_Bool INTERNAL_FindSession(LabSession *sessions, uint32 sessions_size, uint32 index, LabSession *out_session)
-{
-	if (index + 1 > sessions_size)
-	{
-		CORE_DebugError("Session index out of bounds\n");
-		return FALSE;
-	}
-
-	*out_session = sessions[index];
-	return TRUE;
-}
-
-/*****************************************************************************************************************************/
-
-static CORE_Bool CommandsListener_ProcessPlayerMove(CommandsListener instance, CommandStruct *command_to_process)
+static CORE_Bool CommandsListener_ProcessPlayerMove(CommandsListener instance, const CommandStruct *command_to_process)
 {
 	LabSession 	session;
 	Player 		player;
 
 
-	if (INTERNAL_FindSession(instance->sessions, 
-							 instance->sessions_size, 
-							 command_to_process->session_index,
-							 &session) == FALSE)
+	if (LabSession_HelperFindSession(	instance->sessions, 
+							 			instance->sessions_size, 
+							 			command_to_process->session_index,
+							 			&session) == FALSE	)
 	{
 		return FALSE;
 	}
@@ -49,20 +35,22 @@ static CORE_Bool CommandsListener_ProcessPlayerMove(CommandsListener instance, C
 	}
 
 	return Player_Move(player, 
-					   command_to_process->player_move_payload.directions, 
-					   command_to_process->player_move_payload.directions_size);
+					   command_to_process->payload.player_move.directions, 
+					   command_to_process->payload.player_move.directions_size);
 }
+
+/*****************************************************************************************************************************/
 
 static CommandParserStruct command_to_function[] = 
 {
 	{kCommandType_PlayerMove, CommandsListener_ProcessPlayerMove},
 };
 
-static uint32 command_to_function_size = sizeof(command_to_function) / sizeof(CommandParserStruct);
+static const uint32 command_to_function_size = sizeof(command_to_function) / sizeof(CommandParserStruct);
 
 /*****************************************************************************************************************************/
 
-CORE_Bool CommandsListener_Process(CommandsListener instance, CommandStruct *command_to_process)
+CORE_Bool CommandsListener_Process(CommandsListener instance, const CommandStruct *command_to_process)
 {
 	CommandParserStruct command_parser;
 
@@ -83,7 +71,7 @@ CORE_Bool CommandsListener_Process(CommandsListener instance, CommandStruct *com
 	return command_parser.func(instance, command_to_process);
 }
 
-void CommandsListener_Setup(CommandsListener instance, LabSession *sessions, uint32 sessions_size)
+void CommandsListener_Setup(CommandsListener instance, LabSession sessions[], uint32 sessions_size)
 {
 	instance->sessions_size = sessions_size;
 	instance->sessions = sessions;

@@ -19,15 +19,22 @@ typedef struct CommandPayload_PlayerMove
 	MoveDirection 	*directions;
 } CommandPayload_PlayerMove;
 
+typedef union 
+{
+	CommandPayload_PlayerMove	player_move;
+} Payload;
+
 typedef struct CommandStruct 
 {
+	uint32 			verification_id;
 	CommandType 	type;
 	uint32			player_index;
 	uint32			session_index;
-	union
-	{
-		CommandPayload_PlayerMove	player_move_payload;
-	};
+	Payload 		payload;
 } CommandStruct;
+
+#define _VERIFICATION_ID  					(0xDEAD)
+
+#define Command_Verificate(COMMAND_PTR)		((COMMAND_PTR)->verification_id == _VERIFICATION_ID)
 
 #endif

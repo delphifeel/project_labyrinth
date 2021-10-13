@@ -8,23 +8,25 @@
 /*****************************************************************************************************************************/
 
 /*
-	LabSession - object containing specific game session.
-	On create it's create labyrinth and spawn players on spawn points.
-	When its freed, thats mean session ended 
-*/
+ *	LabSession - object containing specific game session.
+ *	On setup it's create labyrinth and spawn players on spawn points.
+ */
 CORE_OBJECT_DEFINE(LabSession);
 
 /*****************************************************************************************************************************/
 
-void LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_added_player_index);
-CORE_Bool LabSession_FindPlayer(LabSession instance, uint32 player_index, Player *out_player);
+CORE_Bool 	LabSession_HelperFindSession(LabSession sessions[], uint32 sessions_size, uint32 index, LabSession *out_session);
 
-void LabSession_GetLabPointsReader(LabSession instance, LabPointsMapReader *out_lab_points_reader);
+CORE_Bool 	LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_added_player_index);
+CORE_Bool 	LabSession_FindPlayer(LabSession instance, uint32 player_index, Player *out_player);
+void 		LabSession_Start(LabSession instance);
 
-void LabSession_Setup(LabSession instance, uint32 players_count);
+void 		LabSession_GetLabPointsReader(LabSession instance, LabPointsMapReader *out_lab_points_reader);
 
-void LabSession_Create(LabSession* instance_ptr);
-void LabSession_Free(LabSession* instance_ptr);
+void 		LabSession_Setup(LabSession instance, uint32 players_count);
+
+void 		LabSession_Create(LabSession* instance_ptr);
+void 		LabSession_Free(LabSession* instance_ptr);
 
 /*****************************************************************************************************************************/
 

@@ -9,12 +9,20 @@ CORE_OBJECT_DEFINE(GameServer);
 
 /*****************************************************************************************************************************/
 
-void GameServer_Process(GameServer);
+/*
+ * 			Init new session. After init 
+ *			need to add all players related to this session
+ *			and start session.
+ */
+CORE_Bool 	GameServer_InitNewSession(GameServer instance, uint32 *out_session_index);
+CORE_Bool	GameServer_AddPlayerToSession(GameServer instance, uint32 session_index, char *player_name, uint32 *out_player_index);
+CORE_Bool 	GameServer_StartSession(GameServer instance, uint32 session_index);
 
-void GameServer_Setup(GameServer instance);
+void 		GameServer_Process(GameServer instance);
+void 		GameServer_Setup(GameServer instance);
 
-void GameServer_Create(GameServer* instance_ptr);
-void GameServer_Free(GameServer* instance_ptr);
+void 		GameServer_Create(GameServer* instance_ptr);
+void 		GameServer_Free(GameServer* instance_ptr);
 
 /*****************************************************************************************************************************/
 

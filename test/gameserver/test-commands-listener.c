@@ -36,10 +36,12 @@ static void Test_CommandPlayerMove()
 		.type 				= kCommandType_PlayerMove,
 		.player_index 		= player1_index,
 		.session_index 		= session_index,
-		.player_move_payload = {
-			player1_directions_size,
-			player1_directions,
-		} 
+		.payload = {
+			.player_move = {
+				player1_directions_size,
+				player1_directions,
+			}
+		}
 	};
 	Player 					player1;
 	uint32  				player1_position_point_id, predicted_new_position_point_id;

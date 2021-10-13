@@ -12,7 +12,7 @@ struct TYPE_NAME##_STRUCT 											\
 	TYPE_STRUCT_INTERFACE											\
 }																	\
 
-#define CORE_OBJECT_CREATE(OBJECT_PTR, TYPE) 		( *(OBJECT_PTR) = CORE_MemAlloc(sizeof(struct TYPE##_STRUCT)) )
-#define CORE_OBJECT_FREE(OBJECT_PTR) 				( CORE_MemFree(*(OBJECT_PTR)), *(OBJECT_PTR) = NULL )
+#define CORE_OBJECT_CREATE(OBJECT_PTR, TYPE) 		( CORE_AssertPointer(OBJECT_PTR), *(OBJECT_PTR) = CORE_MemAlloc(sizeof(struct TYPE##_STRUCT)) )
+#define CORE_OBJECT_FREE(OBJECT_PTR) 				( CORE_AssertPointer(OBJECT_PTR), CORE_MemFree(*(OBJECT_PTR)), *(OBJECT_PTR) = NULL )
 
 #endif
