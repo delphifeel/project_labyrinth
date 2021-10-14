@@ -4,4 +4,8 @@ add_library(CORE
 	src/CORE-tcp-server.c
 )
 
-target_include_directories(CORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_include_directories(CORE PUBLIC 
+	"${PROJECT_SOURCE_DIR}/include"
+	"${PROJECT_SOURCE_DIR}/third-party-libraries/libuv/include"
+	"${PROJECT_SOURCE_DIR}/third-party-libraries/libuv/src"
+)

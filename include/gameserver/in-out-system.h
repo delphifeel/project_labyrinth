@@ -11,11 +11,11 @@
 
 CORE_OBJECT_DEFINE(InOutSystem);
 
-typedef void (*OnReadFunc)(void *context, uint8 data[], uint32 data_size);
+typedef void (*OnIOReadFunc)(void *context, uint8 data[], uint32 data_size);
 
 /*****************************************************************************************************************************/
 
-void InOutSystem_OnRead(InOutSystem instance, OnReadFunc OnReadCallback);
+void InOutSystem_OnRead(InOutSystem instance, OnIOReadFunc on_read);
 
 void InOutSystem_Write(InOutSystem instance, uint8 data[], uint32 data_size);
 

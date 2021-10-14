@@ -4,13 +4,20 @@ add_library(GameServerTest
 	gameserver/test-lab-generation.c
 	gameserver/test-lab-session.c
 )
-
-target_include_directories(GameServerTest PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(GameServerTest PUBLIC GameServer CORE)
+target_include_directories(GameServerTest PUBLIC 
+	"${PROJECT_SOURCE_DIR}/include"
+)
+target_link_libraries(GameServerTest PUBLIC 
+	GameServer 
+	CORE
+)
 
 add_library(CORETest 
 	CORE/test-core-tcp-server.c
 )
-
-target_include_directories(CORETest PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(CORETest PUBLIC CORE)
+target_include_directories(CORETest PUBLIC 
+	"${PROJECT_SOURCE_DIR}/include"
+)
+target_link_libraries(CORETest PUBLIC 
+	CORE
+)
