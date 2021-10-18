@@ -1,31 +1,27 @@
 #include "gameserver/game-server.h"
 #include "gameserver/lab-session.h"
 #include "gameserver/commands-listener.h"
-#include "gameserver/in-out-system.h"
-
-/*****************************************************************************************************************************/
-
-#define SESSIONS_SIZE_CAPACITY 	(10)
-#define SESSION_PLAYERS_COUNT	(40)
+#include "gameserver/commands-io-system.h"
+#include "gameserver/game-server-config.h"
 
 /*****************************************************************************************************************************/
 
 CORE_OBJECT_INTERFACE(GameServer,
-	LabSession 				sessions[SESSIONS_SIZE_CAPACITY];
+	LabSession 				sessions[SESSIONS_CAPACITY];
 	CommandsListener 		commands_listener;
-	InOutSystem 			in_out_system;
+	CommandsIOSystem 		commands_io_system;
 );
 
 /*****************************************************************************************************************************/
 
-static void INTERNAL_PrepareSessions(GameServer instance)
+static void _PrepareSessions(GameServer instance)
 {
 	CORE_MemZero(instance->sessions, sizeof(instance->sessions));
 }
 
-static void INTERNAL_FreeSessions(GameServer instance)
+static void _FreeSessions(GameServer instance)
 {
-	for (uint32 i = 0; i < SESSIONS_SIZE_CAPACITY; i++)
+	for (uint32 i = 0; i < SESSIONS_CAPACITY; i++)
 	{
 		if (instance->sessions[i] != NULL)
 		{
@@ -34,26 +30,14 @@ static void INTERNAL_FreeSessions(GameServer instance)
 	}
 }
 
-static void INTERNAL_OnIOSystemRead(void *context, uint8 data[], uint32 data_size)
+static void _OnCommandGet(CommandsIOSystem commands_io_system, void *context, const CommandStruct *command_from_client)
 {
-	CORE_Assert(data_size == sizeof(CommandStruct));
-
-	CommandStruct 	*command_ptr;
 	GameServer 		game_server;
 
 
 	game_server = (GameServer) context;
 
-	// convert data to CommandStruct
-	command_ptr = (CommandStruct *) data;
-
-	if (Command_Verificate(command_ptr) == FALSE)
-	{
-		CORE_DebugError("data is not a CommandStruct\n");
-		return;
-	}
-
-	if (CommandsListener_Process(game_server->commands_listener, command_ptr) == FALSE)
+	if (CommandsListener_Process(game_server->commands_listener, command_from_client) == FALSE)
 	{
 		CORE_DebugError("Command processing error\n");
 		return;
@@ -71,7 +55,7 @@ CORE_Bool GameServer_InitNewSession(GameServer instance, uint32 *out_session_ind
 
 	found_free_session = FALSE;
 
-	for (uint32 i = 0; i < SESSIONS_SIZE_CAPACITY; i++)
+	for (uint32 i = 0; i < SESSIONS_CAPACITY; i++)
 	{
 		if (instance->sessions[i] != NULL)
 		{
@@ -105,7 +89,7 @@ CORE_Bool GameServer_AddPlayerToSession(GameServer instance, uint32 session_inde
 	LabSession session;
 
 
-	if (LabSession_HelperFindSession(instance->sessions, SESSIONS_SIZE_CAPACITY, session_index, &session) == FALSE)
+	if (LabSession_HelperFindSession(instance->sessions, SESSIONS_CAPACITY, session_index, &session) == FALSE)
 	{
 		CORE_DebugError("Can't add player\n");
 		return FALSE;
@@ -119,7 +103,7 @@ CORE_Bool GameServer_StartSession(GameServer instance, uint32 session_index)
 	LabSession session;
 
 
-	if (LabSession_HelperFindSession(instance->sessions, SESSIONS_SIZE_CAPACITY, session_index, &session) == FALSE)
+	if (LabSession_HelperFindSession(instance->sessions, SESSIONS_CAPACITY, session_index, &session) == FALSE)
 	{
 		CORE_DebugError("Can't start session\n");
 		return FALSE;
@@ -131,15 +115,17 @@ CORE_Bool GameServer_StartSession(GameServer instance, uint32 session_index)
 
 void GameServer_Process(GameServer instance)
 {
-	// all processing in INTERNAL_OnIOSystemRead
+	// all processing in _OnIOSystemRead
 }
 
 void GameServer_Setup(GameServer instance)
 {
-	CommandsListener_Setup(instance->commands_listener, instance->sessions, SESSIONS_SIZE_CAPACITY);
+	CommandsListener_Setup(instance->commands_listener, instance->sessions, SESSIONS_CAPACITY);
 
-	InOutSystem_Setup(instance->in_out_system, instance);
-	InOutSystem_OnRead(instance->in_out_system, INTERNAL_OnIOSystemRead);
+	CommandsIOSystem_OnGet(instance->commands_io_system, _OnCommandGet);
+	CommandsIOSystem_SetContext(instance->commands_io_system, instance);
+	CommandsIOSystem_Setup(instance->commands_io_system);
+	CommandsIOSystem_Start(instance->commands_io_system);
 }
 
 /*****************************************************************************************************************************/
@@ -148,21 +134,21 @@ void GameServer_Create(GameServer *instance_ptr)
 {
 	CORE_OBJECT_CREATE(instance_ptr, GameServer);
 
-	CORE_DebugPrint("GameServer: Init sessions\n");
-	INTERNAL_PrepareSessions(*instance_ptr);
+	CORE_DebugInfo("Init sessions\n");
+	_PrepareSessions(*instance_ptr);
 
-	CORE_DebugPrint("GameServer: Init commands listener\n");
+	CORE_DebugInfo("Init commands listener\n");
 	CommandsListener_Create(&(*instance_ptr)->commands_listener);
 
-	CORE_DebugPrint("GameServer: Init in-out system\n");
-	InOutSystem_Create(&(*instance_ptr)->in_out_system);
+	CORE_DebugInfo("Init commands in-out system\n");
+	CommandsIOSystem_Create(&(*instance_ptr)->commands_io_system);
 }
 
 void GameServer_Free(GameServer *instance_ptr)
 {
-	INTERNAL_FreeSessions(*instance_ptr);
+	_FreeSessions(*instance_ptr);
 	CommandsListener_Free(&(*instance_ptr)->commands_listener);
-	InOutSystem_Free(&(*instance_ptr)->in_out_system);
+	CommandsIOSystem_Free(&(*instance_ptr)->commands_io_system);
 
 	CORE_OBJECT_FREE(instance_ptr);
 }

@@ -1,5 +1,5 @@
 INCLUDE_DIRS="../../include ../../third-party-libraries/libuv/include"
-CHECKS="*,-llvm-include-order,-llvm-header-guard"
+CHECKS="*,-llvm-include-order,-llvm-header-guard,-misc-unused-parameters"
 SRC_FILES="../../gameserver/src/* ../../CORE/src/*"
 
 clang-tidy-8 \

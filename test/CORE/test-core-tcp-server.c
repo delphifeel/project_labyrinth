@@ -1,34 +1,32 @@
 #include "CORE.h"
 
-void OnReadCb(	CORE_TCPServer instance, const uint8 data[], uint32 data_size, 
-				uint8 **out_response_data, uint32 *out_response_data_size)
+void OnReadCb(	CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection,
+				const uint8 data[], uint32 data_size)
 {
-	char *response_string;
+	char response_string[100];
 
 
 	CORE_DebugPrint("Read(%d bytes): %s\n", data_size, data);
 
-	response_string = CORE_MemAlloc(100);
 	response_string[0] = 0;
 	strcat(response_string, "Hello world\n");
 
-	*out_response_data = response_string;
-	*out_response_data_size = strlen(response_string);
+	CORE_TCPServer_Write(instance, client_connection, (const uint8 *) response_string, strlen(response_string));
 }
 
-void OnErrorCb(CORE_TCPServer instance, const char *error_message)
+void OnErrorCb(CORE_TCPServer instance, void *context, const char *error_message)
 {
 	CORE_DebugPrint("%s\n", error_message);
 }
 
-void OnNewConnectionCb(CORE_TCPServer instance)
+void OnNewConnectionCb(CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection)
 {
-	CORE_DebugPrint("New connection\n");
+	CORE_DebugPrint("New connection %lu\n", (uint32) client_connection);
 }
 
-void OnCloseConnectionCb(CORE_TCPServer instance)
+void OnCloseConnectionCb(CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection)
 {
-	CORE_DebugPrint("Close connection\n");
+	CORE_DebugPrint("Close connection %lu\n", (uint32) client_connection);
 }
 
 void Test_CORE_TCPServer()

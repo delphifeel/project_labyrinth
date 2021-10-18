@@ -6,6 +6,8 @@
 #define CORE_TCPSERVER_DEFAULT_BACKLOG 		(128)
 
 CORE_OBJECT_INTERFACE(CORE_TCPServer,
+    void                    *context;
+
 	/*
 	 * 		libuv specific data types
 	 */
@@ -34,6 +36,16 @@ CORE_OBJECT_INTERFACE(CORE_TCPServer,
 );
 
 /*****************************************************************************************************************************/
+
+static inline CORE_TCPServer_ClientConnection _UVClientToClientConnection(uv_stream_t *client)
+{
+    return (CORE_TCPServer_ClientConnection) client;
+}
+
+static inline uv_stream_t* _ClientConnectionToUVClient(CORE_TCPServer_ClientConnection client_connection)
+{
+    return (uv_stream_t *) client_connection;
+}
 
 static void _UVHandleSetContext(uv_handle_t *handle, CORE_TCPServer instance)
 {
@@ -74,32 +86,16 @@ static void _OnWriteBuffer(uv_write_t* request, int status)
 
 static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf) 
 {
-    CORE_TCPServer 	instance;
-    uint8  			*response_data;
-    uint32  		response_data_size;
+    CORE_TCPServer 	                    instance;
+    CORE_TCPServer_ClientConnection     client_connection;
 
 
+    client_connection = _UVClientToClientConnection(client);
     _UVHandleGetContext((uv_handle_t *) client, &instance);
 
     if (nread > 0) 
     {
-        response_data = NULL;
-        response_data_size = 0;
-        instance->on_read(instance, (const uint8 *) buf->base, nread, &response_data, &response_data_size);
-        if ((response_data != NULL) && (response_data_size > 0))
-        {
-        	instance->temp_write_buffer.base = (char *) response_data;
-        	instance->temp_write_buffer.len = response_data_size;
-
-            _UVHandleSetContext((uv_handle_t *) &instance->temp_write_request_handle, instance);
-        	if (uv_write(&instance->temp_write_request_handle, client, &instance->temp_write_buffer, 1, _OnWriteBuffer) != 0)
-        	{
-        		if (instance->on_error != NULL)
-        		{
-        			instance->on_error(instance, "Write error");
-        		}
-        	}
-        }
+        instance->on_read(instance, instance->context, client_connection, (const uint8 *) buf->base, nread);
     }
     else if (nread < 0) 
     {
@@ -107,13 +103,13 @@ static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *bu
         {
         	if (instance->on_error != NULL)
         	{
-        		instance->on_error(instance, "Read error");
+        		instance->on_error(instance, instance->context, "Read error");
         	}
         }
 
         if (instance->on_close_connection != NULL)
     	{
-    		instance->on_close_connection(instance);
+    		instance->on_close_connection(instance, instance->context, client_connection);
     	}
         uv_close((uv_handle_t *) client, _OnHandleClose);
     }
@@ -123,8 +119,9 @@ static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *bu
 
 static void _OnNewConnection(uv_stream_t *server, int status)
 {
-	CORE_TCPServer instance;
-	uv_tcp_t *client;
+	CORE_TCPServer                      instance;
+	uv_tcp_t                            *client;
+    CORE_TCPServer_ClientConnection     client_connection;
 
 
 	_UVHandleGetContext((uv_handle_t *) server, &instance);
@@ -133,7 +130,7 @@ static void _OnNewConnection(uv_stream_t *server, int status)
 	{
 		if (instance->on_error != NULL)
 		{
-			instance->on_error(instance, "New connection error");
+			instance->on_error(instance, instance->context, "New connection error");
 		}
         return;
     }
@@ -142,22 +139,48 @@ static void _OnNewConnection(uv_stream_t *server, int status)
 
     uv_tcp_init(instance->uv_loop, client);
     _UVHandleSetContext((uv_handle_t *) client, instance);
-    if (uv_accept(server, (uv_stream_t *) client) == 0) 
-    {
-    	if (instance->on_new_connection != NULL)
-    	{
-    		instance->on_new_connection(instance);
-    	}
+    client_connection = _UVClientToClientConnection((uv_stream_t *) client);
 
-        uv_read_start((uv_stream_t *) client, _AllocBuffer, _OnReadBuffer);
-    }
-    else 
+    if (uv_accept(server, (uv_stream_t *) client) != 0)
     {
-    	if (instance->on_close_connection != NULL)
-    	{
-    		instance->on_close_connection(instance);
-    	}
-        uv_close((uv_handle_t*) client, _OnHandleClose);
+        if (instance->on_close_connection != NULL)
+        {
+            instance->on_close_connection(instance, instance->context, client_connection);
+        }
+        uv_close((uv_handle_t *) client, _OnHandleClose);
+        return;
+    }
+
+    if (instance->on_new_connection != NULL)
+    {
+        instance->on_new_connection(instance, instance->context, client_connection);
+    }
+
+    uv_read_start((uv_stream_t *) client, _AllocBuffer, _OnReadBuffer);
+}
+
+void CORE_TCPServer_Write(CORE_TCPServer instance, CORE_TCPServer_ClientConnection client_connection,
+                          const uint8 data[], uint32 data_size)
+{
+    CORE_AssertPointer(data);
+
+    char *data_alloced;
+
+
+    data_alloced = CORE_MemAlloc(data_size);
+    memcpy(data_alloced, data, data_size);
+
+    instance->temp_write_buffer.base = data_alloced;
+    instance->temp_write_buffer.len = data_size;
+
+    _UVHandleSetContext((uv_handle_t *) &instance->temp_write_request_handle, instance);
+    if (uv_write(&instance->temp_write_request_handle, _ClientConnectionToUVClient(client_connection), 
+                 &instance->temp_write_buffer, 1, _OnWriteBuffer) != 0)
+    {
+        if (instance->on_error != NULL)
+        {
+            instance->on_error(instance, instance->context, "Write error");
+        }
     }
 }
 
@@ -193,6 +216,13 @@ void CORE_TCPServer_OnCloseConnection(CORE_TCPServer instance, OnCloseConnection
 
 /*****************************************************************************************************************************/
 
+void CORE_TCPServer_SetContext(CORE_TCPServer instance, void *context)
+{
+    instance->context = context;
+}
+
+/*****************************************************************************************************************************/
+
 void CORE_TCPServer_Setup(CORE_TCPServer instance, uint32 port)
 {
 	CORE_AssertPointer(instance->on_read);
@@ -218,7 +248,7 @@ void CORE_TCPServer_Start(CORE_TCPServer instance)
     {
     	if (instance->on_error != NULL)
     	{
-    		instance->on_error(instance, "Socket listen error");
+    		instance->on_error(instance, instance->context, "Socket listen error");
     	}
         return;
     }
@@ -235,7 +265,10 @@ void CORE_TCPServer_Create(CORE_TCPServer *instance_ptr)
 
 	(*instance_ptr)->on_read = NULL;
 	(*instance_ptr)->on_new_connection = NULL;
+    (*instance_ptr)->on_close_connection = NULL;
 	(*instance_ptr)->on_error = NULL;
+    (*instance_ptr)->context = NULL;
+
 	CORE_MemZero(&(*instance_ptr)->temp_write_buffer, sizeof(uv_buf_t));
 	CORE_MemZero(&(*instance_ptr)->temp_write_request_handle, sizeof(uv_write_t));
 }

@@ -22,7 +22,7 @@ typedef struct CommandPayload_PlayerMove
 typedef union 
 {
 	CommandPayload_PlayerMove	player_move;
-} Payload;
+} CommandPayload;
 
 typedef struct CommandStruct 
 {
@@ -30,7 +30,7 @@ typedef struct CommandStruct
 	CommandType 	type;
 	uint32			player_index;
 	uint32			session_index;
-	Payload 		payload;
+	CommandPayload 	payload;
 } CommandStruct;
 
 #define _VERIFICATION_ID  					(0xDEAD)
