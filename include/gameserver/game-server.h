@@ -15,7 +15,7 @@ CORE_OBJECT_DEFINE(GameServer);
  *			and start session.
  */
 CORE_Bool 	GameServer_InitNewSession(GameServer instance, uint32 *out_session_index);
-CORE_Bool	GameServer_AddPlayerToSession(GameServer instance, uint32 session_index, char *player_name, uint32 *out_player_index);
+CORE_Bool	GameServer_AddPlayerToSession(GameServer instance, uint32 session_index, uint32 player_id, uint32 *out_player_index);
 CORE_Bool 	GameServer_StartSession(GameServer instance, uint32 session_index);
 
 void 		GameServer_Process(GameServer instance);

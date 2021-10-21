@@ -1,0 +1,40 @@
+* All client-server commun. to AuthServer named Requests
+* All client-server commun. to GameServer named Commands
+
+ ___________________________________________________________ 
+|                                                           |
+|                           LOGIN                           |
+|___________________________________________________________|
+
+ User       >>>         LoginRequest     >>>      AuthServer
+
+ User       <<<             OK           <<<      AuthServer
+
+
+ ___________________________________________________________ 
+|                                                           |
+|                         JOIN LOBBY                        |
+|___________________________________________________________|
+
+ User       >>>      JoinLobbyRequest    >>>      AuthServer
+
+ User       <<<             Wait         <<<      AuthServer
+
+              (   when full group is ready    )
+
+ User       <<<              OK          <<<      AuthServer
+
+
+ ___________________________________________________________ 
+|                                                           |
+|                         START GAME                        |
+|___________________________________________________________|
+
+ AuthServer    >>>     AddPlayersCommand    >>>   GameServer
+ AuthServer    <<<            OK            <<<   GameServer
+
+    (   AuthServer waiting for GameServer `game start` response  )
+    
+(   GameServer add players, prepare lab, prepare sessions, start game   )
+
+ AuthServer    <<<        Game Started      <<<   GameServer                   

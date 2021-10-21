@@ -14,7 +14,6 @@ CORE_OBJECT_INTERFACE(Player,
     uint32                      position_point_id;
     PositionStruct              position_inside_lab_point;
     LabPointsMapReader          points_reader;
-    char                        name[40];
 );
 
 /*****************************************************************************************************************************/
@@ -72,16 +71,6 @@ void Player_SetId(Player instance, uint32 id)
 void Player_GetId(Player instance, uint32 *id)
 {
     *id = instance->id; 
-}
-
-void Player_SetName(Player instance, char *name)
-{
-    strncpy(instance->name, name, sizeof(instance->name)); 
-}
-
-void Player_GetName(Player instance, char *name, uint32 name_size)
-{
-    strncpy(name, instance->name, name_size); 
 }
 
 void Player_GetPositionInsideLabPoint(Player instance, PositionStruct *position)

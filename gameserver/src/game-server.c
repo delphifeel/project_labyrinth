@@ -81,9 +81,8 @@ CORE_Bool GameServer_InitNewSession(GameServer instance, uint32 *out_session_ind
 	return TRUE;
 }
 
-CORE_Bool GameServer_AddPlayerToSession(GameServer instance, uint32 session_index, char *player_name, uint32 *out_player_index)
+CORE_Bool GameServer_AddPlayerToSession(GameServer instance, uint32 session_index, uint32 player_id, uint32 *out_player_index)
 {
-	CORE_AssertPointer(player_name);
 	CORE_AssertPointer(out_player_index);
 
 	LabSession session;
@@ -95,7 +94,7 @@ CORE_Bool GameServer_AddPlayerToSession(GameServer instance, uint32 session_inde
 		return FALSE;
 	}
 
-	return LabSession_AddPlayer(session, player_name, out_player_index);
+	return LabSession_AddPlayer(session, player_id, out_player_index);
 }
 
 CORE_Bool GameServer_StartSession(GameServer instance, uint32 session_index)

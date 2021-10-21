@@ -59,9 +59,8 @@ CORE_Bool LabSession_FindPlayer(LabSession instance, uint32 player_index, Player
 	return TRUE;
 }
 
-CORE_Bool LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_added_player_index)
+CORE_Bool LabSession_AddPlayer(LabSession instance, uint32 player_id, uint32 *out_added_player_index)
 {
-	CORE_AssertPointer(player_name);
 	CORE_AssertPointer(out_added_player_index);
 	CORE_Assert(instance->is_session_started == FALSE);
 
@@ -87,8 +86,7 @@ CORE_Bool LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *o
 
 	Player_Create(&new_player);
 	Player_Setup(new_player, instance->labyrinth_map_reader, player_spawn_point_id);
-	Player_SetId(new_player, *out_added_player_index + 1);
-	Player_SetName(new_player, player_name);
+	Player_SetId(new_player, player_id);
 
 	instance->players_map[instance->players_map_size] = new_player;
 	instance->players_map_size++;

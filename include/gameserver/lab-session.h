@@ -17,7 +17,7 @@ CORE_OBJECT_DEFINE(LabSession);
 
 CORE_Bool 	LabSession_HelperFindSession(LabSession sessions[], uint32 sessions_size, uint32 index, LabSession *out_session);
 
-CORE_Bool 	LabSession_AddPlayer(LabSession instance, char *player_name, uint32 *out_added_player_index);
+CORE_Bool 	LabSession_AddPlayer(LabSession instance, uint32 player_id, uint32 *out_added_player_index);
 CORE_Bool 	LabSession_FindPlayer(LabSession instance, uint32 player_index, Player *out_player);
 void 		LabSession_Start(LabSession instance);
 
