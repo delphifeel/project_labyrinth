@@ -1,6 +1,7 @@
 #include "CORE.h"
 #include "gameserver/commands-io-system.h"
 #include "gameserver/game-server-config.h"
+#include "gameserver/command.h"
 
 /*****************************************************************************************************************************/
 
@@ -9,10 +10,12 @@
 /*****************************************************************************************************************************/
 
 CORE_OBJECT_INTERFACE(CommandsIOSystem,
-    void                                   *context;
+    LabSession                             *sessions;
+    uint32                                 sessions_size;
+
 	CORE_TCPServer                         tcp_server;
 
-    OnCommandGetFunc   on_command_get;          
+    // OnCommandGetFunc   on_command_get;          
 
     /*
      *      All TCP clients connected to game server.
@@ -24,6 +27,28 @@ CORE_OBJECT_INTERFACE(CommandsIOSystem,
 );
 
 /*****************************************************************************************************************************/
+
+static void _ProcessCommand(CommandsIOSystem instance, Command *command)
+{
+    CommandType   command_type;
+    CommandProcessorStruct command_processor;
+
+
+    Command_GetType(command, &command_type);
+
+    command_processor = CommandsProcessors[command_type];
+    if (command_processor.command_type != command_type)
+    {
+        CORE_DebugAbort("Wrong association in CommandsProcessors. Fix CommandsProcessors to resolve\n");
+        return;
+    }
+
+    if (command_processor.process_cb(command, instance->sessions, instance->sessions_size) == FALSE)
+    {
+        CORE_DebugError("Command processing error\n");
+        return;
+    }
+}
 
 static void _TCPServerOnError(CORE_TCPServer tcp_server, void *context, const char *error_message)
 {
@@ -46,30 +71,22 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
                              CORE_TCPServer_ClientConnection client_connection,
                              const uint8 data[], uint32 data_size)
 {
-    CommandStruct       *command_from_client;
-    CommandsIOSystem    instance;
-    uint32              session_index;
-    uint32              player_index;
+    Command                         command;
+    CommandsIOSystem                instance;
+    uint32                          session_index;
+    uint32                          player_index;
 
 
-    if (data_size != sizeof(CommandStruct))
+    Command_Init(&command);
+    if (Command_ParseFromBuffer(&command, data) == FALSE)
     {
-        CORE_DebugError("Data size != size of `CommandStruct`\n");
         return;
     }
-
-    command_from_client = (CommandStruct *) data;
-    if (Command_Verificate(command_from_client) == FALSE)
-    {
-        CORE_DebugError("Command verification failed: data is not a `CommandStruct`\n");
-        return;
-    }
-
-    instance = (CommandsIOSystem) context;
+    
+    Command_GetSessionIndex(&command, &session_index);
+    Command_GetPlayerIndex(&command, &player_index);
 
     // add tcp_client to `tcp_clients_map` if its not in map already
-    session_index = command_from_client->session_index;
-    player_index = command_from_client->player_index;
 
     if ((session_index > SESSIONS_CAPACITY - 1) ||
         (player_index > CONNECTIONS_PER_SESSION - 1))
@@ -77,67 +94,57 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
         CORE_DebugError("Command session_index or player_index out of bounds\n");
         return;
     }
+
+    instance = (CommandsIOSystem) context;
 
     if (instance->tcp_clients_map[session_index][player_index] == NULL)
     {
         instance->tcp_clients_map[session_index][player_index] = client_connection;
     }
 
-    instance->on_command_get(instance, instance->context, command_from_client);
+    _ProcessCommand(instance, &command);
 }
 
 /*****************************************************************************************************************************/
 
-void CommandsIOSystem_Send(CommandsIOSystem instance, const CommandStruct *command_to_client)
-{
-    CORE_AssertPointer(command_to_client);
+// void CommandsIOSystem_Send(CommandsIOSystem instance, const ServerCommandHeaderStruct *command_header, const uint8 *command_payload)
+// {
+//     CORE_AssertPointer(command_header);
+//     CORE_AssertPointer(command_payload);
 
-    uint32                              session_index;
-    uint32                              player_index;
-    CORE_TCPServer_ClientConnection     client_connection;
+//     uint32                              session_index;
+//     uint32                              player_index;
+//     CORE_TCPServer_ClientConnection     client_connection;
 
 
-    session_index = command_to_client->session_index;
-    player_index = command_to_client->player_index;
+//     session_index = command_header->session_index;
+//     player_index = command_header->player_index;
 
-    if ((session_index > SESSIONS_CAPACITY - 1) ||
-        (player_index > CONNECTIONS_PER_SESSION - 1))
-    {
-        CORE_DebugError("Command session_index or player_index out of bounds\n");
-        return;
-    }
+//     if ((session_index > SESSIONS_CAPACITY - 1) ||
+//         (player_index > CONNECTIONS_PER_SESSION - 1))
+//     {
+//         CORE_DebugError("Command session_index or player_index out of bounds\n");
+//         return;
+//     }
 
-    client_connection = instance->tcp_clients_map[session_index][player_index];
-    if (client_connection == NULL)
-    {
-        CORE_DebugError("No associated connection with this command\n");
-        return;
-    }
+//     client_connection = instance->tcp_clients_map[session_index][player_index];
+//     if (client_connection == NULL)
+//     {
+//         CORE_DebugError("No associated connection with this command\n");
+//         return;
+//     }
 
-    CORE_TCPServer_Write(instance->tcp_server, client_connection, (const uint8 *) command_to_client, sizeof(CommandStruct));
-}
-
-/*****************************************************************************************************************************/
-
-void CommandsIOSystem_OnGet(CommandsIOSystem instance, OnCommandGetFunc on_command_get)
-{
-    CORE_AssertPointer(on_command_get);
-
-    instance->on_command_get = on_command_get;
-}
+//     CORE_TCPServer_Write(instance->tcp_server, client_connection, (const uint8 *) command_to_client, sizeof(CommandStruct));
+// }
 
 /*****************************************************************************************************************************/
 
-void CommandsIOSystem_SetContext(CommandsIOSystem instance, void *context)
+void CommandsIOSystem_Setup(CommandsIOSystem instance, LabSession sessions[], uint32 sessions_size)
 {
-    instance->context = context;
-}
+    CORE_AssertPointer(sessions);
 
-/*****************************************************************************************************************************/
-
-void CommandsIOSystem_Setup(CommandsIOSystem instance)
-{
-    CORE_AssertPointer(instance->on_command_get);
+    instance->sessions = sessions;
+    instance->sessions_size = sessions_size;
 
     CORE_TCPServer_OnError(instance->tcp_server, _TCPServerOnError);
     CORE_TCPServer_OnNewConnection(instance->tcp_server, _TCPServerOnNewConnection);
@@ -163,8 +170,6 @@ void CommandsIOSystem_Create(CommandsIOSystem *instance_ptr)
 
 	CORE_OBJECT_CREATE(instance_ptr, CommandsIOSystem);
     instance = *instance_ptr;
-
-    instance->context = NULL;
 
     CORE_MemZero(&instance->tcp_clients_map, sizeof(instance->tcp_clients_map));
     CORE_TCPServer_Create(&instance->tcp_server);

@@ -3,46 +3,46 @@
 
 #include "CORE.h"
 #include "common.h"
+#include "lab-session.h"
+
+#include "command-private.h"
+
+/*****************************************************************************************************************************/
+
+typedef struct CommandHeader CommandHeader;
+
+typedef struct Command
+{
+	CommandHeader 	*_header;
+	uint8 			*_payload;
+} Command;
 
 /*****************************************************************************************************************************/
 
 typedef enum CommandType
 {
 	kCommandType_PlayerMove,
-	kCommandType_PlayerAdd,
 } CommandType;
+
+typedef CORE_Bool (*CommandProcessFunc)(Command *command, LabSession sessions[], uint32 sessions_size);
+typedef struct CommandProcessorStruct
+{
+	CommandType 		command_type;
+	CommandProcessFunc 	process_cb;
+} CommandProcessorStruct;
+
+extern CommandProcessorStruct CommandsProcessors[];
 
 /*****************************************************************************************************************************/
 
-typedef struct CommandPayload_PlayerMove
-{
-	uint32 			directions_size;
-	MoveDirection 	*directions;
-} CommandPayload_PlayerMove;
+CORE_Bool Command_ValidateBytes(const uint8 data[]);
 
-typedef struct CommandPayload_PlayerAdd
-{
-	uint32 			player_id;
-} CommandPayload_PlayerAdd;
+void Command_GetType(Command *instance, CommandType *out_command_type);
+void Command_GetSessionIndex(Command *instance, uint32 *out_session_index);
+void Command_GetPlayerIndex(Command *instance, uint32 *out_player_index);
+void Command_GetPayload(Command *instance, uint8 **out_payload);
 
-typedef union 
-{
-	CommandPayload_PlayerMove	player_move;
-	CommandPayload_PlayerAdd	player_add;
-} CommandPayload;
-
-typedef struct CommandStruct 
-{
-	uint32 			verification_id;
-	CommandType 	type;
-	uint32			player_index;
-	uint32			session_index;
-	uint8 			token[32];
-	CommandPayload 	payload;
-} CommandStruct;
-
-#define _VERIFICATION_ID  					(0xDEAD)
-
-#define Command_Verificate(COMMAND_PTR)		((COMMAND_PTR)->verification_id == _VERIFICATION_ID)
+CORE_Bool Command_ParseFromBuffer(Command *instance, const uint8 buffer[]);
+void Command_Init(Command *instance);
 
 #endif

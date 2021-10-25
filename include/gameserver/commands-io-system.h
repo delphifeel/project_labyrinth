@@ -3,6 +3,7 @@
 
 #include "CORE.h"
 #include "command.h"
+#include "lab-session.h"
 
 /*****************************************************************************************************************************/
 
@@ -13,17 +14,14 @@
 
 CORE_OBJECT_DEFINE(CommandsIOSystem);
 
-typedef void (*OnCommandGetFunc)(CommandsIOSystem instance, void *context, const CommandStruct *command_from_client);
+// typedef void (*OnCommandGetFunc)(CommandsIOSystem                   instance, 
+//                                  void                               *context, 
+//                                  const ClientCommandHeaderStruct    *command_header,
+//                                  const uint8                        *command_payload);
 
 /*****************************************************************************************************************************/
 
-void CommandsIOSystem_OnGet(CommandsIOSystem instance, OnCommandGetFunc on_command_get);
-
-void CommandsIOSystem_Send(CommandsIOSystem instance, const CommandStruct *command_to_client);
-
-void CommandsIOSystem_SetContext(CommandsIOSystem instance, void *context);
-
-void CommandsIOSystem_Setup(CommandsIOSystem instance);
+void CommandsIOSystem_Setup(CommandsIOSystem instance, LabSession sessions[], uint32 sessions_size);
 void CommandsIOSystem_Start(CommandsIOSystem instance);
 
 void CommandsIOSystem_Create(CommandsIOSystem *instance_ptr);

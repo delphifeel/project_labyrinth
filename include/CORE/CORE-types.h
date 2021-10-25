@@ -2,6 +2,7 @@
 #define _CORE_TYPES_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #define TRUE                                                    (1)
 #define FALSE                                                   (0)

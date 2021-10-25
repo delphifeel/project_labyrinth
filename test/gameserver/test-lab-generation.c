@@ -25,7 +25,7 @@ static void INTERNAL_ValidateGeneratedMap(LabPointsMap generated_map)
 		if (point.left_connection_id != 0)
 			continue;
 
-		CORE_DebugAbort("[%ld] Need to have AT LEAST ONE connection\n", i + 1);
+		CORE_DebugAbort("[%u] Need to have AT LEAST ONE connection\n", i + 1);
 	}
 }
 

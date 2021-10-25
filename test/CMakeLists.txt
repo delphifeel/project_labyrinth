@@ -1,5 +1,4 @@
 add_library(GameServerTest 
-	gameserver/test-commands-listener.c
 	gameserver/test-disjoint-set.c
 	gameserver/test-lab-generation.c
 	gameserver/test-lab-session.c

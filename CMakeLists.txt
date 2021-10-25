@@ -12,7 +12,7 @@ add_subdirectory(test)
 add_subdirectory(third-party-libraries/libuv)
 
 
-add_executable(ProjectLabyrinthTest test/CORE/all-tests.c)
+add_executable(ProjectLabyrinthTest test/gameserver/all-tests.c)
 target_link_libraries(ProjectLabyrinthTest PUBLIC 
 	GameServer 
 	CORE 

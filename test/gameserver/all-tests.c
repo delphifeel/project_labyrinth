@@ -7,7 +7,6 @@ extern void Test_LabSession();
 
 int main()
 {
-	Test_CommandsListener();
 	Test_DisjointSet();
 	Test_LabGeneration();
 	Test_LabSession();	

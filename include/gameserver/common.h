@@ -11,7 +11,7 @@
 
 typedef enum MoveDirection
 {
-	kMoveDirection_Top,
+	kMoveDirection_Top = 1,
 	kMoveDirection_Right,
 	kMoveDirection_Bottom,
 	kMoveDirection_Left,
