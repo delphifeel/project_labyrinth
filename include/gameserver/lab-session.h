@@ -22,6 +22,7 @@ CORE_Bool 	LabSession_FindPlayer(LabSession instance, uint32 player_index, Playe
 void 		LabSession_Start(LabSession instance);
 
 void 		LabSession_GetLabPointsReader(LabSession instance, LabPointsMapReader *out_lab_points_reader);
+void        LabSession_MapToJSON(LabSession instance, char **json);
 
 void 		LabSession_Setup(LabSession instance, uint32 players_count);
 

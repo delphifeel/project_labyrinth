@@ -21,6 +21,8 @@ CORE_OBJECT_INTERFACE(Player,
 
 CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 directions_size)
 {
+    CORE_AssertPointer(directions);
+
     LabPointStruct      result_lab_point;
     uint32              result_point_id;
 
@@ -55,6 +57,7 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
 
         if (result_point_id == 0)
         {
+            CORE_DebugError("Can't move to the [%u] - no connection\n", directions[i]);
             return FALSE;
         }
     }

@@ -11,6 +11,7 @@ void Test_Command()
 	uint32 			session_index;
 	uint32 			temp_uint;
 	const uint8		*payload;
+	uint32 			payload_size;
 
 
 	validation_header = 0xAFBEADDE;
@@ -33,7 +34,8 @@ void Test_Command()
 	buffer_ptr[2] = 2;
 
 	Command_Init(&command);
-	assert(Command_ParseFromBuffer(&command, buffer));
+
+	assert(Command_ParseFromBuffer(&command, buffer, sizeof(buffer)) == TRUE);
 
 	Command_GetType(&command, &temp_uint);
 	assert(temp_uint == command_type);
@@ -44,7 +46,8 @@ void Test_Command()
 	Command_GetPlayerIndex(&command, &temp_uint);
 	assert(temp_uint == player_index);
 
-	Command_GetPayload(&command, &payload);
+	Command_GetPayloadPtr(&command, &payload, &payload_size);
+	assert(payload_size == sizeof(buffer) - 48);
 
 	assert(payload[0] == 0);
 	assert(payload[1] == 1);

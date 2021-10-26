@@ -3,6 +3,7 @@ add_library(GameServerTest
 	gameserver/test-lab-generation.c
 	gameserver/test-lab-session.c
 	gameserver/test-command.c
+	gameserver/test-commands-processor.c
 )
 target_include_directories(GameServerTest PUBLIC 
 	"${PROJECT_SOURCE_DIR}/include"

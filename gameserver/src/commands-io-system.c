@@ -2,6 +2,7 @@
 #include "gameserver/commands-io-system.h"
 #include "gameserver/game-server-config.h"
 #include "gameserver/command.h"
+#include "gameserver/commands-processor.h"
 
 /*****************************************************************************************************************************/
 
@@ -27,11 +28,6 @@ CORE_OBJECT_INTERFACE(CommandsIOSystem,
 );
 
 /*****************************************************************************************************************************/
-
-static void _ProcessCommand(CommandsIOSystem instance, Command *command)
-{
-    Command_Process(command, instance->sessions, instance->sessions_size);
-}
 
 static void _TCPServerOnError(CORE_TCPServer tcp_server, void *context, const char *error_message)
 {
@@ -61,8 +57,9 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
 
 
     Command_Init(&command);
-    if (Command_ParseFromBuffer(&command, data) == FALSE)
+    if (Command_ParseFromBuffer(&command, data, data_size) == FALSE)
     {
+        CORE_DebugError("Parse `data` for command error\n");
         return;
     }
     
@@ -85,7 +82,11 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
         instance->tcp_clients_map[session_index][player_index] = client_connection;
     }
 
-    _ProcessCommand(instance, &command);
+    if (CommandsProcessor_Process(&command, instance->sessions, instance->sessions_size) == FALSE)
+    {
+        CORE_DebugError("Command processing error\n");
+        return;
+    }
 }
 
 /*****************************************************************************************************************************/

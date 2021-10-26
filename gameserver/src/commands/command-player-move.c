@@ -15,14 +15,22 @@ CORE_Bool CommandPlayerMove_Process(Command *command, LabSession sessions[], uin
 	uint32 						directions_size;
 	uint32 						session_index;
 	uint32 						player_index;
-	const uint8					*payload_raw;
 	const PlayerMovePayload 	*payload;
+	const uint8					*payload_raw;
+	uint32 						payload_size;
 
 
 	Command_GetSessionIndex(command, &session_index);
 	Command_GetPlayerIndex(command, &player_index);
-	Command_GetPayload(command, &payload_raw);
-	payload = (const PlayerMovePayload *) payload_raw;
+	Command_GetPayloadPtr(command, &payload_raw, &payload_size);
+
+	if (payload_size != sizeof(PlayerMovePayload))
+	{
+		CORE_DebugError("payload_size != sizeof(PlayerMovePayload)\n");
+		return FALSE;
+	}
+
+	payload = payload_raw;
 
 	if (LabSession_HelperFindSession(sessions, 
 							 		 sessions_size, 

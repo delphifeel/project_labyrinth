@@ -54,27 +54,27 @@ static void Test_LabSessionAddPlayers()
 	LabSession_Free(&instance);
 }
 
-// void Test_LabSessionLabyrinthToJSON()
-// {
-// 	LabSession instance;
-// 	char *json;
-// 	CORE_FileHandle FileToWrite;
+void Test_LabSessionLabyrinthToJSON()
+{
+	LabSession instance;
+	char *json;
+	CORE_FileHandle FileToWrite;
 
-// 	LabSession_Create(&instance);
-// 	LabSession_Setup(instance, 5);
+	LabSession_Create(&instance);
+	LabSession_Setup(instance, 5);
 
-// 	LabPointsMap_ToJSON(instance->labyrinth_map, &json);
+	LabSession_MapToJSON(instance, &json);
 
-// 	FileToWrite = CORE_FileOpen("data-prim.json", "w");
-// 	CORE_FileWrite(json, sizeof(char), strlen(json), FileToWrite);
-// 	CORE_FileClose(FileToWrite);
+	FileToWrite = CORE_FileOpen("data-prim.json", "w");
+	CORE_FileWrite(json, sizeof(char), strlen(json), FileToWrite);
+	CORE_FileClose(FileToWrite);
 
-// 	LabSession_Free(&instance);
-// 	CORE_MemFree(json);
-// }
+	LabSession_Free(&instance);
+	CORE_MemFree(json);
+}
 
 void Test_LabSession()
 {
 	Test_LabSessionAddPlayers();
-	// Test_LabSessionLabyrinthToJSON();
+	Test_LabSessionLabyrinthToJSON();
 }

@@ -6,6 +6,7 @@ add_library(GameServer
 	src/player.c
 	src/game-server.c
 	src/command.c
+	src/commands-processor.c
 	src/commands/command-player-move.c
 	src/commands/command-start-game.c
 )

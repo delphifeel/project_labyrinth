@@ -112,6 +112,11 @@ void LabSession_GetLabPointsReader(LabSession instance, LabPointsMapReader *out_
 	*out_lab_points_reader = instance->labyrinth_map_reader;
 }
 
+void LabSession_MapToJSON(LabSession instance, char **json)
+{
+	LabPointsMap_ToJSON(instance->labyrinth_map, json);
+}
+
 /*****************************************************************************************************************************/
 
 void LabSession_Setup(LabSession instance, uint32 players_count)
