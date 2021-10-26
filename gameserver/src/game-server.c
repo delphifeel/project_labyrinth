@@ -30,71 +30,7 @@ static void _FreeSessions(GameServer instance)
 
 /*****************************************************************************************************************************/
 
-// CORE_Bool GameServer_InitNewSession(GameServer instance, uint32 *out_session_index)
-// {
-// 	LabSession 	new_session;
-// 	CORE_Bool 	found_free_session;
-// 	uint32  	new_session_index;
 
-
-// 	found_free_session = FALSE;
-
-// 	for (uint32 i = 0; i < SESSIONS_CAPACITY; i++)
-// 	{
-// 		if (instance->sessions[i] != NULL)
-// 		{
-// 			continue;
-// 		}
-
-// 		found_free_session = TRUE;
-// 		new_session_index = i;
-// 		break;
-// 	}
-
-// 	if (found_free_session == FALSE)
-// 	{
-// 		CORE_DebugError("No free session.\n");
-// 		return FALSE;
-// 	}
-
-// 	LabSession_Create(&new_session);
-// 	LabSession_Setup(new_session, SESSION_PLAYERS_COUNT);
-
-// 	instance->sessions[new_session_index] = new_session;
-// 	*out_session_index = new_session_index;
-// 	return TRUE;
-// }
-
-// CORE_Bool GameServer_AddPlayerToSession(GameServer instance, uint32 session_index, uint32 player_id, uint32 *out_player_index)
-// {
-// 	CORE_AssertPointer(out_player_index);
-
-// 	LabSession session;
-
-
-// 	if (LabSession_HelperFindSession(instance->sessions, SESSIONS_CAPACITY, session_index, &session) == FALSE)
-// 	{
-// 		CORE_DebugError("Can't add player\n");
-// 		return FALSE;
-// 	}
-
-// 	return LabSession_AddPlayer(session, player_id, out_player_index);
-// }
-
-// CORE_Bool GameServer_StartSession(GameServer instance, uint32 session_index)
-// {
-// 	LabSession session;
-
-
-// 	if (LabSession_HelperFindSession(instance->sessions, SESSIONS_CAPACITY, session_index, &session) == FALSE)
-// 	{
-// 		CORE_DebugError("Can't start session\n");
-// 		return FALSE;
-// 	}
-
-// 	LabSession_Start(session);
-// 	return TRUE;
-// }
 
 void GameServer_Process(GameServer instance)
 {
@@ -122,8 +58,8 @@ void GameServer_Create(GameServer *instance_ptr)
 
 void GameServer_Free(GameServer *instance_ptr)
 {
-	_FreeSessions(*instance_ptr);
 	CommandsIOSystem_Free(&(*instance_ptr)->commands_io_system);
+	_FreeSessions(*instance_ptr);
 
 	CORE_OBJECT_FREE(instance_ptr);
 }

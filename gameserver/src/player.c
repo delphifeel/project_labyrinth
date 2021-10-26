@@ -14,6 +14,7 @@ CORE_OBJECT_INTERFACE(Player,
     uint32                      position_point_id;
     PositionStruct              position_inside_lab_point;
     LabPointsMapReader          points_reader;
+    uint8                       token[TOKEN_SIZE];
 );
 
 /*****************************************************************************************************************************/
@@ -61,6 +62,16 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
     instance->position_point_id = result_point_id;
 
     return TRUE; 
+}
+
+void Player_SetToken(Player instance, const uint8 token[TOKEN_SIZE])
+{
+    memcpy(instance->token, token, TOKEN_SIZE);
+}
+
+void Player_GetTokenPtr(Player instance, const uint8 *out_token_ptr[TOKEN_SIZE])
+{
+    *out_token_ptr = instance->token;
 }
 
 void Player_SetId(Player instance, uint32 id)

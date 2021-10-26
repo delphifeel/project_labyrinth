@@ -21,12 +21,12 @@ void OnErrorCb(CORE_TCPServer instance, void *context, const char *error_message
 
 void OnNewConnectionCb(CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection)
 {
-	CORE_DebugPrint("New connection %u\n", (uint32) client_connection);
+	CORE_DebugPrint("New connection %u\n", (uint64) client_connection);
 }
 
 void OnCloseConnectionCb(CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection)
 {
-	CORE_DebugPrint("Close connection %u\n", (uint32) client_connection);
+	CORE_DebugPrint("Close connection %u\n", (uint64) client_connection);
 }
 
 void Test_CORE_TCPServer()

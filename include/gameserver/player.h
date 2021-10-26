@@ -19,6 +19,8 @@ CORE_OBJECT_DEFINE(Player);
 
 CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 directions_size);
 
+void Player_SetToken(Player instance, const uint8 token[TOKEN_SIZE]);
+void Player_GetTokenPtr(Player instance, const uint8 *out_token_ptr[TOKEN_SIZE]);
 void Player_SetId(Player instance, uint32 id);
 void Player_GetId(Player instance, uint32 *id);
 void Player_GetPositionInsideLabPoint(Player instance, PositionStruct *position);

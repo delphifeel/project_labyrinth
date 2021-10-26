@@ -14,11 +14,6 @@
 
 CORE_OBJECT_DEFINE(CommandsIOSystem);
 
-// typedef void (*OnCommandGetFunc)(CommandsIOSystem                   instance, 
-//                                  void                               *context, 
-//                                  const ClientCommandHeaderStruct    *command_header,
-//                                  const uint8                        *command_payload);
-
 /*****************************************************************************************************************************/
 
 void CommandsIOSystem_Setup(CommandsIOSystem instance, LabSession sessions[], uint32 sessions_size);

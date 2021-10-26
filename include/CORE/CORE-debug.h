@@ -11,8 +11,8 @@
 #include "CORE-debug-private.h"
 
 #define CORE_DebugPrint 								printf
-#define CORE_Assert(EXPRESSION) 						(	(EXPRESSION) ? TRUE : (CORE_DebugPrint("(%s)\t[ASSERT FAILED]\t(%s:%d):\t", __FILE__, __func__, __LINE__), CORE_DebugPrint("%s\n", #EXPRESSION))	)
-#define CORE_AssertWithMessage(EXPRESSION, ...) 		(	(EXPRESSION) ? TRUE : (CORE_DebugPrint("(%s)\t[ASSERT FAILED]\t(%s:%d):\t", __FILE__, __func__, __LINE__), CORE_DebugPrint(__VA_ARGS__))	)
+#define CORE_Assert(EXPRESSION) 						(	(EXPRESSION) ? (void) TRUE : (CORE_DebugPrint("(%s:%d) (%s) [ASSERT FAILED] ", __FILE__, __LINE__, __func__), CORE_DebugPrint("%s\n", #EXPRESSION), exit(0))	)
+#define CORE_AssertWithMessage(EXPRESSION, ...) 		(	(EXPRESSION) ? (void) TRUE : (CORE_DebugPrint("(%s:%d) (%s) [ASSERT FAILED] ", __FILE__, __LINE__, __func__), CORE_DebugPrint(__VA_ARGS__), exit(0))	)
 #define CORE_DebugInfo(...) 							(	CORE_DebugPrint("(%s) ", __func__), CORE_DebugPrint(__VA_ARGS__)	)
 #define CORE_DebugError(...) 							(	CORE_DebugPrint("(%s)\t[ERROR]\t(%s:%d):\t", __FILE__, __func__, __LINE__), CORE_DebugPrint(__VA_ARGS__)	)
 #define CORE_DebugAbort(...) 							(	CORE_DebugPrint("(%s)\t[ABORT]\t(%s:%d):\t", __FILE__, __func__, __LINE__), CORE_DebugPrint(__VA_ARGS__), abort()	)

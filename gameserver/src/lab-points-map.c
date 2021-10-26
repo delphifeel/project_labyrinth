@@ -38,7 +38,7 @@ void LabPointsMap_ToJSON(LabPointsMap instance, char **json)
 	*json = CORE_MemAlloc(sizeof(char) * max_json + 1);
 	*json[0] = '\0';
 
-	lab_point_raw_json_object_char_count = sprintf(lab_point_raw_json_object, "{\"count\": %ld,\"points\": {", instance->size);
+	lab_point_raw_json_object_char_count = sprintf(lab_point_raw_json_object, "{\"count\": %u,\"points\": {", instance->size);
 	strncat(*json, lab_point_raw_json_object, lab_point_raw_json_object_char_count);
 	DEC_JSON_LEFT(lab_point_raw_json_object_char_count);
 
@@ -46,12 +46,12 @@ void LabPointsMap_ToJSON(LabPointsMap instance, char **json)
 	{
 		
 		current_lab_point = instance->points_hash_map[i]; 
-		lab_point_raw_json_object_char_count = sprintf(lab_point_raw_json_object, "\"%ld\": ", current_lab_point.Id);
+		lab_point_raw_json_object_char_count = sprintf(lab_point_raw_json_object, "\"%u\": ", current_lab_point.Id);
 		strncat(*json, lab_point_raw_json_object, lab_point_raw_json_object_char_count);
 		DEC_JSON_LEFT(lab_point_raw_json_object_char_count);
 
 		lab_point_raw_json_object_char_count = sprintf(lab_point_raw_json_object, 
-												  "{\"top_id\": %ld, \"right_id\": %ld, \"bottom_id\": %ld, \"left_id\": %ld, \"is_exit\": %ld, \"is_spawn\": %ld}",
+												  "{\"top_id\": %u, \"right_id\": %u, \"bottom_id\": %u, \"left_id\": %u, \"is_exit\": %u, \"is_spawn\": %u}",
 												  current_lab_point.top_connection_id, current_lab_point.right_connection_id, 
 												  current_lab_point.bottom_connection_id, current_lab_point.left_connection_id,
 												  current_lab_point.is_exit, current_lab_point.is_spawn);

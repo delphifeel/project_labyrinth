@@ -1,6 +1,6 @@
-#include "gameserver/commands/command-player-move.h"
 #include "gameserver/player.h"
 #include "gameserver/common.h"
+#include "gameserver/command.h"
 
 typedef struct PlayerMovePayload 
 {
@@ -9,23 +9,25 @@ typedef struct PlayerMovePayload
 
 CORE_Bool CommandPlayerMove_Process(Command *command, LabSession sessions[], uint32 sessions_size)
 {
-	LabSession 				session;
-	Player 					player;
-	MoveDirection 			directions[2];
-	uint32 					directions_size;
-	uint32 					session_index;
-	uint32 					player_index;
-	PlayerMovePayload 		*payload;
+	LabSession 					session;
+	Player 						player;
+	MoveDirection 				directions[2];
+	uint32 						directions_size;
+	uint32 						session_index;
+	uint32 						player_index;
+	const uint8					*payload_raw;
+	const PlayerMovePayload 	*payload;
 
 
 	Command_GetSessionIndex(command, &session_index);
 	Command_GetPlayerIndex(command, &player_index);
-	Command_GetPayload(command, (uint8 **) &payload);
+	Command_GetPayload(command, &payload_raw);
+	payload = (const PlayerMovePayload *) payload_raw;
 
-	if (LabSession_HelperFindSession(	sessions, 
-							 			sessions_size, 
-							 			session_index,
-							 			&session) == FALSE	)
+	if (LabSession_HelperFindSession(sessions, 
+							 		 sessions_size, 
+							 		 session_index,
+							 		 &session) == FALSE	)
 	{
 		return FALSE;
 	}

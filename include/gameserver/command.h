@@ -5,8 +5,6 @@
 #include "common.h"
 #include "lab-session.h"
 
-#include "command-private.h"
-
 /*****************************************************************************************************************************/
 
 typedef struct CommandHeader CommandHeader;
@@ -22,27 +20,18 @@ typedef struct Command
 typedef enum CommandType
 {
 	kCommandType_PlayerMove,
+	kCommandType_StartGame,
 } CommandType;
 
-typedef CORE_Bool (*CommandProcessFunc)(Command *command, LabSession sessions[], uint32 sessions_size);
-typedef struct CommandProcessorStruct
-{
-	CommandType 		command_type;
-	CommandProcessFunc 	process_cb;
-} CommandProcessorStruct;
-
-extern CommandProcessorStruct CommandsProcessors[];
-
 /*****************************************************************************************************************************/
-
-CORE_Bool Command_ValidateBytes(const uint8 data[]);
 
 void Command_GetType(Command *instance, CommandType *out_command_type);
 void Command_GetSessionIndex(Command *instance, uint32 *out_session_index);
 void Command_GetPlayerIndex(Command *instance, uint32 *out_player_index);
-void Command_GetPayload(Command *instance, uint8 **out_payload);
+void Command_GetPayload(Command *instance, const uint8 **out_payload);
 
-CORE_Bool Command_ParseFromBuffer(Command *instance, const uint8 buffer[]);
+CORE_Bool Command_ParseFromBuffer(Command *instance, const uint8 *buffer_ptr);
+void Command_Process(Command *instance, LabSession sessions[], uint32 sessions_size);
 void Command_Init(Command *instance);
 
 #endif

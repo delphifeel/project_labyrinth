@@ -4,15 +4,19 @@
 
 
 CORE_OBJECT_INTERFACE(LabSession,
-	uint8  				session_uid[UID_SIZE];
-
 	LabPointsMap 		labyrinth_map;
 	LabPointsMapReader 	labyrinth_map_reader;
 
+	/*
+	 *		Players added to session
+	 */
 	Player 				*players_map;
 	uint32  			players_map_size;
 	uint32 				players_map_capacity;
 
+	/*
+	 *		Spawn points for players
+	 */
 	uint32  			*spawn_points;
 	uint32  			spawn_points_size;
 	uint32  			spawn_points_assoc_with_player_count;
@@ -59,7 +63,7 @@ CORE_Bool LabSession_FindPlayer(LabSession instance, uint32 player_index, Player
 	return TRUE;
 }
 
-CORE_Bool LabSession_AddPlayer(LabSession instance, uint32 player_id, uint32 *out_added_player_index)
+CORE_Bool LabSession_AddPlayer(LabSession instance, uint32 player_id, const uint8 player_token[TOKEN_SIZE], uint32 *out_added_player_index)
 {
 	CORE_AssertPointer(out_added_player_index);
 	CORE_Assert(instance->is_session_started == FALSE);
@@ -70,7 +74,7 @@ CORE_Bool LabSession_AddPlayer(LabSession instance, uint32 player_id, uint32 *ou
 
 	if (instance->players_map_size == instance->players_map_capacity)
 	{
-		CORE_DebugError("No more free spots\n");
+		CORE_DebugError("No more free spots - session is FULL\n");
 		return FALSE;
 	}
 
@@ -87,6 +91,7 @@ CORE_Bool LabSession_AddPlayer(LabSession instance, uint32 player_id, uint32 *ou
 	Player_Create(&new_player);
 	Player_Setup(new_player, instance->labyrinth_map_reader, player_spawn_point_id);
 	Player_SetId(new_player, player_id);
+	Player_SetToken(new_player, player_token);
 
 	instance->players_map[instance->players_map_size] = new_player;
 	instance->players_map_size++;
@@ -111,12 +116,6 @@ void LabSession_GetLabPointsReader(LabSession instance, LabPointsMapReader *out_
 
 void LabSession_Setup(LabSession instance, uint32 players_count)
 {
-	if (CORE_CreateUID(instance->session_uid) == FALSE)
-	{
-		CORE_DebugAbort("Can't create UID\n");
-		return;
-	}
-
 	instance->is_session_started = FALSE;
 
 	instance->players_map = CORE_MemAlloc(sizeof(Player) * players_count);

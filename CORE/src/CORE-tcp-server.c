@@ -253,7 +253,7 @@ void CORE_TCPServer_Start(CORE_TCPServer instance)
         return;
     }
 
-    CORE_DebugInfo("Starting server on port %lu\n", instance->port);
+    CORE_DebugInfo("Starting server on port %u\n", instance->port);
     uv_run(instance->uv_loop, UV_RUN_DEFAULT);
 }
 

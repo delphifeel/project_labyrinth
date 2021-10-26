@@ -30,24 +30,7 @@ CORE_OBJECT_INTERFACE(CommandsIOSystem,
 
 static void _ProcessCommand(CommandsIOSystem instance, Command *command)
 {
-    CommandType   command_type;
-    CommandProcessorStruct command_processor;
-
-
-    Command_GetType(command, &command_type);
-
-    command_processor = CommandsProcessors[command_type];
-    if (command_processor.command_type != command_type)
-    {
-        CORE_DebugAbort("Wrong association in CommandsProcessors. Fix CommandsProcessors to resolve\n");
-        return;
-    }
-
-    if (command_processor.process_cb(command, instance->sessions, instance->sessions_size) == FALSE)
-    {
-        CORE_DebugError("Command processing error\n");
-        return;
-    }
+    Command_Process(command, instance->sessions, instance->sessions_size);
 }
 
 static void _TCPServerOnError(CORE_TCPServer tcp_server, void *context, const char *error_message)
@@ -152,7 +135,6 @@ void CommandsIOSystem_Setup(CommandsIOSystem instance, LabSession sessions[], ui
     CORE_TCPServer_OnRead(instance->tcp_server, _TCPServerOnRead);
 
     CORE_TCPServer_SetContext(instance->tcp_server, instance);
-
 	CORE_TCPServer_Setup(instance->tcp_server, COMMANDS_IO_SYSTEM_DEFAULT_PORT);
 }
 
