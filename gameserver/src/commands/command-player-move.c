@@ -30,7 +30,7 @@ CORE_Bool CommandPlayerMove_Process(Command *command, LabSession sessions[], uin
 		return FALSE;
 	}
 
-	payload = payload_raw;
+	payload = (const PlayerMovePayload *) payload_raw;
 
 	if (LabSession_HelperFindSession(sessions, 
 							 		 sessions_size, 

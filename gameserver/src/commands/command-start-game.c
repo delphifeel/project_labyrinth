@@ -20,7 +20,6 @@ CORE_Bool CommandStartGame_Process(Command *command, LabSession sessions[], uint
 
 
 	Command_GetPayloadPtr(command, &payload_raw, &payload_size);
-	payload = (const StartGamePayload *) payload_raw;
 
 	if (payload_size != sizeof(StartGamePayload))
 	{
@@ -28,7 +27,7 @@ CORE_Bool CommandStartGame_Process(Command *command, LabSession sessions[], uint
 		return FALSE;
 	}
 
-	payload = payload_raw;
+	payload = (const StartGamePayload *) payload_raw;
 
 
 	/*

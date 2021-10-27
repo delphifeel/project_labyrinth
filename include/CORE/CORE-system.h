@@ -9,7 +9,8 @@
 
 /*****************************************************************************************************************************/
 
-CORE_Bool CORE_CreateUID(uint8 *out_uid);
+CORE_Bool CORE_GenerateUIDToBuffer(uint8 buffer[UID_SIZE]);
+CORE_Bool CORE_GenerateRandomDataToBuffer(uint8 buffer[], uint32 buffer_size);
 
 /*****************************************************************************************************************************/
 

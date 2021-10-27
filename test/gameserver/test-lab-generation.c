@@ -1,6 +1,6 @@
 #include "gameserver/lab-generation.h"
 
-static void INTERNAL_ValidateGeneratedMap(LabPointsMap generated_map)
+static void _ValidateGeneratedMap(LabPointsMap generated_map)
 {
 	uint32 			generated_map_size;
 	LabPointStruct 	point;
@@ -39,7 +39,7 @@ static void Test_GenerateLab()
 	LabPointsMap_Create(&generated_map);
 
 	LabGeneration_Execute(generated_map, &spawn_points, &spawn_points_size);
-	INTERNAL_ValidateGeneratedMap(generated_map);
+	_ValidateGeneratedMap(generated_map);
 
 	CORE_MemFree(spawn_points);
 	LabPointsMap_Free(&generated_map);

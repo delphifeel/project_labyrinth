@@ -7,6 +7,8 @@
 
 /*****************************************************************************************************************************/
 
+#define MIN_MATRIX_SIZE 	(7)
+
 #define MATRIX_SIZE 		(41)
 #define SPAWN_POINTS_COUNT 	(20)
 
@@ -24,7 +26,7 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 	int32 			p;
 
 
-	if (MATRIX_SIZE < 7) {
+	if (MATRIX_SIZE < MIN_MATRIX_SIZE) {
 		CORE_DebugError("MATRIX_SIZE need to be >= 7\n");
 	}
 
@@ -149,12 +151,22 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 	}
 }
 
+#define RANDOM_DATA_SIZE	(100)
+
+static uint8 	random_data[RANDOM_DATA_SIZE];
+static uint32 	random_data_pos = 0;
+
 static int INTERNAL_SortEdgesRandomly(const void *unused1, const void *unused2)
 {
 	int32 random_number;
 
 
-	random_number = rand() % 3;
+	random_number = random_data[random_data_pos++] % 3;
+	if (random_data_pos == RANDOM_DATA_SIZE)
+	{
+		random_data_pos = 0;
+	}
+
 	switch (random_number)
 	{
 		case 0: 	return -1;
@@ -252,9 +264,8 @@ static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst
 
 
 	// sort edges randomly
-	srand(time(NULL));
+	CORE_GenerateRandomDataToBuffer(random_data, RANDOM_DATA_SIZE);
 	qsort(sorted_edges, sorted_edges_size, sizeof(Edge), INTERNAL_SortEdgesRandomly);
-
 	CORE_DebugPrint("sorted_edges_size: %u\n", sorted_edges_size);
 
 
