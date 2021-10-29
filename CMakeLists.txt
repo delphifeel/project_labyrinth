@@ -4,6 +4,7 @@ add_compile_options(-Wall -pedantic --std=gnu99)
 
 
 add_subdirectory(gameserver)
+add_subdirectory(authserver)
 add_subdirectory(CORE)
 add_subdirectory(test)
 
@@ -13,9 +14,11 @@ add_subdirectory(third-party-libraries/libuv)
 
 
 add_executable(ProjectLabyrinthTest test/gameserver/all-tests.c)
+
 target_link_libraries(ProjectLabyrinthTest PUBLIC 
-	GameServer 
 	CORE 
+	GameServer
+	AuthServer
 	GameServerTest 
 	CORETest 
 	uv
