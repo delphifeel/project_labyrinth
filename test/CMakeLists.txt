@@ -5,11 +5,26 @@ add_library(GameServerTest
 	gameserver/test-command.c
 	gameserver/test-commands-processor.c
 )
+
 target_include_directories(GameServerTest PUBLIC 
 	"${PROJECT_SOURCE_DIR}/include"
 )
 target_link_libraries(GameServerTest PUBLIC 
 	GameServer 
+	CORE
+)
+
+add_library(AuthServerTest
+	authserver/test-message.c
+	authserver/test-messages-processor.c
+)
+
+target_include_directories(AuthServerTest PUBLIC
+	"${PROJECT_SOURCE_DIR}/include"
+)
+
+target_link_libraries(AuthServerTest PUBLIC 
+	AuthServer 
 	CORE
 )
 
