@@ -1,7 +1,7 @@
 #include "authserver/message-processor.h"
 
 
-void _FillBuffer(uint32 message_type, uint8 payload[], uint32 payload_size, const uint8 buffer[])
+void _FillBuffer(uint32 message_type, const uint8 payload[], uint32 payload_size, uint8 buffer[])
 {
     uint8               *buffer_ptr; 
 
@@ -39,7 +39,9 @@ void Test_MessageAuthenticate()
     _FillBuffer(kMessageAuthenticate, payload, sizeof(payload), buffer); 
 
     Message_Init(&message); 
-    Message_ParseFromBuffer(&message, buffer, sizeof(buffer)); 
+    Message_ParseFromBuffer(&message, buffer, sizeof(buffer));
+
+    assert(MessageProcessor_Process(&message) == TRUE);
 
 }
 
