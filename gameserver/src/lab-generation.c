@@ -54,7 +54,7 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 
 	// set exit point
 	LabPointsMap_GetPointByID(temp_points_map, p / 2 + 1, &lab_point);
-	CORE_DebugPrint("Set %u as exit\n", p / 2 + 1);
+	CORE_DebugInfo("Set %u as exit\n", p / 2 + 1);
 	lab_point.is_exit = TRUE;
 	LabPointsMap_ChangePoint(temp_points_map, lab_point);
 
@@ -266,7 +266,7 @@ static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst
 	// sort edges randomly
 	CORE_GenerateRandomDataToBuffer(random_data, RANDOM_DATA_SIZE);
 	qsort(sorted_edges, sorted_edges_size, sizeof(Edge), INTERNAL_SortEdgesRandomly);
-	CORE_DebugPrint("sorted_edges_size: %u\n", sorted_edges_size);
+	CORE_DebugInfo("sorted_edges_size: %u\n", sorted_edges_size);
 
 
 	// create disjoint set from edges and union all possible edges according to Kruskal's algo
@@ -288,8 +288,8 @@ static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst
 	DisjointSet_GetSubsetsCount(disjoint_set_handle, &subsets_left);
 	DisjointSet_Free(&disjoint_set_handle);
 
-	CORE_DebugPrint("subsets_left: %u\n", subsets_left);
-	CORE_DebugPrint("mst_edges_size: %u\n", mst_edges_size);
+	CORE_DebugInfo("subsets_left: %u\n", subsets_left);
+	CORE_DebugInfo("mst_edges_size: %u\n", mst_edges_size);
 
 
 	// create new lab points map accordoing to mst_edges

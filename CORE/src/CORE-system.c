@@ -23,13 +23,6 @@ CORE_Bool CORE_GenerateRandomDataToBuffer(uint8 buffer[], uint32 buffer_size)
 		return FALSE;
 	}
 
-	CORE_DebugPrint("Random data: ");
-	for (uint32 i = 0; i < buffer_size; i++)
-	{
-		CORE_DebugPrint("%02x ", buffer[i]);
-	}
-	CORE_DebugPrint("\n");
-
 	CORE_FileClose(file);
 	return TRUE;
 }

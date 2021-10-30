@@ -2,5 +2,4 @@
 #define _CORE_DEBUG_PRIVATE_H_
 
 
-
 #endif

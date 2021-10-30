@@ -64,7 +64,6 @@ void Test_CommandPlayerMove()
 {
 	Command 		command;
 	uint8 			buffer[56];
-	uint32  		validation_header;
 	uint32  		player1_index;
 	uint32  		player2_index;
 	uint32 			session_index;
