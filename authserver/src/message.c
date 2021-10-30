@@ -37,6 +37,7 @@ CORE_Bool Message_ParseFromBuffer(Message *instance, const uint8 buffer[], uint3
     memcpy(&instance->header, buffer_ptr, sizeof(_MessageHeader)); 
     buffer_ptr += sizeof(_MessageHeader); 
     buffer_size_left -= sizeof(_MessageHeader); 
+    instance->is_header_set = TRUE;
 
     if (buffer_size_left > _MESSAGE_MAX_PAYLOAD_SIZE)
     {
