@@ -1,6 +1,8 @@
 #include "CORE.h"
 #include "authserver/auth-io-system.h"
 #include "authserver/config.h"
+#include "authserver/message.h"
+#include "authserver/message-processor.h"
 
 
 /*****************************************************************************************************************************/
@@ -34,7 +36,20 @@ static void _TCP_ServerOnRead(CORE_TCPServer tcp_server, void *context,
                              CORE_TCPServer_ClientConnection client_connection, 
                              const uint8 data[], uint32 data_size)
 {
+    Message             message;
 
+    Message_Init(&message);
+    if(Message_ParseFromBuffer(&message, data, data_size) == FALSE)
+    {
+        CORE_DebugError("Parse `data` for command error\n"); 
+        return; 
+    }
+
+    if(MessageProcessor_Process(&message) == FALSE)
+    {
+        CORE_DebugError("Command processing error\n"); 
+        return; 
+    }
 }
 
 /*****************************************************************************************************************************/

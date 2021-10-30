@@ -18,8 +18,9 @@ add_executable(ProjectLabyrinthTest test/gameserver/all-tests.c)
 target_link_libraries(ProjectLabyrinthTest PUBLIC 
 	CORE 
 	GameServer
+	GameServerTest
 	AuthServer
-	GameServerTest 
+	AuthServerTest 
 	CORETest 
 	uv
 )
