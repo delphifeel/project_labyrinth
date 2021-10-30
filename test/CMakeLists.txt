@@ -16,6 +16,7 @@ target_link_libraries(GameServerTest PUBLIC
 
 add_library(AuthServerTest
 	authserver/test-message.c
+	authserver/test-messages-processor.c
 )
 
 target_include_directories(AuthServerTest PUBLIC
