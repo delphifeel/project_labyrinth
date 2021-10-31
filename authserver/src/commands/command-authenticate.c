@@ -1,4 +1,4 @@
-#include "authserver/message.h"
+#include "command.h"
 
 #define MAX_LOGIN_SIZE         (36)
 #define MAX_PASSWORD_SIZE      (24)
@@ -12,13 +12,13 @@ typedef struct AuthenticatePayload
 } AuthenticatePayload; 
 
 
-CORE_Bool MessageAuthenticate_Process(Message *message)
+CORE_Bool CommandAuthenticate_Process(Command *command, Command *out_response_command)
 {
     const AuthenticatePayload       *payload;
     const uint8                     *payload_raw;
     uint32                          payload_size; 
 
-    Message_GetPayloadPtr(message, &payload_raw, &payload_size); 
+    Command_GetPayloadPtr(command, &payload_raw, &payload_size); 
 
     if (payload_size != sizeof(AuthenticatePayload))
     {

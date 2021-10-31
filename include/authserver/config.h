@@ -2,14 +2,14 @@
 #define _AUTH_SERVER_CONFIG_H_
 
 
-/*
+/**
  * 	
  * 		AUTH SERVER CONFIG FILE 
  * 
  */
 
 
-/*
+/**
  * 		AuthIOSystem: Default port for client-server communication
  */
 

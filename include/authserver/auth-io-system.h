@@ -1,5 +1,5 @@
-#ifndef _IN_AUTH_AUTH_SYSTEM_H_
-#define _IN_AUTH_AUTH_SYSTEM_H_
+#ifndef _AUTH_IO_SYSTEM_H_
+#define _AUTH_IO_SYSTEM_H_
 
 #include "CORE.h"
 /*****************************************************************************************************************************/

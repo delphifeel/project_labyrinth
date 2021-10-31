@@ -1,10 +1,14 @@
 #include "CORE.h"
+#include "command.h"
+#include "commands-processor.h"
 #include "gameserver/commands-io-system.h"
 #include "gameserver/game-server-config.h"
-#include "gameserver/command.h"
-#include "gameserver/commands-processor.h"
+#include "gameserver/gameserver-command.h"
+#include "gameserver/gameserver-command-types.h"
 
 /*****************************************************************************************************************************/
+
+#define _GAMESERVER_COMMAND_VALIDATION_ID    (0xDEADBEAF)
 
 #define CONNECTIONS_PER_SESSION  (SESSION_PLAYERS_COUNT)
 
@@ -14,6 +18,7 @@ CORE_OBJECT_INTERFACE(CommandsIOSystem,
     LabSession                             *sessions;
     uint32                                 sessions_size;
 
+    CommandsProcessor                      commands_processor;
 	CORE_TCPServer                         tcp_server;
 
     // OnCommandGetFunc   on_command_get;          
@@ -46,26 +51,79 @@ static void _TCPServerOnCloseConnection(CORE_TCPServer tcp_server, void *context
     CORE_DebugInfo("TCP Server - close connection\n");
 }
 
+static CORE_Bool _ParseCommandFromBuffer(GameServerCommand *instance, const uint8 buffer[], uint32 buffer_size)
+{
+    CORE_AssertPointer(buffer);
+
+    uint32          validation_header;
+    const uint8     *buffer_ptr;
+    uint32          buffer_size_left;
+
+
+    buffer_ptr = buffer;
+    buffer_size_left = buffer_size;
+
+    // 0...4    (4 bytes)   - validation header
+    validation_header = *((uint32 *) buffer_ptr);
+    if (validation_header != _GAMESERVER_COMMAND_VALIDATION_ID)
+    {
+        CORE_DebugError("no validation header - `buffer` is not a command\n");
+        return FALSE;
+    }
+    buffer_ptr += 4;
+    buffer_size_left -= 4;
+
+    // 4...8   (4 bytes)  - command type
+    GameServerCommand_SetType(instance, *((uint32 *) buffer_ptr));
+    buffer_ptr += 4;
+    buffer_size_left -= 4;
+
+    // 8...12   (4 bytes) - command session index
+    GameServerCommand_SetSessionIndex(instance, *((uint32 *) buffer_ptr));
+    buffer_ptr += 4;
+    buffer_size_left -= 4;
+
+    // 12...16   (4 bytes) - command player index
+    GameServerCommand_SetPlayerIndex(instance, *((uint32 *) buffer_ptr));
+    buffer_ptr += 4;
+    buffer_size_left -= 4;
+
+    // 16...48   (32 bytes) - command player token
+    GameServerCommand_SetPlayerToken(instance, buffer_ptr);
+    buffer_ptr += 32;
+    buffer_size_left -= 32;
+
+    // 48...~   (~ bytes) - command payload
+    if (GameServerCommand_SetPayload(instance, buffer_ptr, buffer_size_left) == FALSE)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context, 
                              CORE_TCPServer_ClientConnection client_connection,
                              const uint8 data[], uint32 data_size)
 {
-    Command                         command;
-    Command                         
+    GameServerCommand               command;
+    GameServerCommand               response_command;
     CommandsIOSystem                instance;
     uint32                          session_index;
     uint32                          player_index;
 
 
-    Command_Init(&command);
-    if (Command_ParseFromBuffer(&command, data, data_size) == FALSE)
+    GameServerCommand_Init(&command);
+    GameServerCommand_Init(&response_command);
+
+    if (_ParseCommandFromBuffer(&command, data, data_size) == FALSE)
     {
         CORE_DebugError("Parse `data` for command error\n");
         return;
     }
     
-    Command_GetSessionIndex(&command, &session_index);
-    Command_GetPlayerIndex(&command, &player_index);
+    GameServerCommand_GetSessionIndex(&command, &session_index);
+    GameServerCommand_GetPlayerIndex(&command, &player_index);
 
     // add tcp_client to `tcp_clients_map` if its not in map already
 
@@ -83,7 +141,9 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
         instance->tcp_clients_map[session_index][player_index] = client_connection;
     }
 
-    if (CommandsProcessor_Process(&command, instance->sessions, instance->sessions_size) == FALSE)
+    GameServerCommand_SetSessionsPtr(&command, instance->sessions, instance->sessions_size);
+
+    if (CommandsProcessor_Process(instance->commands_processor, (Command *) &command, (Command *) &response_command) == FALSE)
     {
         CORE_DebugError("Command processing error\n");
         return;
@@ -138,6 +198,8 @@ void CommandsIOSystem_Setup(CommandsIOSystem instance, LabSession sessions[], ui
 
     CORE_TCPServer_SetContext(instance->tcp_server, instance);
 	CORE_TCPServer_Setup(instance->tcp_server, COMMANDS_IO_SYSTEM_DEFAULT_PORT);
+
+    CommandsProcessor_Setup(instance->commands_processor, GetGameServerCommandToProcessFunc());
 }
 
 void CommandsIOSystem_Start(CommandsIOSystem instance)
@@ -157,10 +219,12 @@ void CommandsIOSystem_Create(CommandsIOSystem *instance_ptr)
 
     CORE_MemZero(&instance->tcp_clients_map, sizeof(instance->tcp_clients_map));
     CORE_TCPServer_Create(&instance->tcp_server);
+    CommandsProcessor_Create(&instance->commands_processor);
 }
 
 void CommandsIOSystem_Free(CommandsIOSystem *instance_ptr)
 {
+    CommandsProcessor_Free(&(*instance_ptr)->commands_processor);
     CORE_TCPServer_Free(&(*instance_ptr)->tcp_server);
 
 	CORE_OBJECT_FREE(instance_ptr);

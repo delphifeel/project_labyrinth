@@ -3,12 +3,12 @@
 /*****************************************************************************************************************************/
 
 CORE_OBJECT_INTERFACE(CommandsProcessor,
-	CommandTypeToProcessFunc *command_to_process_func_array;
+	const CommandToProcessFunc *command_to_process_func_array;
 );
 
 /*****************************************************************************************************************************/
 
-void CommandsProcessor_Process(CommandsProcessor instance, const Command *command, const Command *out_response_command);
+CORE_Bool CommandsProcessor_Process(CommandsProcessor instance, Command *command, Command *out_response_command)
 {
 	CORE_AssertPointer(instance->command_to_process_func_array);
 
@@ -22,17 +22,19 @@ void CommandsProcessor_Process(CommandsProcessor instance, const Command *comman
     if (command_to_process_func.command_type != command_type)
     {
         CORE_DebugError("Wrong order in `command_to_process_func_array`. `command` index is not %u\n", command_type);
-        return;
+        return FALSE;
     }
 
     if (command_to_process_func.process_func(command, out_response_command) == FALSE)
     {
         CORE_DebugError("Command %u processing error\n", command_type);
-        return;
+        return FALSE;
     }
+
+    return TRUE;
 }
 
-void CommandsProcessor_Setup(CommandsProcessor instance, const CommandTypeToProcessFunc *command_to_process_func_array);
+void CommandsProcessor_Setup(CommandsProcessor instance, const CommandToProcessFunc *command_to_process_func_array)
 {
 	CORE_AssertPointer(command_to_process_func_array);
 
@@ -49,7 +51,7 @@ void CommandsProcessor_Create(CommandsProcessor *instance_ptr)
 	CORE_OBJECT_CREATE(instance_ptr, CommandsProcessor);
 	instance = *instance_ptr;
 
-	instance->command_type_to_process_func = NULL;
+	instance->command_to_process_func_array = NULL;
 }
 
 void CommandsProcessor_Free(CommandsProcessor *instance_ptr)

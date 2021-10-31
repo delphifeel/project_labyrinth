@@ -1,28 +1,6 @@
-#include "gameserver/commands-processor.h"
-
-static void _FillBuffer(uint32 command_type, uint32 player_index, 
-						uint32 session_index, const uint8 player_token[TOKEN_SIZE],
-						const uint8 payload[], uint32 payload_size, uint8 buffer[])
-{
-	uint8 		*buffer_ptr;
-	uint32 		validation_header;
-
-
-	validation_header = 0xAFBEADDE;
-	buffer_ptr = buffer;
-
-	memcpy(buffer_ptr, &validation_header, 4);
-	buffer_ptr += 4;
-	memcpy(buffer_ptr, &command_type, 4);
-	buffer_ptr += 4;
-	memcpy(buffer_ptr, &player_index, 4);
-	buffer_ptr += 4;
-	memcpy(buffer_ptr, &session_index, 4);
-	buffer_ptr += 4;
-	memcpy(buffer_ptr, player_token, TOKEN_SIZE);
-	buffer_ptr += TOKEN_SIZE;
-	memcpy(buffer_ptr, payload, payload_size);
-}
+#include "commands-processor.h"
+#include "gameserver/gameserver-command.h"
+#include "gameserver/gameserver-command-types.h"
 
 static void _InitSession(LabSession *out_session, 
 						 uint32 player1_id, uint32 player2_id, 
@@ -62,14 +40,15 @@ static void _FreeSession(LabSession *session_ptr)
  */
 void Test_CommandPlayerMove()
 {
-	Command 		command;
-	uint8 			buffer[56];
-	uint32  		player1_index;
-	uint32  		player2_index;
-	uint32 			session_index;
-	uint8 			player_token[TOKEN_SIZE];
-	uint32  		directions[2];
-	LabSession 		sessions[1];
+	CommandsProcessor 		commands_processor;
+	GameServerCommand 		command;
+	GameServerCommand 		response_command;
+	uint32  				player1_index;
+	uint32  				player2_index;
+	uint32 					session_index;
+	uint8 					player_token[TOKEN_SIZE];
+	uint32  				directions[2];
+	LabSession 				sessions[1];
 
 	session_index = 0;
 	directions[0] = kMoveDirection_Left;
@@ -80,16 +59,23 @@ void Test_CommandPlayerMove()
 
 	_InitSession(&sessions[0], player1_id, player2_id, &player1_index, &player2_index);
 
-	_FillBuffer(kCommandType_PlayerMove, player1_index, session_index, player_token, 
-				(const uint8 *) directions, sizeof(directions), buffer);
+
+	GameServerCommand_Init(&command);
+	GameServerCommand_SetType(&command, kCommandType_PlayerMove);
+	GameServerCommand_SetPlayerIndex(&command, player1_index);
+	GameServerCommand_SetSessionIndex(&command, session_index);
+	GameServerCommand_SetSessionsPtr(&command, sessions, 1);
+	GameServerCommand_SetPlayerToken(&command, player_token);
+	GameServerCommand_SetPayload(&command, (const uint8 *) directions, sizeof(directions));
 
 
-	Command_Init(&command);
-	Command_ParseFromBuffer(&command, buffer, sizeof(buffer));
 
-	// assert(CommandsProcessor_Process(&command, sessions, 1) == TRUE);
+	CommandsProcessor_Create(&commands_processor);
+	CommandsProcessor_Setup(commands_processor, GetGameServerCommandToProcessFunc());
+	assert(CommandsProcessor_Process(commands_processor, (Command *) &command, (Command *) &response_command) == TRUE);
 
 	_FreeSession(&sessions[0]);
+	CommandsProcessor_Free(&commands_processor);
 }
 
 

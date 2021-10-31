@@ -1,5 +1,5 @@
-#ifndef _IN_OUT_SYSTEM_H_
-#define _IN_OUT_SYSTEM_H_
+#ifndef _COMMANDS_IO_SYSTEM_
+#define _COMMANDS_IO_SYSTEM_
 
 #include "CORE.h"
 #include "command.h"

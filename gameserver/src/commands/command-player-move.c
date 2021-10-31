@@ -1,14 +1,17 @@
+#include "command.h"
 #include "gameserver/player.h"
-#include "gameserver/common.h"
-#include "gameserver/command.h"
+#include "gameserver/gameserver-command.h"
 
 typedef struct PlayerMovePayload 
 {
 	uint32 	directions[2];
 } PlayerMovePayload;
 
-CORE_Bool CommandPlayerMove_Process(Command *command, LabSession sessions[], uint32 sessions_size)
+CORE_Bool CommandPlayerMove_Process(Command *command, Command *out_response_command)
 {
+	GameServerCommand 			*game_server_command;
+	LabSession 					*sessions;
+	uint32 						sessions_size;
 	LabSession 					session;
 	Player 						player;
 	MoveDirection 				directions[2];
@@ -20,9 +23,12 @@ CORE_Bool CommandPlayerMove_Process(Command *command, LabSession sessions[], uin
 	uint32 						payload_size;
 
 
-	Command_GetSessionIndex(command, &session_index);
-	Command_GetPlayerIndex(command, &player_index);
-	Command_GetPayloadPtr(command, &payload_raw, &payload_size);
+	game_server_command = (GameServerCommand *) command;
+
+	GameServerCommand_GetSessionsPtr(game_server_command, &sessions, &sessions_size);
+	GameServerCommand_GetSessionIndex(game_server_command, &session_index);
+	GameServerCommand_GetPlayerIndex(game_server_command, &player_index);
+	GameServerCommand_GetPayloadPtr(game_server_command, &payload_raw, &payload_size);
 
 	if (payload_size != sizeof(PlayerMovePayload))
 	{

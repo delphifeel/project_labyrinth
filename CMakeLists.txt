@@ -12,6 +12,7 @@ add_subdirectory(gameserver)
 add_subdirectory(authserver)
 add_subdirectory(CORE)
 add_subdirectory(test)
+add_subdirectory(lib)
 
 
 # third-party libraries 
@@ -22,6 +23,7 @@ add_executable(ProjectLabyrinthTest test/gameserver/all-tests.c)
 
 target_link_libraries(ProjectLabyrinthTest PUBLIC 
 	CORE 
+	CommandsProcessor
 	GameServer
 	GameServerTest
 	AuthServer
