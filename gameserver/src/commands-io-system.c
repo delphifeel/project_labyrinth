@@ -51,6 +51,7 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
                              const uint8 data[], uint32 data_size)
 {
     Command                         command;
+    Command                         
     CommandsIOSystem                instance;
     uint32                          session_index;
     uint32                          player_index;

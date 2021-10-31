@@ -45,6 +45,7 @@ CORE_Bool CommandsProcessor_Process(Command *command, LabSession sessions[], uin
 
     if (command_processor.process_cb(command, sessions, sessions_size) == FALSE)
     {
+        CORE_DebugError("Command %u processing error\n", command_type);
         return FALSE;
     }
 

@@ -9,13 +9,16 @@ project_labyrinth
 # Current Tasks
 
 - Player tests 
-- Cmake configuration [@D-Hatz]
-- In/Out System
-
+- Auth Server (dhatz)
+- Game Server (delphifeel)
+- Add styleguide to docs
 
 
 # Naming Conventions
 
-- If struct contains Struct in name it should be handled as struct without any getter or setters
-- If struct is syntax-sugar that create via CORE_OBJECT_INTERFACE it should be handled as `Class`
-- All fields in `Class` are "snake case" 
+- Add styleguide to docs
+
+# TODOS
+
+- AuthServer and GameServer using common `command` processing system. 
+At some point we will need to refactor it to base `command` class.
