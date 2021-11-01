@@ -36,7 +36,7 @@ void Test_CommandAuthenticate()
 
     CommandsProcessor_Create(&commands_processor);
     CommandsProcessor_Setup(commands_processor, GetAuthCommandToProcessFunc());
-    assert(CommandsProcessor_Process(commands_processor, &command, &response_command) == TRUE);
+    CORE_Assert(CommandsProcessor_Process(commands_processor, &command, &response_command) == TRUE);
 
     CommandsProcessor_Free(&commands_processor);
 }

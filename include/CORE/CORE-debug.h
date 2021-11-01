@@ -23,7 +23,7 @@
 
 #define CORE_DebugPrint 								printf
 
-#define _CORE_DEBUG_MESSAGE_PRE(_TYPE)					(CORE_DebugPrint("[%s] (%s: %d) %s() ", (_TYPE), __FILE__, __LINE__, __func__))
+#define _CORE_DEBUG_MESSAGE_PRE(_TYPE)					(CORE_DebugPrint("[%s] (%s:%d) %s() ", (_TYPE), __FILE__, __LINE__, __func__))
 
 
 /**
@@ -35,7 +35,7 @@
  */
 #define CORE_Assert(EXPRESSION) 						(	(EXPRESSION) ? (void) TRUE : (_CORE_DEBUG_MESSAGE_PRE("ASSERT FAILED"), CORE_DebugPrint("%s\n", #EXPRESSION), exit(0))	)
 #define CORE_AssertWithMessage(EXPRESSION, ...) 		(	(EXPRESSION) ? (void) TRUE : (_CORE_DEBUG_MESSAGE_PRE("ASSERT FAILED"), CORE_DebugPrint(__VA_ARGS__), exit(0))	)
-#define CORE_AssertPointer(PTR) 						(	CORE_AssertWithMessage((PTR) != NULL, "Pointer is NULL\n")	)
+#define CORE_AssertPointer(PTR) 						(	CORE_AssertWithMessage((PTR) != NULL, "`%s` is NULL\n", #PTR)	)
 #define CORE_Abort(...) 								(	_CORE_DEBUG_MESSAGE_PRE("ABORT"), CORE_DebugPrint(__VA_ARGS__), abort()	)
 
 /**

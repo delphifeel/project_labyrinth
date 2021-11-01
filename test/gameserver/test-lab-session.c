@@ -33,23 +33,23 @@ static void Test_LabSessionAddPlayers()
 	LabSession_AddPlayer(instance, player1_id, player1_token, &player1_index);
 	LabSession_AddPlayer(instance, player2_id, player2_token, &player2_index);
 
-	assert(player1_index == 0);
-	assert(player2_index == 1);
+	CORE_Assert(player1_index == 0);
+	CORE_Assert(player2_index == 1);
 
 	LabSession_FindPlayer(instance, player1_index, &player1);
 	LabSession_FindPlayer(instance, player2_index, &player2);
 
 	Player_GetId(player1, &temp_id);
-	assert(temp_id == player1_id);
+	CORE_Assert(temp_id == player1_id);
 
 	Player_GetId(player2, &temp_id);
-	assert(temp_id == player2_id);
+	CORE_Assert(temp_id == player2_id);
 
 	Player_GetTokenPtr(player1, &temp_token_ptr);
-	assert(memcmp(temp_token_ptr, player1_token, TOKEN_SIZE) == 0);
+	CORE_Assert(memcmp(temp_token_ptr, player1_token, TOKEN_SIZE) == 0);
 
 	Player_GetTokenPtr(player2, &temp_token_ptr);
-	assert(memcmp(temp_token_ptr, player2_token, TOKEN_SIZE) == 0);
+	CORE_Assert(memcmp(temp_token_ptr, player2_token, TOKEN_SIZE) == 0);
 
 	LabSession_Free(&instance);
 }

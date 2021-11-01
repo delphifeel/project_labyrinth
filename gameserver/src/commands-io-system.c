@@ -143,7 +143,9 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
 
     GameServerCommand_SetSessionsPtr(&command, instance->sessions, instance->sessions_size);
 
-    if (CommandsProcessor_Process(instance->commands_processor, (struct Command *) &command, (struct Command *) &response_command) == FALSE)
+    if (CommandsProcessor_Process(instance->commands_processor, 
+                                  (struct Command *) &command, 
+                                  (struct Command *) &response_command) == FALSE)
     {
         CORE_DebugError("Command processing error\n");
         return;

@@ -14,8 +14,8 @@ void Test_PlayerInit()
     Player_Setup(instance, Mock_Position);
 
     Player_GetPosition(instance, &PlayerPosition);
-    assert(PlayerPosition.X == Mock_Position.X); 
-    assert(PlayerPosition.Y == Mock_Position.Y); 
+    CORE_Assert(PlayerPosition.X == Mock_Position.X); 
+    CORE_Assert(PlayerPosition.Y == Mock_Position.Y); 
 
     Player_Free(&instance); 
 }
@@ -32,11 +32,11 @@ void Test_PlayerSetGetName()
 
     Player_SetName(instance, Name); 
     Player_GetName(instance, player_name, sizeof(player_name));
-    assert(strcmp(player_name, Name) == 0);
+    CORE_Assert(strcmp(player_name, Name) == 0);
 
     strncpy(player_name, "Lorem ipsum dolor", sizeof(player_name));   
     Player_GetName(instance, player_name, sizeof(player_name));
-    assert(strcmp(player_name, Name) == 0);
+    CORE_Assert(strcmp(player_name, Name) == 0);
 
     Player_Free(&instance); 
 }
@@ -52,7 +52,7 @@ void Test_PlayerSetGetId()
 
     Player_SetId(instance, Mock_Id); 
     Player_GetId(instance, &Id);
-    assert(Id == Mock_Id); 
+    CORE_Assert(Id == Mock_Id); 
 
     Player_Free(&instance); 
 }

@@ -34,21 +34,21 @@ void Test_Command()
 
 	// Command_Init(&command);
 
-	// assert(Command_ParseFromBuffer(&command, buffer, sizeof(buffer)) == TRUE);
+	// CORE_Assert(Command_ParseFromBuffer(&command, buffer, sizeof(buffer)) == TRUE);
 
 	// Command_GetType(&command, &temp_uint);
-	// assert(temp_uint == command_type);
+	// CORE_Assert(temp_uint == command_type);
 
 	// Command_GetSessionIndex(&command, &temp_uint);
-	// assert(temp_uint == session_index);
+	// CORE_Assert(temp_uint == session_index);
 
 	// Command_GetPlayerIndex(&command, &temp_uint);
-	// assert(temp_uint == player_index);
+	// CORE_Assert(temp_uint == player_index);
 
 	// Command_GetPayloadPtr(&command, &payload, &payload_size);
-	// assert(payload_size == sizeof(buffer) - 48);
+	// CORE_Assert(payload_size == sizeof(buffer) - 48);
 
-	// assert(payload[0] == 0);
-	// assert(payload[1] == 1);
-	// assert(payload[2] == 2);
+	// CORE_Assert(payload[0] == 0);
+	// CORE_Assert(payload[1] == 1);
+	// CORE_Assert(payload[2] == 2);
 }

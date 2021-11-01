@@ -19,7 +19,7 @@ void 		GameServerCommand_GetPlayerTokenPtr(struct GameServerCommand *instance, c
 void 		GameServerCommand_GetPayloadPtr(struct GameServerCommand *instance, const uint8 **out_payload_ptr, uint32 *out_payload_size);
 
 void 		GameServerCommand_SetType(struct GameServerCommand *instance, uint32 command_type);
-void 		GameServerCommand_SetSessionsPtr(struct GameServerCommand *instance, LabSession *sessions_ptr, uint32 session_size);
+void 		GameServerCommand_SetSessionsPtr(struct GameServerCommand *instance, LabSession *sessions_ptr, uint32 sessions_size);
 void 		GameServerCommand_SetSessionIndex(struct GameServerCommand *instance, uint32 session_index);
 void 		GameServerCommand_SetPlayerIndex(struct GameServerCommand *instance, uint32 player_index);
 void 		GameServerCommand_SetPlayerToken(struct GameServerCommand *instance, const uint8 player_token[TOKEN_SIZE]);
