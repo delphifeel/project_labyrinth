@@ -31,13 +31,13 @@ void OnCloseConnectionCb(CORE_TCPServer instance, void *context, CORE_TCPServer_
 
 void Test_CORE_TCPServer()
 {
-	CORE_TCPServer server;
+	// CORE_TCPServer server;
 
-	CORE_TCPServer_Create(&server);
-	CORE_TCPServer_OnRead(server, OnReadCb);
-	CORE_TCPServer_OnError(server, OnErrorCb);
-	CORE_TCPServer_OnNewConnection(server, OnNewConnectionCb);
-	CORE_TCPServer_OnCloseConnection(server, OnCloseConnectionCb);
-	CORE_TCPServer_Setup(server, 7000);
-	CORE_TCPServer_Start(server);
+	// CORE_TCPServer_Create(&server);
+	// CORE_TCPServer_OnRead(server, OnReadCb);
+	// CORE_TCPServer_OnError(server, OnErrorCb);
+	// CORE_TCPServer_OnNewConnection(server, OnNewConnectionCb);
+	// CORE_TCPServer_OnCloseConnection(server, OnCloseConnectionCb);
+	// CORE_TCPServer_Setup(server, 7000);
+	// CORE_TCPServer_Start(server);
 }

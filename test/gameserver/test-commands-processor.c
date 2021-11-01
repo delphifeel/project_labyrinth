@@ -40,15 +40,15 @@ static void _FreeSession(LabSession *session_ptr)
  */
 void Test_CommandPlayerMove()
 {
-	CommandsProcessor 		commands_processor;
-	GameServerCommand 		command;
-	GameServerCommand 		response_command;
-	uint32  				player1_index;
-	uint32  				player2_index;
-	uint32 					session_index;
-	uint8 					player_token[TOKEN_SIZE];
-	uint32  				directions[2];
-	LabSession 				sessions[1];
+	CommandsProcessor 				commands_processor;
+	struct GameServerCommand 		command;
+	struct GameServerCommand 		response_command;
+	uint32  						player1_index;
+	uint32  						player2_index;
+	uint32 							session_index;
+	uint8 							player_token[TOKEN_SIZE];
+	uint32  						directions[2];
+	LabSession 						sessions[1];
 
 	session_index = 0;
 	directions[0] = kMoveDirection_Left;
@@ -72,7 +72,7 @@ void Test_CommandPlayerMove()
 
 	CommandsProcessor_Create(&commands_processor);
 	CommandsProcessor_Setup(commands_processor, GetGameServerCommandToProcessFunc());
-	assert(CommandsProcessor_Process(commands_processor, (Command *) &command, (Command *) &response_command) == TRUE);
+	assert(CommandsProcessor_Process(commands_processor, (struct Command *) &command, (struct Command *) &response_command) == TRUE);
 
 	_FreeSession(&sessions[0]);
 	CommandsProcessor_Free(&commands_processor);

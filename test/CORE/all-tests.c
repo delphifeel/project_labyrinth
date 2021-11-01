@@ -2,7 +2,7 @@ extern void Test_CORE_TCPServer(void);
 
 #include "CORE.h"
 
-int main()
+void CORETests_Run()
 {
 	Test_CORE_TCPServer();
 }

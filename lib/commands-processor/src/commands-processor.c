@@ -8,7 +8,7 @@ CORE_OBJECT_INTERFACE(CommandsProcessor,
 
 /*****************************************************************************************************************************/
 
-CORE_Bool CommandsProcessor_Process(CommandsProcessor instance, Command *command, Command *out_response_command)
+CORE_Bool CommandsProcessor_Process(CommandsProcessor instance, struct Command *command, struct Command *out_response_command)
 {
 	CORE_AssertPointer(instance->command_to_process_func_array);
 
@@ -27,7 +27,7 @@ CORE_Bool CommandsProcessor_Process(CommandsProcessor instance, Command *command
 
     if (command_to_process_func.process_func(command, out_response_command) == FALSE)
     {
-        CORE_DebugError("Command %u processing error\n", command_type);
+        CORE_DebugError("struct Command %u processing error\n", command_type);
         return FALSE;
     }
 

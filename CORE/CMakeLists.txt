@@ -9,3 +9,7 @@ target_include_directories(CORE PUBLIC
 	"${PROJECT_SOURCE_DIR}/third-party-libraries/libuv/include"
 	"${PROJECT_SOURCE_DIR}/third-party-libraries/libuv/src"
 )
+
+target_link_libraries(CORE PUBLIC 
+	uv
+)

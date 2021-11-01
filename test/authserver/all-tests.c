@@ -2,7 +2,7 @@ extern void Test_CommandsProcessor();
 
 #include "CORE.h"
 
-int main()
+void AuthServerTests_Run()
 {
     // Test_Message();
     Test_CommandsProcessor();

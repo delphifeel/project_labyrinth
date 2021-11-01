@@ -12,7 +12,7 @@ typedef struct AuthenticatePayload
 } AuthenticatePayload; 
 
 
-CORE_Bool CommandAuthenticate_Process(Command *command, Command *out_response_command)
+CORE_Bool CommandAuthenticate_Process(struct Command *command, struct Command *out_response_command)
 {
     const AuthenticatePayload       *payload;
     const uint8                     *payload_raw;

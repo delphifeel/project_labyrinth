@@ -51,7 +51,7 @@ static void _TCPServerOnCloseConnection(CORE_TCPServer tcp_server, void *context
     CORE_DebugInfo("TCP Server - close connection\n");
 }
 
-static CORE_Bool _ParseCommandFromBuffer(GameServerCommand *instance, const uint8 buffer[], uint32 buffer_size)
+static CORE_Bool _ParseCommandFromBuffer(struct GameServerCommand *instance, const uint8 buffer[], uint32 buffer_size)
 {
     CORE_AssertPointer(buffer);
 
@@ -106,8 +106,8 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
                              CORE_TCPServer_ClientConnection client_connection,
                              const uint8 data[], uint32 data_size)
 {
-    GameServerCommand               command;
-    GameServerCommand               response_command;
+    struct GameServerCommand        command;
+    struct GameServerCommand        response_command;
     CommandsIOSystem                instance;
     uint32                          session_index;
     uint32                          player_index;
@@ -143,7 +143,7 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
 
     GameServerCommand_SetSessionsPtr(&command, instance->sessions, instance->sessions_size);
 
-    if (CommandsProcessor_Process(instance->commands_processor, (Command *) &command, (Command *) &response_command) == FALSE)
+    if (CommandsProcessor_Process(instance->commands_processor, (struct Command *) &command, (struct Command *) &response_command) == FALSE)
     {
         CORE_DebugError("Command processing error\n");
         return;

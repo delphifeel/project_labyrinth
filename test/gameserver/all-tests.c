@@ -7,7 +7,7 @@ extern void Test_CommandsProcessor();
 
 #include "CORE.h"
 
-int main()
+void GameServerTests_Run()
 {
 	Test_DisjointSet();
 	Test_LabGeneration();

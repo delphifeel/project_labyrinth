@@ -11,8 +11,8 @@
 void Test_CommandAuthenticate()
 {
     CommandsProcessor  commands_processor;
-    Command            command;
-    Command            response_command;
+    struct Command     command;
+    struct Command     response_command;
     uint32             command_type;
     uint8              payload[60];
     uint8              *payload_ptr;

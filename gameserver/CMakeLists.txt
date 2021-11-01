@@ -17,3 +17,7 @@ target_include_directories(GameServer PUBLIC
 	"${PROJECT_SOURCE_DIR}/include"
 	"${PROJECT_SOURCE_DIR}/lib/commands-processor/include"
 )
+
+target_link_libraries(GameServer PUBLIC 
+	CORE
+)

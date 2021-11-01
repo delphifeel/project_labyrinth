@@ -2,14 +2,14 @@
 
 /*****************************************************************************************************************************/
 
-void Command_GetType(Command *instance, uint32 *out_command_type)
+void Command_GetType(struct Command *instance, uint32 *out_command_type)
 {
 	CORE_AssertPointer(out_command_type);
 
 	*out_command_type = instance->type;
 }
 
-void Command_GetPayloadPtr(Command *instance, const uint8 **out_payload_ptr, uint32 *out_payload_size)
+void Command_GetPayloadPtr(struct Command *instance, const uint8 **out_payload_ptr, uint32 *out_payload_size)
 {
 	CORE_AssertPointer(instance->payload);
 	CORE_AssertPointer(out_payload_ptr);
@@ -19,12 +19,12 @@ void Command_GetPayloadPtr(Command *instance, const uint8 **out_payload_ptr, uin
 	*out_payload_size = instance->payload_size;
 }
 
-void Command_SetType(Command *instance, uint32 command_type)
+void Command_SetType(struct Command *instance, uint32 command_type)
 {
 	instance->type = command_type;
 }
 
-CORE_Bool Command_SetPayload(Command *instance, const uint8 payload[], uint32 payload_size)
+CORE_Bool Command_SetPayload(struct Command *instance, const uint8 payload[], uint32 payload_size)
 {
 	CORE_Assert(payload_size > 0);
 	CORE_AssertPointer(payload);
@@ -42,9 +42,9 @@ CORE_Bool Command_SetPayload(Command *instance, const uint8 payload[], uint32 pa
 
 /*****************************************************************************************************************************/
 
-void Command_Init(Command *instance)
+void Command_Init(struct Command *instance)
 {
-	CORE_MemZero(instance, sizeof(Command));
+	CORE_MemZero(instance, sizeof(struct Command));
 }
 
 /*****************************************************************************************************************************/

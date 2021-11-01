@@ -34,7 +34,7 @@ static void _TCP_ServerOnCloseConnection(CORE_TCPServer tcp_server, void *contex
     CORE_DebugInfo("TCP Server - close connection\n");
 }
 
-static CORE_Bool _ParseCommandFromBuffer(Command *instance, const uint8 buffer[], uint32 buffer_size)
+static CORE_Bool _ParseCommandFromBuffer(struct Command *instance, const uint8 buffer[], uint32 buffer_size)
 {
     CORE_AssertPointer(buffer);
 
@@ -74,8 +74,8 @@ static void _TCP_ServerOnRead(CORE_TCPServer tcp_server, void *context,
                              CORE_TCPServer_ClientConnection client_connection, 
                              const uint8 data[], uint32 data_size)
 {
-    Command             command;
-    Command             command_to_send;
+    struct Command      command;
+    struct Command      command_to_send;
     AuthIOSystem        instance;
 
 
