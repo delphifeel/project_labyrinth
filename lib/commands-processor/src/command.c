@@ -2,6 +2,13 @@
 
 /*****************************************************************************************************************************/
 
+void Command_GetSize(struct Command *instance, uint32 *out_size)
+{
+	CORE_AssertPointer(out_size);
+
+	*out_size = sizeof(instance->type) + instance->payload_size;
+}
+
 void Command_GetType(struct Command *instance, uint32 *out_command_type)
 {
 	CORE_AssertPointer(out_command_type);

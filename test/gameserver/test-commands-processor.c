@@ -71,7 +71,7 @@ void Test_CommandPlayerMove()
 
 
 	CommandsProcessor_Create(&commands_processor);
-	CommandsProcessor_Setup(commands_processor, GetGameServerCommandToProcessFunc());
+	CommandsProcessor_Setup(commands_processor, GetGameServerCommandToProcessFunc(), 0);
 	// CORE_Assert(CommandsProcessor_Process(commands_processor, (struct Command *) &command, (struct Command *) &response_command) == TRUE);
 
 	_FreeSession(&sessions[0]);

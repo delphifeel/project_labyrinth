@@ -43,6 +43,12 @@ static CORE_Bool _ParseCommandFromBuffer(struct Command *instance, const uint8 b
     uint32          buffer_size_left;
 
 
+    if (buffer_size < 8)
+    {
+        CORE_DebugError("`buffer` size is too small\n");
+        return FALSE;
+    }
+
     buffer_ptr = buffer;
     buffer_size_left = buffer_size;
 
@@ -50,7 +56,8 @@ static CORE_Bool _ParseCommandFromBuffer(struct Command *instance, const uint8 b
     validation_header = *((uint32 *) buffer_ptr);
     if (validation_header != _AUTH_COMMAND_VALIDATION_ID)
     {
-        CORE_DebugError("no validation header - `buffer` is not a command\n");
+        CORE_DebugError("No validation header - `buffer` is not a `Command`\n");
+        CORE_DebugInfo("Expected %x, got %x\n", _AUTH_COMMAND_VALIDATION_ID, validation_header);
         return FALSE;
     }
     buffer_ptr += 4;
@@ -76,6 +83,7 @@ static void _TCP_ServerOnRead(CORE_TCPServer tcp_server, void *context,
 {
     struct Command        command;
     struct Command        response_command;
+    uint32                response_command_size;
     AuthIOSystem          instance;
     CORE_Bool             is_have_response;
 
@@ -95,7 +103,8 @@ static void _TCP_ServerOnRead(CORE_TCPServer tcp_server, void *context,
 
     if (is_have_response == TRUE)
     {
-        // TODO(delphifeel): send response to client
+        Command_GetSize(&response_command, &response_command_size);
+        CORE_TCPServer_Write(tcp_server, client_connection, (const uint8 *) &response_command, response_command_size);
     }
 }
 
@@ -118,7 +127,7 @@ void AuthIOSystem_Setup(AuthIOSystem instance)
     CORE_TCPServer_SetContext(instance->tcp_server, instance);
     CORE_TCPServer_Setup(instance->tcp_server, AUTH_IO_SYSTEM_DEFAULT_PORT); 
 
-    CommandsProcessor_Setup(instance->commands_processor, GetAuthCommandToProcessFunc());
+    CommandsProcessor_Setup(instance->commands_processor, GetAuthCommandToProcessFunc(), GetAuthCommandToProcessFuncSize());
 }
 
 /*****************************************************************************************************************************/

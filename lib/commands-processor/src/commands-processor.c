@@ -3,7 +3,8 @@
 /*****************************************************************************************************************************/
 
 CORE_OBJECT_INTERFACE(CommandsProcessor,
-	const CommandToProcessFunc *command_to_process_func_array;
+	const CommandToProcessFunc     *command_to_process_func_array;
+    uint32                         command_to_process_func_array_size;
 );
 
 /*****************************************************************************************************************************/
@@ -20,6 +21,13 @@ CORE_Bool CommandsProcessor_Process(CommandsProcessor instance,
 
 
     Command_GetType(command, &command_type);
+
+    if (command_type >= instance->command_to_process_func_array_size)
+    {
+    	CORE_DebugError("Command type doesn't exists\n");
+    	return FALSE;
+    }
+
     CORE_DebugInfo("Processing command %u\n", command_type);
 
     command_to_process_func = instance->command_to_process_func_array[command_type];
@@ -39,11 +47,15 @@ CORE_Bool CommandsProcessor_Process(CommandsProcessor instance,
     return TRUE;
 }
 
-void CommandsProcessor_Setup(CommandsProcessor instance, const CommandToProcessFunc *command_to_process_func_array)
+void CommandsProcessor_Setup(   CommandsProcessor           instance, 
+                                const CommandToProcessFunc  *command_to_process_func_array,
+                                uint32                      command_to_process_func_array_size)
 {
 	CORE_AssertPointer(command_to_process_func_array);
+	CORE_Assert(command_to_process_func_array_size > 0);
 
 	instance->command_to_process_func_array = command_to_process_func_array;
+	instance->command_to_process_func_array_size = command_to_process_func_array_size;
 }
 
 /*****************************************************************************************************************************/

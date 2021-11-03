@@ -1,7 +1,10 @@
 #include "command.h"
+#include "authserver/auth-command-types.h"
 
 #define MAX_LOGIN_SIZE         (36)
 #define MAX_PASSWORD_SIZE      (24)
+
+#define TOKEN_SIZE             (32)
 
 
 typedef struct AuthenticatePayload
@@ -11,12 +14,19 @@ typedef struct AuthenticatePayload
     char                password[MAX_PASSWORD_SIZE]; 
 } AuthenticatePayload; 
 
+typedef struct AuthenticateResponsePayload
+{
+    uint8                token[TOKEN_SIZE];
+} AuthenticateResponsePayload;
+
 static const AuthenticatePayload _mocked_creds[] = 
 {
     {"delphifeel", "1234"},
     {"dhatz", "1234"},
     {"cherniki", "12345"},
 };
+
+static const uint8 _mocked_token[TOKEN_SIZE] = {0xDE, 0xAD, 0xBE, 0xAF, 0x00, 0x00};
 
 CORE_Bool CommandAuthenticate_Process(  struct Command 	*command, 
                                         struct Command 	*out_response_command, 
@@ -26,6 +36,8 @@ CORE_Bool CommandAuthenticate_Process(  struct Command 	*command,
     const uint8                     *payload_raw;
     uint32                          payload_size; 
     uint32                          creds_array_size;
+    CORE_Bool                       user_found;
+    AuthenticateResponsePayload     response_payload;
 
     Command_GetPayloadPtr(command, &payload_raw, &payload_size); 
 
@@ -37,6 +49,7 @@ CORE_Bool CommandAuthenticate_Process(  struct Command 	*command,
 
     payload = (const AuthenticatePayload *) payload_raw; 
 
+    user_found = FALSE;
     creds_array_size = sizeof(_mocked_creds) / sizeof(AuthenticatePayload);
     for (uint32 i = 0; i < creds_array_size; i++)
     {
@@ -44,9 +57,28 @@ CORE_Bool CommandAuthenticate_Process(  struct Command 	*command,
             (CORE_StringEqual(payload->password, _mocked_creds[i].password) == TRUE))
         {
             CORE_DebugInfo("Found user: %s - return auth creds\n", payload->login);
-            return TRUE;
+            user_found = TRUE;
+            break;
         }
     }
 
-    return FALSE; 
+    if (user_found == FALSE)
+    {
+        CORE_DebugError("Can't login - user not found: %s\n", payload->login);
+        return FALSE;
+    }
+
+
+    *out_is_have_response = TRUE;
+    Command_SetType(out_response_command, kCommandResponseType_Authenticate);
+
+    memcpy(response_payload.token, _mocked_token, TOKEN_SIZE);
+    if (Command_SetPayload( out_response_command, 
+                            (const uint8 *) &response_payload, 
+                            sizeof(AuthenticateResponsePayload)) == FALSE)
+    {
+        return FALSE;
+    }
+
+    return TRUE; 
 }

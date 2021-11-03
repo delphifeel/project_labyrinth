@@ -204,7 +204,7 @@ void CommandsIOSystem_Setup(CommandsIOSystem instance, LabSession sessions[], ui
     CORE_TCPServer_SetContext(instance->tcp_server, instance);
 	CORE_TCPServer_Setup(instance->tcp_server, COMMANDS_IO_SYSTEM_DEFAULT_PORT);
 
-    CommandsProcessor_Setup(instance->commands_processor, GetGameServerCommandToProcessFunc());
+    CommandsProcessor_Setup(instance->commands_processor, GetGameServerCommandToProcessFunc(), 0);
 }
 
 void CommandsIOSystem_Start(CommandsIOSystem instance)

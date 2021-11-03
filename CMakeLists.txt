@@ -21,9 +21,17 @@ add_subdirectory(third-party-libraries/libuv)
 
 
 add_executable(ProjectLabyrinthTest test/all-tests.c)
-
 target_link_libraries(ProjectLabyrinthTest PUBLIC 
 	CORETests
 	GameServerTests
 	AuthServerTests
+)
+
+add_executable(ProjectLabyrinthAuthServer authserver/src/main.c)
+target_include_directories(ProjectLabyrinthAuthServer PUBLIC 
+	"${PROJECT_SOURCE_DIR}/include"
+	"${PROJECT_SOURCE_DIR}/lib/commands-processor/include"
+)
+target_link_libraries(ProjectLabyrinthAuthServer PUBLIC 
+	AuthServer
 )

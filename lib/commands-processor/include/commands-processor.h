@@ -23,7 +23,9 @@ CORE_Bool 	CommandsProcessor_Process(	CommandsProcessor 	instance,
 										struct Command 		*out_response_command,
 										CORE_Bool 			*out_is_have_response);
 
-void 		CommandsProcessor_Setup(CommandsProcessor instance, const CommandToProcessFunc *command_to_process_func_array);
+void 		CommandsProcessor_Setup(CommandsProcessor 			instance, 
+									const CommandToProcessFunc 	*command_to_process_func_array,
+									uint32 						command_to_process_func_array_size);
 
 void 		CommandsProcessor_Create(CommandsProcessor *instance_ptr);
 void 		CommandsProcessor_Free(CommandsProcessor *instance_ptr);

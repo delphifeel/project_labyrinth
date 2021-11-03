@@ -24,4 +24,9 @@ const CommandToProcessFunc *GetAuthCommandToProcessFunc()
 	return _AuthServerCommandToProcessFunc;
 }
 
+uint32 GetAuthCommandToProcessFuncSize()
+{
+	return (sizeof(_AuthServerCommandToProcessFunc) / sizeof(CommandToProcessFunc));
+}
+
 /*****************************************************************************************************************************/
