@@ -42,7 +42,7 @@ void Test_CommandAuthenticate()
 }
 
 
-void Test_CommandsProcessor()
+void Test_AuthCommandsProcessor()
 {
     Test_CommandAuthenticate();
 }

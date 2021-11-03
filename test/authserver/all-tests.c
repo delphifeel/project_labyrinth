@@ -1,9 +1,9 @@
-extern void Test_CommandsProcessor();
+extern void Test_AuthCommandsProcessor();
 
 #include "CORE.h"
 
 void AuthServerTests_Run()
 {
     // Test_Message();
-    Test_CommandsProcessor();
+    Test_AuthCommandsProcessor();
 }

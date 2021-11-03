@@ -1,6 +1,6 @@
 add_library(AuthServerTests 
 	all-tests.c
-	test-commands-processor.c
+	test-auth-commands-processor.c
 )
 target_include_directories(AuthServerTests PUBLIC 
 	"${PROJECT_SOURCE_DIR}/include"
