@@ -20,5 +20,3 @@ project_labyrinth
 
 # TODOS
 
-- AuthServer and GameServer using common `command` processing system. 
-At some point we will need to refactor it to base `command` class.
