@@ -62,8 +62,8 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
         }
     }
 
+    CORE_DebugInfo("Player %u moves to the point %u \n", instance->id, result_point_id);
     instance->position_point_id = result_point_id;
-
     return TRUE; 
 }
 

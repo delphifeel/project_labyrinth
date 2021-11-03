@@ -6,7 +6,9 @@
 
 CORE_OBJECT_DEFINE(CommandsProcessor);
 
-typedef CORE_Bool (*CommandProcessFunc)(struct Command *command, struct Command *out_response_command);
+typedef CORE_Bool (*CommandProcessFunc)(struct Command 	*command, 
+										struct Command 	*out_response_command,
+										CORE_Bool 		*out_is_have_response);
 
 typedef struct CommandToProcessFunc
 {
@@ -16,7 +18,10 @@ typedef struct CommandToProcessFunc
 
 /*****************************************************************************************************************************/
 
-CORE_Bool 	CommandsProcessor_Process(CommandsProcessor instance, struct Command *command, struct Command *out_response_command);
+CORE_Bool 	CommandsProcessor_Process(	CommandsProcessor 	instance, 
+										struct Command 		*command, 
+										struct Command 		*out_response_command,
+										CORE_Bool 			*out_is_have_response);
 
 void 		CommandsProcessor_Setup(CommandsProcessor instance, const CommandToProcessFunc *command_to_process_func_array);
 

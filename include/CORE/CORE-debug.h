@@ -21,7 +21,7 @@
 	#define CORE_TESTING_ENABLED
 #endif
 
-#ifndef CORE_DEBUG_COLORED
+#ifndef CORE_SET_DEBUG_COLORED
 	#define _COREDEBUG_FUNC_SYMBOL			("")
 	#define _COREDEBUG_INFO_SYMBOL			("")
 	#define _COREDEBUG_RESET_SYMBOL			("")
@@ -40,9 +40,40 @@
 
 #define CORE_DebugPrint 	printf
 
-#ifndef CORE_MODULE_NAME
-	#define CORE_MODULE_NAME 	(__FILE__)
-#endif
+
+static const char *_CORE_module_name = NULL;
+static inline const char *_CORE_GetModuleName(const char *file_name)
+{
+	const char *temp_ptr;
+
+
+	if (_CORE_module_name == NULL)
+	{
+		temp_ptr = file_name;
+		while (*temp_ptr != 0)
+		{
+			if ((*temp_ptr == '/') ||
+				(*temp_ptr == '\\'))
+			{
+				_CORE_module_name = temp_ptr;
+			}
+
+			temp_ptr++;
+		}
+
+		if (_CORE_module_name == NULL)
+		{
+			_CORE_module_name = file_name;
+		}
+		else
+		{
+			_CORE_module_name++;
+		}
+	}
+
+	return _CORE_module_name;
+}
+
 
 #define _CORE_DEBUG_MESSAGE_PRE(_TYPE, _TYPE_SYMBOL)													\
 		(CORE_DebugPrint(																				\
@@ -51,7 +82,7 @@
 			(_TYPE), 																					\
 			_COREDEBUG_RESET_SYMBOL,																	\
 			_COREDEBUG_FILE_SYMBOL,																		\
-			CORE_MODULE_NAME,																			\
+			_CORE_GetModuleName(__FILE__),																\
 			__LINE__, 																					\
 			_COREDEBUG_RESET_SYMBOL,																	\
 			_COREDEBUG_FUNC_SYMBOL,																		\

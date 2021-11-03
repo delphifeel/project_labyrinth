@@ -12,7 +12,9 @@ typedef struct StartGamePayload
 	} players[SESSION_PLAYERS_COUNT];
 } StartGamePayload;
 
-CORE_Bool CommandStartGame_Process(struct Command *command, struct Command *out_response_command)
+CORE_Bool CommandStartGame_Process(	struct Command 	*command, 
+									struct Command 	*out_response_command,
+									CORE_Bool 		*out_is_have_response)
 {
 	struct GameServerCommand 	*game_server_command;
 	LabSession 					*sessions;

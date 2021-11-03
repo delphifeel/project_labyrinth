@@ -7,7 +7,9 @@ typedef struct PlayerMovePayload
 	uint32 	directions[2];
 } PlayerMovePayload;
 
-CORE_Bool CommandPlayerMove_Process(struct Command *command, struct Command *out_response_command)
+CORE_Bool CommandPlayerMove_Process(struct Command 	*command, 
+									struct Command 	*out_response_command,
+									CORE_Bool 		*out_is_have_response)
 {
 	struct GameServerCommand 	*game_server_command;
 	LabSession 					*sessions;
@@ -45,11 +47,13 @@ CORE_Bool CommandPlayerMove_Process(struct Command *command, struct Command *out
 	{
 		return FALSE;
 	}
+	CORE_DebugInfo("Found specific session\n");
 
 	if (LabSession_FindPlayer(session, player_index, &player) == FALSE)
 	{
 		return FALSE;
 	}
+	CORE_DebugInfo("Found specific player\n");
 
 	if (payload->directions[1] == 0)
 	{

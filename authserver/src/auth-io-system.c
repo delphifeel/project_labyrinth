@@ -74,14 +74,15 @@ static void _TCP_ServerOnRead(CORE_TCPServer tcp_server, void *context,
                              CORE_TCPServer_ClientConnection client_connection, 
                              const uint8 data[], uint32 data_size)
 {
-    struct Command      command;
-    struct Command      command_to_send;
-    AuthIOSystem        instance;
+    struct Command        command;
+    struct Command        response_command;
+    AuthIOSystem          instance;
+    CORE_Bool             is_have_response;
 
 
     instance = (AuthIOSystem) context;
     Command_Init(&command);
-    Command_Init(&command_to_send);
+    Command_Init(&response_command);
 
     if (_ParseCommandFromBuffer(&command, data, data_size) == FALSE)
     {
@@ -89,7 +90,13 @@ static void _TCP_ServerOnRead(CORE_TCPServer tcp_server, void *context,
         return; 
     }
 
-    CommandsProcessor_Process(instance->commands_processor, &command, &command_to_send);
+    is_have_response = FALSE;
+    CommandsProcessor_Process(instance->commands_processor, &command, &response_command, &is_have_response);
+
+    if (is_have_response == TRUE)
+    {
+        // TODO(delphifeel): send response to client
+    }
 }
 
 /*****************************************************************************************************************************/

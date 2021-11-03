@@ -11,4 +11,6 @@
 #define CORE_MemSet 				memset
 #define CORE_MemZero(PTR, SIZE)		CORE_MemSet(PTR, 0, SIZE)
 
+#define CORE_StringEqual(_STR1, _STR2)		(strcmp(_STR1, _STR2) == 0 ? TRUE : FALSE)
+
 #endif

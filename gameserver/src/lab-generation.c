@@ -1,5 +1,3 @@
-#define CORE_MODULE_NAME	("LabGeneration")
-
 #include <stdlib.h>
 #include <time.h>
 

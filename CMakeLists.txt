@@ -4,7 +4,8 @@ add_compile_options(
 	-Wall 
 	-pedantic 
 	--std=gnu99
-	-DCORE_SET_TESTING_ENABLED
+	#-DCORE_SET_TESTING_ENABLED
+	-DCORE_SET_DEBUG_COLORED
 )
 
 

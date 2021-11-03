@@ -10,14 +10,15 @@
 
 void Test_CommandAuthenticate()
 {
+    CORE_Bool          is_have_response;
     CommandsProcessor  commands_processor;
     struct Command     command;
     struct Command     response_command;
     uint32             command_type;
     uint8              payload[60];
     uint8              *payload_ptr;
-    uint8              login[36]      = "admin"; 
-    uint8              password[24]   = "admin"; 
+    uint8              login[36]      = "delphifeel"; 
+    uint8              password[24]   = "1234"; 
 
     
     command_type = kCommandType_Authenticate;
@@ -36,7 +37,7 @@ void Test_CommandAuthenticate()
 
     CommandsProcessor_Create(&commands_processor);
     CommandsProcessor_Setup(commands_processor, GetAuthCommandToProcessFunc());
-    CORE_Assert(CommandsProcessor_Process(commands_processor, &command, &response_command) == TRUE);
+    CORE_Assert(CommandsProcessor_Process(commands_processor, &command, &response_command, &is_have_response) == TRUE);
 
     CommandsProcessor_Free(&commands_processor);
 }

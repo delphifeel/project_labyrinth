@@ -111,6 +111,7 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
     CommandsIOSystem                instance;
     uint32                          session_index;
     uint32                          player_index;
+    CORE_Bool                       is_have_response;
 
 
     GameServerCommand_Init(&command);
@@ -143,9 +144,11 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
 
     GameServerCommand_SetSessionsPtr(&command, instance->sessions, instance->sessions_size);
 
+    is_have_response = FALSE;
     if (CommandsProcessor_Process(instance->commands_processor, 
                                   (struct Command *) &command, 
-                                  (struct Command *) &response_command) == FALSE)
+                                  (struct Command *) &response_command,
+                                  &is_have_response) == FALSE)
     {
         CORE_DebugError("Command processing error\n");
         return;
