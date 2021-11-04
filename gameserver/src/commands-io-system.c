@@ -51,9 +51,12 @@ static void _TCPServerOnCloseConnection(CORE_TCPServer tcp_server, void *context
     CORE_DebugInfo("TCP Server - close connection\n");
 }
 
+#define _MIN_COMMAND_SIZE   (48)
+
 static CORE_Bool _ParseCommandFromBuffer(struct GameServerCommand *instance, const uint8 buffer[], uint32 buffer_size)
 {
     CORE_AssertPointer(buffer);
+    CORE_Assert(buffer_size > _MIN_COMMAND_SIZE);
 
     uint32          validation_header;
     const uint8     *buffer_ptr;
@@ -102,6 +105,68 @@ static CORE_Bool _ParseCommandFromBuffer(struct GameServerCommand *instance, con
     return TRUE;
 }
 
+static CORE_Bool _ConvertCommandToBuffer(   struct GameServerCommand    *instance, 
+                                            uint8                       buffer[], 
+                                            uint32                      buffer_max_size,
+                                            uint32                      *out_buffer_size)
+{
+    CORE_AssertPointer(buffer);
+    CORE_AssertPointer(out_buffer_size);
+    CORE_Assert(buffer_max_size > _MIN_COMMAND_SIZE);
+
+    uint8           *buffer_ptr;
+    uint32          buffer_size_left;
+    const uint8     *player_token_ptr;
+    const uint8     *payload;
+    uint32          payload_size;
+
+
+    buffer_ptr = buffer;
+    buffer_size_left = buffer_max_size;
+
+    // 0...4    (4 bytes)   - validation header
+    *((uint32 *) buffer_ptr) = _GAMESERVER_COMMAND_VALIDATION_ID;
+    buffer_ptr += 4;
+    buffer_size_left -= 4;
+
+    // 4...8   (4 bytes)  - command type
+    GameServerCommand_GetType(instance, (uint32 *) buffer_ptr);
+    buffer_ptr += 4;
+    buffer_size_left -= 4;
+
+    // 8...12   (4 bytes) - command session index
+    GameServerCommand_GetSessionIndex(instance, (uint32 *) buffer_ptr);
+    buffer_ptr += 4;
+    buffer_size_left -= 4;
+
+    // 12...16   (4 bytes) - command player index
+    GameServerCommand_GetPlayerIndex(instance, (uint32 *) buffer_ptr);
+    buffer_ptr += 4;
+    buffer_size_left -= 4;
+
+    // 16...48   (32 bytes) - command player token
+    GameServerCommand_GetPlayerTokenPtr(instance, &player_token_ptr);
+    memcpy(buffer_ptr, player_token_ptr, TOKEN_SIZE);
+    buffer_ptr += 32;
+    buffer_size_left -= 32;
+
+    // 48...~   (~ bytes) - command payload
+    GameServerCommand_GetPayloadPtr(instance, &payload, &payload_size);
+
+    if (payload_size > buffer_size_left)
+    {
+        CORE_DebugError("Game Server Command payload size (%u) > buffer size left (%u)\n", payload_size, buffer_size_left);
+        return FALSE;
+    }
+
+    memcpy(buffer_ptr, payload, payload_size);
+
+    *out_buffer_size = _MIN_COMMAND_SIZE + payload_size;
+
+    return TRUE;
+}
+
+
 static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context, 
                              CORE_TCPServer_ClientConnection client_connection,
                              const uint8 data[], uint32 data_size)
@@ -112,6 +177,8 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
     uint32                          session_index;
     uint32                          player_index;
     CORE_Bool                       is_have_response;
+    uint8                           response_buffer[512];
+    uint32                          response_buffer_size;
 
 
     GameServerCommand_Init(&command);
@@ -152,6 +219,18 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
     {
         CORE_DebugError("Command processing error\n");
         return;
+    }
+
+    if (is_have_response == TRUE)
+    {
+        if (_ConvertCommandToBuffer(&response_command, 
+                                    response_buffer, 
+                                    sizeof(response_buffer), 
+                                    &response_buffer_size) == FALSE)
+        {
+            return;
+        }
+        CORE_TCPServer_Write(tcp_server, client_connection, response_buffer, response_buffer_size);
     }
 }
 
