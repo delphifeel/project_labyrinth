@@ -1,16 +1,17 @@
 #include "CORE.h"
-#include "commands-processor.h"
+#include <command.h>
 #include "authserver/auth-io-system.h"
 #include "authserver/config.h"
 #include "authserver/auth-command-types.h"
+#include "authserver/auth-commands-processor.h"
 
 #define _AUTH_COMMAND_VALIDATION_ID     (0xBADBEE)
 
 /*****************************************************************************************************************************/
 
 CORE_OBJECT_INTERFACE(AuthIOSystem, 
-    CORE_TCPServer              tcp_server;
-    CommandsProcessor           commands_processor;
+    CORE_TCPServer                  tcp_server;
+    AuthCommandsProcessor           commands_processor;
 );
 
 /*****************************************************************************************************************************/
@@ -120,6 +121,7 @@ static void _TCP_ServerOnRead(CORE_TCPServer tcp_server, void *context,
                              CORE_TCPServer_ClientConnection client_connection, 
                              const uint8 data[], uint32 data_size)
 {
+    uint32                command_type;
     struct Command        command;
     struct Command        response_command;
     AuthIOSystem          instance;
@@ -139,7 +141,8 @@ static void _TCP_ServerOnRead(CORE_TCPServer tcp_server, void *context,
     }
 
     is_have_response = FALSE;
-    CommandsProcessor_Process(instance->commands_processor, &command, &response_command, &is_have_response);
+    Command_GetType(&command, &command_type);
+    AuthCommandsProcessor_Process(instance->commands_processor, command_type, &command, &response_command, &is_have_response);
 
     if (is_have_response == TRUE)
     {
@@ -173,7 +176,7 @@ void AuthIOSystem_Setup(AuthIOSystem instance)
     CORE_TCPServer_SetContext(instance->tcp_server, instance);
     CORE_TCPServer_Setup(instance->tcp_server, AUTH_IO_SYSTEM_DEFAULT_PORT); 
 
-    CommandsProcessor_Setup(instance->commands_processor, GetAuthCommandToProcessFunc(), GetAuthCommandToProcessFuncSize());
+    AuthCommandsProcessor_Setup(instance->commands_processor, GetAuthCommandToProcessFunc(), GetAuthCommandToProcessFuncSize());
 }
 
 /*****************************************************************************************************************************/
@@ -185,14 +188,14 @@ void AuthIOSystem_Create(AuthIOSystem *instance_ptr)
 
     instance = *instance_ptr; 
     CORE_TCPServer_Create(&instance->tcp_server);
-    CommandsProcessor_Create(&instance->commands_processor);
+    AuthCommandsProcessor_Create(&instance->commands_processor);
 }
 /*****************************************************************************************************************************/
 
 
 void AuthIOSystem_Free(AuthIOSystem *instance_ptr)
 {
-    CommandsProcessor_Free(&(*instance_ptr)->commands_processor);
+    AuthCommandsProcessor_Free(&(*instance_ptr)->commands_processor);
     CORE_TCPServer_Free(&(*instance_ptr)->tcp_server); 
 
     CORE_OBJECT_FREE(instance_ptr); 

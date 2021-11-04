@@ -1,5 +1,6 @@
 #include "commands-processor.h"
 #include "authserver/auth-command-types.h"
+#include "authserver/auth-commands-processor.h"
 
 /**
  *		command `Authenticate` contains:
@@ -10,15 +11,15 @@
 
 void Test_CommandAuthenticate()
 {
-    CORE_Bool          is_have_response;
-    CommandsProcessor  commands_processor;
-    struct Command     command;
-    struct Command     response_command;
-    uint32             command_type;
-    uint8              payload[60];
-    uint8              *payload_ptr;
-    uint8              login[36]      = "delphifeel"; 
-    uint8              password[24]   = "1234"; 
+    CORE_Bool                is_have_response;
+    AuthCommandsProcessor    commands_processor;
+    struct Command           command;
+    struct Command           response_command;
+    uint32                   command_type;
+    uint8                    payload[60];
+    uint8                    *payload_ptr;
+    uint8                    login[36]      = "delphifeel"; 
+    uint8                    password[24]   = "1234"; 
 
     
     command_type = kCommandType_Authenticate;
@@ -35,11 +36,11 @@ void Test_CommandAuthenticate()
     Command_SetType(&command, command_type);
     Command_SetPayload(&command, payload, sizeof(payload));
 
-    CommandsProcessor_Create(&commands_processor);
-    CommandsProcessor_Setup(commands_processor, GetAuthCommandToProcessFunc(), GetAuthCommandToProcessFuncSize());
-    CORE_Assert(CommandsProcessor_Process(commands_processor, &command, &response_command, &is_have_response) == TRUE);
+    AuthCommandsProcessor_Create(&commands_processor);
+    AuthCommandsProcessor_Setup(commands_processor, GetAuthCommandToProcessFunc(), GetAuthCommandToProcessFuncSize());
+    CORE_Assert(AuthCommandsProcessor_Process(commands_processor, command_type, &command, &response_command, &is_have_response) == TRUE);
 
-    CommandsProcessor_Free(&commands_processor);
+    AuthCommandsProcessor_Free(&commands_processor);
 }
 
 

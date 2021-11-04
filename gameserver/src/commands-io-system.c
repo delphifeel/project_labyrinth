@@ -5,6 +5,7 @@
 #include "gameserver/game-server-config.h"
 #include "gameserver/gameserver-command.h"
 #include "gameserver/gameserver-command-types.h"
+#include "gameserver/gameserver-commands-processor.h"
 
 /*****************************************************************************************************************************/
 
@@ -18,7 +19,7 @@ CORE_OBJECT_INTERFACE(CommandsIOSystem,
     LabSession                             *sessions;
     uint32                                 sessions_size;
 
-    CommandsProcessor                      commands_processor;
+    GameServerCommandsProcessor            commands_processor;
 	CORE_TCPServer                         tcp_server;
 
     // OnCommandGetFunc   on_command_get;          
@@ -171,6 +172,7 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
                              CORE_TCPServer_ClientConnection client_connection,
                              const uint8 data[], uint32 data_size)
 {
+    uint32                          command_type;
     struct GameServerCommand        command;
     struct GameServerCommand        response_command;
     CommandsIOSystem                instance;
@@ -212,10 +214,12 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
     GameServerCommand_SetSessionsPtr(&command, instance->sessions, instance->sessions_size);
 
     is_have_response = FALSE;
-    if (CommandsProcessor_Process(instance->commands_processor, 
-                                  (struct Command *) &command, 
-                                  (struct Command *) &response_command,
-                                  &is_have_response) == FALSE)
+    GameServerCommand_GetType(&command, &command_type);
+    if (GameServerCommandsProcessor_Process(instance->commands_processor, 
+                                            command_type,
+                                            &command, 
+                                            &response_command,
+                                            &is_have_response) == FALSE)
     {
         CORE_DebugError("Command processing error\n");
         return;
@@ -283,7 +287,7 @@ void CommandsIOSystem_Setup(CommandsIOSystem instance, LabSession sessions[], ui
     CORE_TCPServer_SetContext(instance->tcp_server, instance);
 	CORE_TCPServer_Setup(instance->tcp_server, COMMANDS_IO_SYSTEM_DEFAULT_PORT);
 
-    CommandsProcessor_Setup(instance->commands_processor, GetGameServerCommandToProcessFunc(), 0);
+    GameServerCommandsProcessor_Setup(instance->commands_processor, GetGameServerCommandToProcessFunc(), GetGameServerCommandToProcessFuncSize());
 }
 
 void CommandsIOSystem_Start(CommandsIOSystem instance)
@@ -303,12 +307,12 @@ void CommandsIOSystem_Create(CommandsIOSystem *instance_ptr)
 
     CORE_MemZero(&instance->tcp_clients_map, sizeof(instance->tcp_clients_map));
     CORE_TCPServer_Create(&instance->tcp_server);
-    CommandsProcessor_Create(&instance->commands_processor);
+    GameServerCommandsProcessor_Create(&instance->commands_processor);
 }
 
 void CommandsIOSystem_Free(CommandsIOSystem *instance_ptr)
 {
-    CommandsProcessor_Free(&(*instance_ptr)->commands_processor);
+    GameServerCommandsProcessor_Free(&(*instance_ptr)->commands_processor);
     CORE_TCPServer_Free(&(*instance_ptr)->tcp_server);
 
 	CORE_OBJECT_FREE(instance_ptr);

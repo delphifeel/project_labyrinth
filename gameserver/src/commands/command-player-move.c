@@ -7,11 +7,10 @@ typedef struct PlayerMovePayload
 	uint32 	directions[2];
 } PlayerMovePayload;
 
-CORE_Bool CommandPlayerMove_Process(struct Command 	*command, 
-									struct Command 	*out_response_command,
-									CORE_Bool 		*out_is_have_response)
+CORE_Bool CommandPlayerMove_Process(struct GameServerCommand 	*game_server_command, 
+									struct GameServerCommand 	*out_response_command,
+									CORE_Bool 					*out_is_have_response)
 {
-	struct GameServerCommand 	*game_server_command;
 	LabSession 					*sessions;
 	uint32 						sessions_size;
 	LabSession 					session;
@@ -24,8 +23,6 @@ CORE_Bool CommandPlayerMove_Process(struct Command 	*command,
 	const uint8					*payload_raw;
 	uint32 						payload_size;
 
-
-	game_server_command = (struct GameServerCommand *) command;
 
 	GameServerCommand_GetSessionsPtr(game_server_command, &sessions, &sessions_size);
 	GameServerCommand_GetSessionIndex(game_server_command, &session_index);

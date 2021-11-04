@@ -1,6 +1,7 @@
 #include "commands-processor.h"
 #include "gameserver/gameserver-command.h"
 #include "gameserver/gameserver-command-types.h"
+#include "gameserver/gameserver-commands-processor.h"
 
 static void _InitSession(LabSession *out_session, 
 						 uint32 player1_id, uint32 player2_id, 
@@ -40,7 +41,7 @@ static void _FreeSession(LabSession *session_ptr)
  */
 void Test_CommandPlayerMove()
 {
-	CommandsProcessor 				commands_processor;
+	GameServerCommandsProcessor 	commands_processor;
 	struct GameServerCommand 		command;
 	struct GameServerCommand 		response_command;
 	uint32  						player1_index;
@@ -70,12 +71,12 @@ void Test_CommandPlayerMove()
 
 
 
-	CommandsProcessor_Create(&commands_processor);
-	CommandsProcessor_Setup(commands_processor, GetGameServerCommandToProcessFunc(), 0);
-	// CORE_Assert(CommandsProcessor_Process(commands_processor, (struct Command *) &command, (struct Command *) &response_command) == TRUE);
+	GameServerCommandsProcessor_Create(&commands_processor);
+	GameServerCommandsProcessor_Setup(commands_processor, GetGameServerCommandToProcessFunc(), 0);
+	// CORE_Assert(GameServerCommandsProcessor_Process(commands_processor, co(struct Command *) &command, (struct Command *) &response_command) == TRUE);
 
 	_FreeSession(&sessions[0]);
-	CommandsProcessor_Free(&commands_processor);
+	GameServerCommandsProcessor_Free(&commands_processor);
 }
 
 

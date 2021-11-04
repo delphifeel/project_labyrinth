@@ -12,19 +12,16 @@ typedef struct StartGamePayload
 	} players[SESSION_PLAYERS_COUNT];
 } StartGamePayload;
 
-CORE_Bool CommandStartGame_Process(	struct Command 	*command, 
-									struct Command 	*out_response_command,
-									CORE_Bool 		*out_is_have_response)
+CORE_Bool CommandStartGame_Process(	struct GameServerCommand 	*game_server_command, 
+									struct GameServerCommand 	*out_response_command,
+									CORE_Bool 					*out_is_have_response)
 {
-	struct GameServerCommand 	*game_server_command;
 	LabSession 					*sessions;
 	uint32 						sessions_size;
 	const uint8 				*payload_raw;
 	const StartGamePayload 		*payload;
 	uint32 						payload_size;
 
-
-	game_server_command = (struct GameServerCommand *) command;
 
 	GameServerCommand_GetSessionsPtr(game_server_command, &sessions, &sessions_size);
 	GameServerCommand_GetPayloadPtr(game_server_command, &payload_raw, &payload_size);

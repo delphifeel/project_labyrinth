@@ -1,33 +1,13 @@
 #ifndef _COMMANDS_PROCESSOR_H_
 #define _COMMANDS_PROCESSOR_H_
 
-#include "CORE.h"
-#include "command.h"
+#include "commands-processor-private.h"
+#include "commands-processor-impl-private.h"
 
-CORE_OBJECT_DEFINE(CommandsProcessor);
+#define COMMANDS_PROCESSOR_DEFINE(_NAME, _IN_COMMAND_TYPE, _OUT_COMMAND_TYPE)  	\
+	_COMMANDS_PROCESSOR_DEFINE(_NAME, _IN_COMMAND_TYPE, _OUT_COMMAND_TYPE)
 
-typedef CORE_Bool (*CommandProcessFunc)(struct Command 	*command, 
-										struct Command 	*out_response_command,
-										CORE_Bool 		*out_is_have_response);
-
-typedef struct CommandToProcessFunc
-{
-	uint32 				command_type;
-	CommandProcessFunc 	process_func;
-} CommandToProcessFunc;
-
-/*****************************************************************************************************************************/
-
-CORE_Bool 	CommandsProcessor_Process(	CommandsProcessor 	instance, 
-										struct Command 		*command, 
-										struct Command 		*out_response_command,
-										CORE_Bool 			*out_is_have_response);
-
-void 		CommandsProcessor_Setup(CommandsProcessor 			instance, 
-									const CommandToProcessFunc 	*command_to_process_func_array,
-									uint32 						command_to_process_func_array_size);
-
-void 		CommandsProcessor_Create(CommandsProcessor *instance_ptr);
-void 		CommandsProcessor_Free(CommandsProcessor *instance_ptr);
+#define COMMANDS_PROCESSOR_IMPLEMENTATION(_NAME, _IN_COMMAND_TYPE, _OUT_COMMAND_TYPE)  	\
+	_COMMANDS_PROCESSOR_IMPLEMENTATION(_NAME, _IN_COMMAND_TYPE, _OUT_COMMAND_TYPE)
 
 #endif
