@@ -4,8 +4,7 @@
 /*****************************************************************************************************************************/
 
 #define _DEFINE_PROCESS_FUNC(_NAME) 																\
-	extern CORE_Bool _NAME(	uint32 			command_type,											\
-							struct Command 	*command, 												\
+	extern CORE_Bool _NAME(	struct Command 	*command, 												\
 							struct Command 	*out_response_command,									\
 							CORE_Bool 		*out_is_have_response) 									\
 

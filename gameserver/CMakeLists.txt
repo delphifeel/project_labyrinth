@@ -6,6 +6,7 @@ add_library(GameServer
 	src/player.c
 	src/game-server.c
 	src/gameserver-command.c
+	src/gameserver-command-response.c
 	src/gameserver-command-types.c
 	src/gameserver-commands-processor.c
 	src/commands-io-system.c
@@ -21,4 +22,5 @@ target_include_directories(GameServer PUBLIC
 
 target_link_libraries(GameServer PUBLIC 
 	CORE
+	CommandsProcessor
 )

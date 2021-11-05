@@ -1,15 +1,16 @@
 #include "command.h"
 #include "gameserver/player.h"
 #include "gameserver/gameserver-command.h"
+#include "gameserver/gameserver-command-response.h"
 
 typedef struct PlayerMovePayload 
 {
 	uint32 	directions[2];
 } PlayerMovePayload;
 
-CORE_Bool CommandPlayerMove_Process(struct GameServerCommand 	*game_server_command, 
-									struct GameServerCommand 	*out_response_command,
-									CORE_Bool 					*out_is_have_response)
+CORE_Bool CommandPlayerMove_Process(struct GameServerCommand 			*game_server_command, 
+									struct GameServerCommandResponse	*out_response_command,
+									CORE_Bool 							*out_is_have_response)
 {
 	LabSession 					*sessions;
 	uint32 						sessions_size;

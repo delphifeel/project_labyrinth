@@ -6,4 +6,5 @@ static GameServer Server;
 int main()
 {
 	GameServer_Create(&Server);
+	GameServer_Setup(Server);
 }

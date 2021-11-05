@@ -38,7 +38,12 @@ static void _TCP_ServerOnCloseConnection(CORE_TCPServer tcp_server, void *contex
 static CORE_Bool _ParseCommandFromBuffer(struct Command *instance, const uint8 buffer[], uint32 buffer_size)
 {
     CORE_AssertPointer(buffer);
-    CORE_Assert(buffer_size > 8);
+
+    if (buffer_size <= 8)
+    {
+        CORE_DebugError("Buffer is too small\n");
+        return FALSE;
+    }
 
     uint32          validation_header;
     const uint8     *buffer_ptr;
@@ -80,7 +85,11 @@ static CORE_Bool _ConvertCommandToBuffer(   struct Command      *instance,
 {
     CORE_AssertPointer(buffer);
     CORE_AssertPointer(out_buffer_size);
-    CORE_Assert(buffer_max_size > 8);
+    if (buffer_max_size <= 8)
+    {
+        CORE_DebugError("Buffer is too small\n");
+        return FALSE;
+    }
 
     uint8           *buffer_ptr;
     uint32          buffer_size_left;

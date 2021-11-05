@@ -30,8 +30,6 @@ static void _FreeSessions(GameServer instance)
 
 /*****************************************************************************************************************************/
 
-
-
 void GameServer_Process(GameServer instance)
 {
 	// all processing in _OnIOSystemRead

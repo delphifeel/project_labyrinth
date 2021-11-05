@@ -4,11 +4,10 @@
 
 /*****************************************************************************************************************************/
 
-#define _DEFINE_PROCESS_FUNC(_NAME) 															\
-	extern CORE_Bool _NAME(	uint32 						command_type,							\ 
-							struct GameServerCommand 	*command, 								\
-							struct GameServerCommand 	*out_response_command,					\
-							CORE_Bool 					*out_is_have_response) 					
+#define _DEFINE_PROCESS_FUNC(_NAME) 																	\
+	extern CORE_Bool _NAME(	struct GameServerCommand 			*command, 								\
+							struct GameServerCommandResponse 	*out_response_command,					\
+							CORE_Bool 							*out_is_have_response) 					\
 
 /*****************************************************************************************************************************/
 
@@ -26,6 +25,11 @@ static const GameServerCommandsProcessor_CommandToProcessFunc _command_to_proces
 const GameServerCommandsProcessor_CommandToProcessFunc *GetGameServerCommandToProcessFunc()
 {
 	return _command_to_process_func;
+}
+
+uint32 GetGameServerCommandToProcessFuncSize()
+{
+	return sizeof(_command_to_process_func) / sizeof(GameServerCommandsProcessor_CommandToProcessFunc);
 }
 
 /*****************************************************************************************************************************/

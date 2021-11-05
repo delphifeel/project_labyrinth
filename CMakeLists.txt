@@ -35,3 +35,12 @@ target_include_directories(ProjectLabyrinthAuthServer PUBLIC
 target_link_libraries(ProjectLabyrinthAuthServer PUBLIC 
 	AuthServer
 )
+
+add_executable(ProjectLabyrinthGameServer gameserver/src/main.c)
+target_include_directories(ProjectLabyrinthGameServer PUBLIC 
+	"${PROJECT_SOURCE_DIR}/include"
+	"${PROJECT_SOURCE_DIR}/lib/commands-processor/include"
+)
+target_link_libraries(ProjectLabyrinthGameServer PUBLIC 
+	GameServer
+)
