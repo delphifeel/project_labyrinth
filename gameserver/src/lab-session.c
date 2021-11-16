@@ -93,6 +93,12 @@ CORE_Bool LabSession_AddPlayer(LabSession instance, uint32 player_id, const uint
 	Player_SetId(new_player, player_id);
 	Player_SetToken(new_player, player_token);
 
+	CORE_DebugInfo(
+		"Player #%u added. id: %u, spawn point id: %u\n", 
+		*out_added_player_index, 
+		player_id,
+		player_spawn_point_id
+	);
 	instance->players_map[instance->players_map_size] = new_player;
 	instance->players_map_size++;
 	return TRUE;
@@ -103,6 +109,7 @@ void LabSession_Start(LabSession instance)
 	CORE_Assert(instance->is_session_started == FALSE);
 
 	instance->is_session_started = TRUE;
+	CORE_DebugInfo("Session started\n");
 }
 
 void LabSession_GetLabPointsReader(LabSession instance, LabPointsMapReader *out_lab_points_reader)
@@ -121,6 +128,7 @@ void LabSession_MapToJSON(LabSession instance, char **json)
 
 void LabSession_Setup(LabSession instance, uint32 players_count)
 {
+	CORE_DebugInfo("Setup session. Player count: %u\n", players_count);
 	instance->is_session_started = FALSE;
 
 	instance->players_map = CORE_MemAlloc(sizeof(Player) * players_count);

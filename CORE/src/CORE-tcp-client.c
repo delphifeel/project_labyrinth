@@ -93,7 +93,10 @@ static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *bu
     if (nread > 0) 
     {
         CORE_DebugInfo("Read %lu bytes\n", nread);
-        instance->on_read(instance, instance->context, (const uint8 *) buf->base, nread);
+        if (instance->on_read != NULL)
+        {
+            instance->on_read(instance, instance->context, (const uint8 *) buf->base, nread);
+        }
     }
     else if (nread < 0) 
     {
@@ -188,9 +191,6 @@ void CORE_TCPClient_SetContext(CORE_TCPClient instance, void *context)
 
 CORE_Bool CORE_TCPClient_Connect(CORE_TCPClient instance, const char *dest_address, uint32 dest_port)
 {
-    CORE_AssertPointer(instance->on_read);
-
-
     instance->server_port = dest_port;
     instance->uv_loop = uv_default_loop();
 

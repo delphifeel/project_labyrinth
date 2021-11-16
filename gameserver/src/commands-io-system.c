@@ -207,7 +207,11 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
     instance = (CommandsIOSystem) context;
     if (instance->tcp_clients_map[session_index][player_index] == NULL)
     {
-        CORE_DebugInfo("Add new client to clients map\n");
+        CORE_DebugInfo(
+            "Add new client to clients map (session index: %u, player index: %u)\n",
+            session_index,
+            player_index
+        );
         instance->tcp_clients_map[session_index][player_index] = client_connection;
     }
 

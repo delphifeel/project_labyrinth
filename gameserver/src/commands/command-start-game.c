@@ -56,6 +56,7 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 
 		found_free_session = TRUE;
 		new_session_index = i;
+		CORE_DebugInfo("Found free session (index %u)\n", new_session_index);
 		break;
 	}
 
@@ -85,6 +86,7 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 		current_player_id = payload->players[i].player_id; 
 		if (current_player_id == 0)
 		{
+			CORE_DebugError("Player #%u have id = 0\n", i);
 			break;
 		}
 		current_player_token = payload->players[i].player_token; 

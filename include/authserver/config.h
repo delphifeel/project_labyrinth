@@ -21,7 +21,7 @@ static const uint8 mocked_token[32] =
 /*
  *      Game server network info
  */
-#define GAMESERVER_IP_ADDRESS       (127.0.0.1)
+#define GAMESERVER_IP_ADDRESS       ("127.0.0.1")
 #define GAMESERVER_PORT             (7000)
 
 /*

@@ -13,11 +13,50 @@ typedef struct JoinLobbyResponsePayload
     CORE_Bool   is_ok;
 } JoinLobbyResponsePayload;
 
+typedef struct StartGamePayload 
+{
+    struct 
+    {
+        uint32  player_id;
+        uint8   player_token[TOKEN_SIZE];   
+    } players[LOBBY_USERS_COUNT];
+} StartGamePayload;
+
 static uint32 _users_in_lobby = 0;
+
+static void _on_connected(CORE_TCPClient tcp_client, void *context)
+{
+    StartGamePayload payload;
+
+    // payload.players[0].player_id = 1;
+    // memcpy(payload.players[0].player_token, mocked_token, TOKEN_SIZE);
+
+    // payload.players[1].player_id = 2;
+    // memcpy(payload.players[1].player_token, mocked_token, TOKEN_SIZE);
+
+    // payload.players[2].player_id = 3;
+    // memcpy(payload.players[2].player_token, mocked_token, TOKEN_SIZE);
+
+    // payload.players[3].player_id = 4;
+    // memcpy(payload.players[3].player_token, mocked_token, TOKEN_SIZE);
+
+    // CORE_TCPClient_Write(tcp_client, (const uint8 *) &payload, sizeof(payload));
+
+    CORE_TCPClient_Disconnect(tcp_client);
+    CORE_TCPClient_Free(&tcp_client);
+}
 
 static CORE_Bool _SendStartGameToGameServer()
 {
-    
+    CORE_TCPClient tcp_client;
+
+
+    CORE_TCPClient_Create(&tcp_client);
+    CORE_TCPClient_OnConnected(tcp_client, _on_connected);
+
+    CORE_TCPClient_Connect(tcp_client, GAMESERVER_IP_ADDRESS, GAMESERVER_PORT);
+
+    return TRUE;
 }
 
 CORE_Bool CommandJoinLobby_Process(struct Command 	*command, 
@@ -58,6 +97,7 @@ CORE_Bool CommandJoinLobby_Process(struct Command 	*command,
         return FALSE;
     }
 
+    CORE_DebugInfo("Player joined lobby\n");
     _users_in_lobby++;
 
 

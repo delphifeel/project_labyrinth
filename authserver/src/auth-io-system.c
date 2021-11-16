@@ -145,7 +145,8 @@ static void _TCP_ServerOnRead(CORE_TCPServer tcp_server, void *context,
 
     if (_ParseCommandFromBuffer(&command, data, data_size) == FALSE)
     {
-        CORE_DebugError("Parse `data` for command error\n"); 
+        CORE_DebugError("Parse `data` for command error\n");
+        CORE_TCPServer_CloseConnection(tcp_server, client_connection);
         return; 
     }
 
@@ -160,6 +161,7 @@ static void _TCP_ServerOnRead(CORE_TCPServer tcp_server, void *context,
                                     sizeof(response_buffer), 
                                     &response_buffer_size) == FALSE)
         {
+            CORE_TCPServer_CloseConnection(tcp_server, client_connection);
             return;
         }
         CORE_TCPServer_Write(tcp_server, client_connection, response_buffer, response_buffer_size);
