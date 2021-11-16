@@ -1,6 +1,6 @@
 #include "CORE.h"
 
-void OnReadCb(	CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection,
+static void OnReadCb(	CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection,
 				const uint8 data[], uint32 data_size)
 {
 	char response_string[100];
@@ -14,17 +14,17 @@ void OnReadCb(	CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConn
 	CORE_TCPServer_Write(instance, client_connection, (const uint8 *) response_string, strlen(response_string));
 }
 
-void OnErrorCb(CORE_TCPServer instance, void *context, const char *error_message)
+static void OnErrorCb(CORE_TCPServer instance, void *context, const char *error_message)
 {
 	CORE_DebugPrint("%s\n", error_message);
 }
 
-void OnNewConnectionCb(CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection)
+static void OnNewConnectionCb(CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection)
 {
 	CORE_DebugPrint("New connection %u\n", (uint64) client_connection);
 }
 
-void OnCloseConnectionCb(CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection)
+static void OnCloseConnectionCb(CORE_TCPServer instance, void *context, CORE_TCPServer_ClientConnection client_connection)
 {
 	CORE_DebugPrint("Close connection %u\n", (uint64) client_connection);
 }

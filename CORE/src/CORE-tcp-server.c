@@ -184,6 +184,16 @@ void CORE_TCPServer_Write(CORE_TCPServer instance, CORE_TCPServer_ClientConnecti
     }
 }
 
+void CORE_TCPServer_CloseConnection(CORE_TCPServer instance, CORE_TCPServer_ClientConnection client_connection)
+{
+    CORE_AssertPointer(client_connection);
+
+    uv_close(
+        (uv_handle_t *) _ClientConnectionToUVClient(client_connection),
+        _OnHandleClose
+    );
+}
+
 /*****************************************************************************************************************************/
 
 void CORE_TCPServer_OnRead(CORE_TCPServer instance, OnReadFunc on_read)
@@ -275,6 +285,10 @@ void CORE_TCPServer_Create(CORE_TCPServer *instance_ptr)
 
 void CORE_TCPServer_Free(CORE_TCPServer *instance_ptr)
 {
+    CORE_TCPServer instance = *instance_ptr;
+    
+    uv_loop_close(instance->uv_loop);
+
 	CORE_OBJECT_FREE(instance_ptr);
 }
 

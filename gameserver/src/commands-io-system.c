@@ -189,6 +189,7 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
     if (_ParseCommandFromBuffer(&command, data, data_size) == FALSE)
     {
         CORE_DebugError("Parse `data` for command error\n");
+        CORE_TCPServer_CloseConnection(tcp_server, client_connection);
         return;
     }
     
@@ -199,6 +200,7 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
         (player_index > CONNECTIONS_PER_SESSION - 1))
     {
         CORE_DebugError("Command session_index or player_index out of bounds\n");
+        CORE_TCPServer_CloseConnection(tcp_server, client_connection);
         return;
     }
 
@@ -220,6 +222,7 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
                                             &is_have_response) == FALSE)
     {
         CORE_DebugError("Command processing error\n");
+        CORE_TCPServer_CloseConnection(tcp_server, client_connection);
         return;
     }
 

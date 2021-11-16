@@ -114,6 +114,9 @@ void Player_Setup(Player instance, LabPointsMapReader points_reader, uint32 spaw
 void Player_Create(Player *instance_ptr)
 {
     CORE_OBJECT_CREATE(instance_ptr, Player);
+    Player instance = *instance_ptr;
+
+    CORE_MemZero(instance->token, sizeof(instance->token));
 }
 
 void Player_Free(Player *instance_ptr) 

@@ -30,6 +30,7 @@ void  	CORE_TCPServer_OnError(CORE_TCPServer instance, OnErrorFunc on_error);
 void  	CORE_TCPServer_OnNewConnection(CORE_TCPServer instance, OnNewConnectionFunc on_new_connection);
 void  	CORE_TCPServer_OnCloseConnection(CORE_TCPServer instance, OnCloseConnectionFunc on_close_connection);
 
+void    CORE_TCPServer_CloseConnection(CORE_TCPServer instance, CORE_TCPServer_ClientConnection client_connection);
 void  	CORE_TCPServer_SetContext(CORE_TCPServer instance, void *context);
 void 	CORE_TCPServer_Write(CORE_TCPServer instance, CORE_TCPServer_ClientConnection client_connection, 
 							 const uint8 data[], uint32 data_size);

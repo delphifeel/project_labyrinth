@@ -2,6 +2,7 @@
 
 CORE_OBJECT_DEFINE(TestObject);
 extern void TestObject_Create(TestObject *instance_ptr);
+extern void TestObject_Free(TestObject *instance_ptr);
 
 void Test_CORE_Object(void)
 {
@@ -29,4 +30,6 @@ void Test_CORE_Object(void)
 	// uint8 uint8_value = 254;
 	// CORE_AssertObjectType(&uint8_value, TestObject);
 	// instance_ptr = (TestObject) &uint8_value;
+
+	TestObject_Free(&instance);
 }

@@ -24,6 +24,8 @@ static void Test_LabSessionAddPlayers()
 
 	player1_token_value = 0xBADBEE;
 	player2_token_value = 0xDEADBEE;
+	CORE_MemZero(player1_token, sizeof(player1_token));
+	CORE_MemZero(player2_token, sizeof(player2_token));
 	memcpy(player1_token, &player1_token_value, sizeof(player1_token_value));
 	memcpy(player2_token, &player2_token_value, sizeof(player2_token_value));
 

@@ -2,6 +2,7 @@ add_library(CORE
 	src/CORE-system.c
 	src/disjoint-set.c
 	src/CORE-tcp-server.c
+	src/CORE-tcp-client.c
 )
 
 target_include_directories(CORE PUBLIC 

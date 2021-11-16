@@ -12,3 +12,7 @@ void TestObject_Create(TestObject *instance_ptr)
 	CORE_OBJECT_CREATE(instance_ptr, TestObject);
 }
 
+void TestObject_Free(TestObject *instance_ptr)
+{
+	CORE_OBJECT_FREE(instance_ptr);
+}
