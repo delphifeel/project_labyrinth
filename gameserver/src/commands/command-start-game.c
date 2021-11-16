@@ -1,8 +1,9 @@
-#include "command.h"
-#include "gameserver/game-server-config.h"
+#include "lib/commands-processor/command.h"
+#include "gameserver/CONFIG.h"
 #include "gameserver/player.h"
-#include "gameserver/gameserver-command.h"
+#include "lib/commands-processor/command.h"
 #include "gameserver/gameserver-command-response.h"
+#include "gameserver/gameserver-command.h"
 
 typedef struct StartGamePayload 
 {

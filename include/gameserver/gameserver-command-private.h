@@ -1,8 +1,8 @@
 #ifndef _GAMESERVER_COMMAND_PRIVATE_H_
 #define _GAMESERVER_COMMAND_PRIVATE_H_
 
+#include <lib/commands-processor/command.h>
 #include "common.h"
-#include "../../lib/commands-processor/include/command.h"
 #include "gameserver/lab-session.h"
 
 struct GameServerCommand

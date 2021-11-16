@@ -4,10 +4,10 @@ add_library(AuthServer
 	src/auth-commands-processor.c
 
 	src/commands/command-authenticate.c
+	src/commands/command-join-lobby.c
 )
 target_include_directories(AuthServer PUBLIC 
 	"${PROJECT_SOURCE_DIR}/include"
-	"${PROJECT_SOURCE_DIR}/lib/commands-processor/include"
 )
 target_link_libraries(AuthServer PUBLIC 
 	CORE

@@ -2,7 +2,7 @@
 #define _COMMANDS_IO_SYSTEM_
 
 #include "CORE.h"
-#include "command.h"
+#include "lib/commands-processor/command.h"
 #include "lab-session.h"
 
 /*****************************************************************************************************************************/

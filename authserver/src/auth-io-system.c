@@ -1,7 +1,7 @@
 #include "CORE.h"
-#include <command.h>
+#include <lib/commands-processor/command.h>
 #include "authserver/auth-io-system.h"
-#include "authserver/config.h"
+#include "authserver/CONFIG.h"
 #include "authserver/auth-command-types.h"
 #include "authserver/auth-commands-processor.h"
 

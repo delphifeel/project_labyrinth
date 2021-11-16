@@ -4,5 +4,4 @@ add_library(CommandsProcessor
 
 target_include_directories(CommandsProcessor PUBLIC
 	"${PROJECT_SOURCE_DIR}/include"
-	commands-processor/include
 )

@@ -1,5 +1,3 @@
-#include "commands-processor.h"
-#include "gameserver/gameserver-command.h"
 #include "gameserver/gameserver-command-types.h"
 #include "gameserver/gameserver-commands-processor.h"
 

@@ -1,3 +1,4 @@
+#include "lib/commands-processor/command.h"
 #include "gameserver/gameserver-command.h"
 
 /*****************************************************************************************************************************/

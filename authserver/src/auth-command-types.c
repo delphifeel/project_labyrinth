@@ -1,4 +1,4 @@
-#include "commands-processor.h"
+#include "lib/commands-processor/commands-processor.h"
 #include "authserver/auth-command-types.h"
 
 /*****************************************************************************************************************************/
@@ -11,10 +11,12 @@
 /*****************************************************************************************************************************/
 
 _DEFINE_PROCESS_FUNC(CommandAuthenticate_Process);
+_DEFINE_PROCESS_FUNC(CommandJoinLobby_Process);
 
 static const AuthCommandsProcessor_CommandToProcessFunc _AuthServerCommandToProcessFunc[] = 
 {
-	{	kCommandType_Authenticate, CommandAuthenticate_Process	},
+	{	kCommandType_Authenticate, 	CommandAuthenticate_Process	},
+	{	kCommandType_JoinLobby, 	CommandJoinLobby_Process	},
 };
 
 /*****************************************************************************************************************************/

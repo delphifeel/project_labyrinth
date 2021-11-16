@@ -6,4 +6,3 @@ clang-tidy-8 											\
 	-header-filter=.* 									\
 	$SRC_FILES -- 										\
 	-I ../../include 									\
-	-I ../../lib/commands-processor/include         	\

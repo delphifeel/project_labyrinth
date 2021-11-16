@@ -30,7 +30,6 @@ target_link_libraries(ProjectLabyrinthTest PUBLIC
 add_executable(ProjectLabyrinthAuthServer authserver/src/main.c)
 target_include_directories(ProjectLabyrinthAuthServer PUBLIC 
 	"${PROJECT_SOURCE_DIR}/include"
-	"${PROJECT_SOURCE_DIR}/lib/commands-processor/include"
 )
 target_link_libraries(ProjectLabyrinthAuthServer PUBLIC 
 	AuthServer
@@ -39,7 +38,6 @@ target_link_libraries(ProjectLabyrinthAuthServer PUBLIC
 add_executable(ProjectLabyrinthGameServer gameserver/src/main.c)
 target_include_directories(ProjectLabyrinthGameServer PUBLIC 
 	"${PROJECT_SOURCE_DIR}/include"
-	"${PROJECT_SOURCE_DIR}/lib/commands-processor/include"
 )
 target_link_libraries(ProjectLabyrinthGameServer PUBLIC 
 	GameServer

@@ -1,11 +1,9 @@
-#include "command.h"
+#include "lib/commands-processor/command.h"
 #include "authserver/auth-command-types.h"
+#include "authserver/CONFIG.h"
 
 #define MAX_LOGIN_SIZE         (36)
 #define MAX_PASSWORD_SIZE      (24)
-
-#define TOKEN_SIZE             (32)
-
 
 typedef struct AuthenticatePayload
 {
@@ -25,8 +23,6 @@ static const AuthenticatePayload _mocked_creds[] =
     {"dhatz", "1234"},
     {"cherniki", "12345"},
 };
-
-static const uint8 _mocked_token[TOKEN_SIZE] = {0xDE, 0xAD, 0xBE, 0xAF, 0x00, 0x00};
 
 CORE_Bool CommandAuthenticate_Process(  struct Command 	*command, 
                                         struct Command 	*out_response_command, 
@@ -72,7 +68,7 @@ CORE_Bool CommandAuthenticate_Process(  struct Command 	*command,
     *out_is_have_response = TRUE;
     Command_SetType(out_response_command, kCommandResponseType_Authenticate);
 
-    memcpy(response_payload.token, _mocked_token, TOKEN_SIZE);
+    memcpy(response_payload.token, mocked_token, TOKEN_SIZE);
     if (Command_SetPayload( out_response_command, 
                             (const uint8 *) &response_payload, 
                             sizeof(AuthenticateResponsePayload)) == FALSE)

@@ -1,7 +1,7 @@
 #include "gameserver/game-server.h"
 #include "gameserver/lab-session.h"
 #include "gameserver/commands-io-system.h"
-#include "gameserver/game-server-config.h"
+#include "gameserver/CONFIG.h"
 
 /*****************************************************************************************************************************/
 

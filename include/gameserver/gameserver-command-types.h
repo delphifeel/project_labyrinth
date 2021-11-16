@@ -1,7 +1,7 @@
 #ifndef _GAMESERVER_COMMAND_TYPES_H_
 #define _GAMESERVER_COMMAND_TYPES_H_
 
-#include "gameserver-commands-processor.h"
+#include "gameserver/gameserver-commands-processor.h"
 
 enum 
 {
