@@ -12,6 +12,7 @@ enum
 enum 
 {
 	kCommandResponseType_PlayerMoved,
+	kCommandResponseType_StartGame,
 };
 
 const GameServerCommandsProcessor_CommandToProcessFunc 	*GetGameServerCommandToProcessFunc();

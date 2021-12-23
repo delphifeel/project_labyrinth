@@ -25,6 +25,7 @@ CORE_OBJECT_INTERFACE(CORE_TCPClient,
      *      callbacks
      */
     CORE_TCPClient_OnReadFunc               on_read;
+    CORE_TCPClient_OnWriteFunc              on_write;
     CORE_TCPClient_OnConnectedFunc          on_connected;
     CORE_TCPClient_OnCloseConnectionFunc    on_close_connection;
 
@@ -75,6 +76,11 @@ static void _OnWriteBuffer(uv_write_t* request, int status)
     _UVHandleGetContext((uv_handle_t *) request, &instance);
     CORE_MemFree(instance->temp_write_buffer.base);
     CORE_MemZero(&instance->temp_write_buffer, sizeof(uv_buf_t));
+
+    if (instance->on_write != NULL)
+    {
+        instance->on_write(instance, instance->context);
+    }
 
     if (status < 0)
     {
@@ -166,6 +172,13 @@ void CORE_TCPClient_OnRead(CORE_TCPClient instance, CORE_TCPClient_OnReadFunc on
     instance->on_read = on_read;
 }
 
+void CORE_TCPClient_OnWrite(CORE_TCPClient instance, CORE_TCPClient_OnWriteFunc on_write)
+{
+    CORE_AssertPointer(on_write);
+
+    instance->on_write = on_write;
+}
+
 void CORE_TCPClient_OnConnected(CORE_TCPClient instance, CORE_TCPClient_OnConnectedFunc on_connected)
 {
     CORE_AssertPointer(on_connected);
@@ -237,6 +250,7 @@ void CORE_TCPClient_Create(CORE_TCPClient *instance_ptr)
     CORE_TCPClient instance = *instance_ptr;
 
 	instance->on_read = NULL;
+    instance->on_write = NULL;
 	instance->on_connected = NULL;
     instance->on_close_connection = NULL;
     instance->context = NULL;

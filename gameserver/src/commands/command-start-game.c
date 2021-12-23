@@ -4,6 +4,7 @@
 #include "lib/commands-processor/command.h"
 #include "gameserver/gameserver-command-response.h"
 #include "gameserver/gameserver-command.h"
+#include "gameserver/gameserver-command-types.h"
 
 typedef struct StartGamePayload 
 {
@@ -13,6 +14,15 @@ typedef struct StartGamePayload
 		uint8 	player_token[TOKEN_SIZE];	
 	} players[SESSION_PLAYERS_COUNT];
 } StartGamePayload;
+
+typedef struct StartGameResponsePayload 
+{
+	struct 
+	{
+		uint32 	player_id;
+		uint32 	player_index;	
+	} players[SESSION_PLAYERS_COUNT];
+} StartGameResponsePayload;
 
 CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_command, 
 									struct GameServerCommandResponse 	*out_response_command,
@@ -37,7 +47,7 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 	payload = (const StartGamePayload *) payload_raw;
 
 
-	/*
+	/**
 	 * 			find free session
 	 */
 	LabSession 	new_session;
@@ -72,13 +82,13 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 	sessions[new_session_index] = new_session;
 	
 
-	/*
+	/**
 	 * 			add all players to created session
 	 */
-	uint32 				current_player_id;
-	const uint8 		*current_player_token;
-	uint32 				current_player_index;
-
+	uint32 						current_player_id;
+	const uint8 				*current_player_token;
+	uint32 						current_player_index;
+	StartGameResponsePayload 	response_payload;
 
 
 	for (uint32 i = 0; i < SESSION_PLAYERS_COUNT; i++)
@@ -92,15 +102,27 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 		current_player_token = payload->players[i].player_token; 
 
 		LabSession_AddPlayer(new_session, current_player_id, current_player_token, &current_player_index);
+
+		response_payload.players[i].player_id = current_player_id;
+		response_payload.players[i].player_index = current_player_index;
 	}
 
+	/**
+	 * 			set repsonse
+	 */
+	*out_is_have_response = TRUE;
+	GameServerCommandResponse_SetType(out_response_command, kCommandResponseType_StartGame);
+	if (GameServerCommandResponse_SetPayload(out_response_command, 
+										 	(const uint8 *) &response_payload,
+										 	sizeof(response_payload)) == FALSE)
+	{
+		return FALSE;
+	}
 
-	/*
+	/**
 	 * 			start session
 	 */
 	LabSession_Start(new_session);
-
-	// TODO(delphifeel): send `current_player_index` to every player and start session
 
 	return TRUE;
 }

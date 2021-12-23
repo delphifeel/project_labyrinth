@@ -2,6 +2,7 @@
 #include "authserver/CONFIG.h"
 #include "lib/commands-processor/command.h"
 #include "authserver/auth-command-types.h"
+#include "gameserver/gameserver-command-types.h"
 
 typedef struct JoinLobbyPayload
 {
@@ -24,24 +25,55 @@ typedef struct StartGamePayload
 
 static uint32 _users_in_lobby = 0;
 
-static void _on_connected(CORE_TCPClient tcp_client, void *context)
+static void _SendData(CORE_TCPClient tcp_client, void *context)
 {
     StartGamePayload payload;
+    uint8 buffer[48 + sizeof(payload)];
+    uint8 *buffer_ptr;
 
-    // payload.players[0].player_id = 1;
-    // memcpy(payload.players[0].player_token, mocked_token, TOKEN_SIZE);
 
-    // payload.players[1].player_id = 2;
-    // memcpy(payload.players[1].player_token, mocked_token, TOKEN_SIZE);
+    buffer_ptr = buffer;
 
-    // payload.players[2].player_id = 3;
-    // memcpy(payload.players[2].player_token, mocked_token, TOKEN_SIZE);
+    // validation header
+    *((uint32 *) buffer_ptr) = 0xDEADBEAF;
+    buffer_ptr += 4;
 
-    // payload.players[3].player_id = 4;
-    // memcpy(payload.players[3].player_token, mocked_token, TOKEN_SIZE);
+    // command type
+    *((uint32 *) buffer_ptr) = kCommandType_StartGame;
+    buffer_ptr += 4;
 
-    // CORE_TCPClient_Write(tcp_client, (const uint8 *) &payload, sizeof(payload));
+    // session index
+    *((uint32 *) buffer_ptr) = 0;
+    buffer_ptr += 4;
 
+    // player index
+    *((uint32 *) buffer_ptr) = 0;
+    buffer_ptr += 4;
+
+    // player token
+    memset(buffer_ptr, 0, 32);
+    buffer_ptr += 32;
+
+    // payload
+    payload.players[0].player_id = 1;
+    memcpy(payload.players[0].player_token, mocked_token, TOKEN_SIZE);
+
+    payload.players[1].player_id = 2;
+    memcpy(payload.players[1].player_token, mocked_token, TOKEN_SIZE);
+
+    payload.players[2].player_id = 3;
+    memcpy(payload.players[2].player_token, mocked_token, TOKEN_SIZE);
+
+    payload.players[3].player_id = 4;
+    memcpy(payload.players[3].player_token, mocked_token, TOKEN_SIZE);
+
+    memcpy(buffer_ptr, &payload, sizeof(payload));
+
+    CORE_TCPClient_Write(tcp_client, (const uint8 *) buffer, sizeof(buffer));
+}
+
+static void _CloseTCPClientConnection(CORE_TCPClient tcp_client, void *context)
+{
     CORE_TCPClient_Disconnect(tcp_client);
     CORE_TCPClient_Free(&tcp_client);
 }
@@ -52,7 +84,8 @@ static CORE_Bool _SendStartGameToGameServer()
 
 
     CORE_TCPClient_Create(&tcp_client);
-    CORE_TCPClient_OnConnected(tcp_client, _on_connected);
+    CORE_TCPClient_OnConnected(tcp_client, _SendData);
+    CORE_TCPClient_OnWrite(tcp_client, _CloseTCPClientConnection);
 
     CORE_TCPClient_Connect(tcp_client, GAMESERVER_IP_ADDRESS, GAMESERVER_PORT);
 

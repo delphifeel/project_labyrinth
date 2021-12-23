@@ -163,6 +163,45 @@ static CORE_Bool _ConvertCommandResponseToBuffer(struct GameServerCommandRespons
     return TRUE;
 }
 
+static CORE_Bool _CommandFromAuthServer(uint32 command_type)
+{
+    return command_type == kCommandType_StartGame;
+}
+
+static CORE_Bool _ProcessCommand(CommandsIOSystem                   instance, 
+                                 struct GameServerCommand           *command_ptr,
+                                 uint32                             command_type,
+                                 struct GameServerCommandResponse   *response_command_ptr,
+                                 CORE_Bool                          *out_is_have_response,
+                                 uint8                              response_buffer[],
+                                 uint32                             response_buffer_max_size,
+                                 uint32                             *out_response_buffer_size)
+{
+    GameServerCommand_SetSessionsPtr(command_ptr, instance->sessions, instance->sessions_size);
+
+    *out_is_have_response = FALSE;
+    if (GameServerCommandsProcessor_Process(instance->commands_processor, 
+                                            command_type,
+                                            command_ptr, 
+                                            response_command_ptr,
+                                            out_is_have_response) == FALSE)
+    {
+        return FALSE;
+    }
+
+    if (*out_is_have_response == TRUE)
+    {
+        if (_ConvertCommandResponseToBuffer(response_command_ptr, 
+                                            response_buffer, 
+                                            response_buffer_max_size, 
+                                            out_response_buffer_size) == FALSE)
+        {
+            return FALSE;
+        }
+    }
+
+    return TRUE;
+}
 
 static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context, 
                              CORE_TCPServer_ClientConnection client_connection,
@@ -183,6 +222,8 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
     uint32                                  iter_player_index;
 
 
+    instance = (CommandsIOSystem) context;
+    
     GameServerCommand_Init(&command);
     GameServerCommandResponse_Init(&response_command);
 
@@ -190,6 +231,30 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
     {
         CORE_DebugError("Parse `data` for command error\n");
         CORE_TCPServer_CloseConnection(tcp_server, client_connection);
+        return;
+    }
+
+    GameServerCommand_GetType(&command, &command_type);
+    if (_CommandFromAuthServer(command_type) == TRUE)
+    {
+        CORE_DebugInfo("Got command from auth server\n");
+
+        if (_ProcessCommand(instance,
+                            &command,
+                            command_type,
+                            &response_command,
+                            &is_have_response,
+                            response_buffer,
+                            sizeof(response_buffer),
+                            &response_buffer_size) == FALSE)
+        {
+            CORE_DebugError("Auth server command processing error\n");
+            CORE_TCPServer_CloseConnection(tcp_server, client_connection);
+            return;
+        }
+
+        CORE_TCPServer_Write(tcp_server, client_connection, response_buffer, response_buffer_size);
+
         return;
     }
     
@@ -204,7 +269,6 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
         return;
     }
 
-    instance = (CommandsIOSystem) context;
     if (instance->tcp_clients_map[session_index][player_index] == NULL)
     {
         CORE_DebugInfo(
@@ -215,31 +279,17 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
         instance->tcp_clients_map[session_index][player_index] = client_connection;
     }
 
-    GameServerCommand_SetSessionsPtr(&command, instance->sessions, instance->sessions_size);
-
-    is_have_response = FALSE;
-    GameServerCommand_GetType(&command, &command_type);
-    if (GameServerCommandsProcessor_Process(instance->commands_processor, 
-                                            command_type,
-                                            &command, 
-                                            &response_command,
-                                            &is_have_response) == FALSE)
+    if (_ProcessCommand(instance,
+                        &command,
+                        command_type,
+                        &response_command,
+                        &is_have_response,
+                        response_buffer,
+                        sizeof(response_buffer),
+                        &response_buffer_size) == FALSE)
     {
         CORE_DebugError("Command processing error\n");
         CORE_TCPServer_CloseConnection(tcp_server, client_connection);
-        return;
-    }
-
-    if (is_have_response == FALSE)
-    {
-        return;
-    }
-
-    if (_ConvertCommandResponseToBuffer(&response_command, 
-                                        response_buffer, 
-                                        sizeof(response_buffer), 
-                                        &response_buffer_size) == FALSE)
-    {
         return;
     }
 
