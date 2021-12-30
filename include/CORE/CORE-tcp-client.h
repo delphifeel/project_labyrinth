@@ -7,7 +7,7 @@
 
 CORE_OBJECT_DEFINE(CORE_TCPClient);
 
-typedef void (*CORE_TCPClient_OnReadFunc)(	CORE_TCPClient instance, void *context, const uint8 data[], uint32 data_size);
+typedef void (*CORE_TCPClient_OnReadFunc)(CORE_TCPClient instance, void *context, const uint8 data[], uint32 data_size);
 typedef void (*CORE_TCPClient_OnConnectedFunc)(CORE_TCPClient instance, void *context);
 typedef void (*CORE_TCPClient_OnCloseConnectionFunc)(CORE_TCPClient instance, void *context);
 typedef void (*CORE_TCPClient_OnWriteFunc)(CORE_TCPClient instance, void *context);

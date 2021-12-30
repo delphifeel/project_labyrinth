@@ -21,6 +21,7 @@ typedef struct StartGameResponsePayload
 	{
 		uint32 	player_id;
 		uint32 	player_index;	
+		uint32 	session_index;
 	} players[SESSION_PLAYERS_COUNT];
 } StartGameResponsePayload;
 
@@ -105,10 +106,11 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 
 		response_payload.players[i].player_id = current_player_id;
 		response_payload.players[i].player_index = current_player_index;
+		response_payload.players[i].session_index = new_session_index;
 	}
 
 	/**
-	 * 			set repsonse
+	 * 			set response
 	 */
 	*out_is_have_response = TRUE;
 	GameServerCommandResponse_SetType(out_response_command, kCommandResponseType_StartGame);

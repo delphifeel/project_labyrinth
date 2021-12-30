@@ -1,3 +1,9 @@
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #include "CORE/CORE-system.h"
 #include "CORE/CORE-file.h"
 #include "CORE/CORE-debug.h"
@@ -30,6 +36,11 @@ CORE_Bool CORE_GenerateRandomDataToBuffer(uint8 buffer[], uint32 buffer_size)
 CORE_Bool CORE_GenerateUIDToBuffer(uint8 buffer[UID_SIZE])
 {
 	return CORE_GenerateRandomDataToBuffer(buffer, UID_SIZE);
+}
+
+void CORE_Sleep(uint32 seconds)
+{
+	sleep(seconds);
 }
 
 /*****************************************************************************************************************************/

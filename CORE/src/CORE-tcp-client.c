@@ -11,6 +11,7 @@ CORE_OBJECT_INTERFACE(CORE_TCPClient,
 	/*
 	 * 		libuv specific data types
 	 */
+    uv_loop_t               uv_loop_struct;
 	uv_loop_t  				*uv_loop;
 	uv_tcp_t  				uv_tcp_client;
     uv_connect_t            uv_connection;
@@ -205,7 +206,8 @@ void CORE_TCPClient_SetContext(CORE_TCPClient instance, void *context)
 CORE_Bool CORE_TCPClient_Connect(CORE_TCPClient instance, const char *dest_address, uint32 dest_port)
 {
     instance->server_port = dest_port;
-    instance->uv_loop = uv_default_loop();
+    uv_loop_init(&instance->uv_loop_struct);
+    instance->uv_loop = &instance->uv_loop_struct;
 
     if (uv_tcp_init(instance->uv_loop, &instance->uv_tcp_client) != 0)
     {

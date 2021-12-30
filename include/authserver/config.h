@@ -28,7 +28,7 @@ static const uint8 mocked_token[32] =
  *      Max users per lobby
  */
 // #define LOBBY_USERS_COUNT    (40)
-#define LOBBY_USERS_COUNT       (4)
+#define LOBBY_USERS_COUNT       (1)
 
 
 /**
@@ -36,6 +36,8 @@ static const uint8 mocked_token[32] =
  */
 
 #define AUTH_IO_SYSTEM_DEFAULT_PORT (7001)
+
+#define AUTH_IO_MAX_CONNECTIONS     (40)
 
 
 #endif
