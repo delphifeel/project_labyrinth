@@ -152,7 +152,7 @@ void Test_CommandStartGame()
 	CORE_Assert(is_have_response == TRUE);
 
 	GameServerCommandResponse_GetType(&response_command, &command_type);
-	CORE_Assert(command_type == kCommandResponseType_StartGame);
+	CORE_Assert(command_type == kCommandType_StartGame);
 	GameServerCommandResponse_GetPayloadPtr(&response_command, 
 											(const uint8 **) &response_payload_ptr,
 											&response_payload_size);

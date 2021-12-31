@@ -13,6 +13,7 @@ add_library(GameServer
 
 	src/commands/command-player-move.c
 	src/commands/command-start-game.c
+	src/commands/command-player-init.c
 )
 
 target_include_directories(GameServer PUBLIC 

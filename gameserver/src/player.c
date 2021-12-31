@@ -12,10 +12,33 @@ CORE_OBJECT_INTERFACE(Player,
     uint32                      id;
     uint32                      speed_multiplier;
     uint32                      position_point_id;
-    PositionStruct              position_inside_lab_point;
+    PositionStruct              position_coords;
     LabPointsMapReader          points_reader;
     uint8                       token[TOKEN_SIZE];
 );
+
+/*****************************************************************************************************************************/
+
+static PositionStruct _min_possible_position;
+static PositionStruct _max_possible_position;
+static CORE_Bool      _min_max_set = FALSE;
+
+static void _GetPossibleMinMaxPosition(const PositionStruct **out_min_possible_position_ptr,
+                                       const PositionStruct **out_max_possible_position_ptr)
+{
+    if (_min_max_set == FALSE)
+    {
+        _min_max_set = TRUE;
+        int32 LABPOINT_SIZE_HALF = LABPOINT_SIZE >> 1;
+        _min_possible_position.x = -LABPOINT_SIZE_HALF;
+        _min_possible_position.y = -LABPOINT_SIZE_HALF;
+        _max_possible_position.x = LABPOINT_SIZE_HALF;
+        _max_possible_position.y = LABPOINT_SIZE_HALF;
+    }
+
+    *out_min_possible_position_ptr = &_min_possible_position;
+    *out_max_possible_position_ptr = &_max_possible_position;
+}
 
 /*****************************************************************************************************************************/
 
@@ -23,8 +46,13 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
 {
     CORE_AssertPointer(directions);
 
-    LabPointStruct      result_lab_point;
-    uint32              result_point_id;
+    LabPointStruct          result_lab_point;
+    uint32                  result_point_id;
+    int32                   new_position_x;
+    int32                   new_position_y;
+    const PositionStruct    *min_possible_position;
+    const PositionStruct    *max_possible_position;
+    CORE_Bool               can_move;
 
 
     if (directions_size > MAX_DIRECTION_SIZE) 
@@ -33,37 +61,94 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
         return FALSE; 
     }
 
+    new_position_x = instance->position_coords.x;
+    new_position_y = instance->position_coords.y;
     result_point_id = instance->position_point_id;
 
     for (uint32 i = 0; i < directions_size; i++)
     {
-        LabPointsMapReader_GetPointByID(instance->points_reader, result_point_id, &result_lab_point);
-
         switch (directions[i])
         {
             case kMoveDirection_Top: 
-                result_point_id = result_lab_point.top_connection_id;
+                new_position_y++;
                 break; 
             case kMoveDirection_Right:
-                result_point_id = result_lab_point.right_connection_id;
+                new_position_x++;
                 break;
             case kMoveDirection_Bottom:  
-                result_point_id = result_lab_point.bottom_connection_id;
+                new_position_y--;
                 break; 
             case kMoveDirection_Left:
-                result_point_id = result_lab_point.left_connection_id;
+                new_position_x--;
                 break; 
-        }
-
-        if (result_point_id == 0)
-        {
-            CORE_DebugError("Can't move to the [%u] - no connection\n", directions[i]);
-            return FALSE;
+            default:
+                CORE_DebugError("Unknown direction\n");
+                return FALSE;
         }
     }
 
-    CORE_DebugInfo("Player %u moves to the point %u \n", instance->id, result_point_id);
-    instance->position_point_id = result_point_id;
+    _GetPossibleMinMaxPosition(&min_possible_position, &max_possible_position);
+    Player_GetPositionPoint(instance, &result_lab_point);
+    can_move = TRUE;
+    do
+    {
+        if (new_position_x < min_possible_position->x)
+        {
+            if (result_lab_point.left_connection_id != 0)
+            {
+                result_point_id = result_lab_point.left_connection_id;
+                new_position_x = max_possible_position->x;
+                break;
+            }
+            can_move = FALSE;
+        }
+        if (new_position_y < min_possible_position->y)
+        {
+            if (result_lab_point.bottom_connection_id != 0)
+            {
+                result_point_id = result_lab_point.bottom_connection_id;
+                new_position_y = max_possible_position->y;
+                break;
+            }
+            can_move = FALSE;
+        }
+        if (new_position_x > max_possible_position->x)
+        {
+            if (result_lab_point.right_connection_id != 0)
+            {
+                result_point_id = result_lab_point.right_connection_id;
+                new_position_x = min_possible_position->x;
+                break;
+            }
+            can_move = FALSE;
+        }
+        if (new_position_y > max_possible_position->y)
+        {
+            if (result_lab_point.top_connection_id != 0)
+            {
+                result_point_id = result_lab_point.top_connection_id;
+                new_position_y = min_possible_position->y;
+                break;
+            }
+            can_move = FALSE;
+        }
+    } while (0);
+
+    if (can_move == FALSE)
+    {
+        CORE_DebugError("Can't move that side - there is a wall\n");
+        return FALSE;
+    }
+
+    if (result_point_id != instance->position_point_id)
+    {
+        CORE_DebugInfo("Player %u moves to the point %u \n", instance->id, result_point_id);
+        instance->position_point_id = result_point_id;
+    }
+
+    CORE_DebugInfo("Player %u moves to the coords [%d:%d]\n", instance->id, new_position_x, new_position_y);
+    instance->position_coords.x = new_position_x;
+    instance->position_coords.y = new_position_y;
     return TRUE; 
 }
 
@@ -87,22 +172,22 @@ void Player_GetId(Player instance, uint32 *id)
     *id = instance->id; 
 }
 
-void Player_GetPositionInsideLabPoint(Player instance, PositionStruct *position)
+void Player_GetPositionCoords(Player instance, PositionStruct *out_position)
 {
-    *position = instance->position_inside_lab_point;
+    *out_position = instance->position_coords;
 }
 
-void Player_GetPositionPointId(Player instance, uint32 *out_position_point_id)
+void Player_GetPositionPoint(Player instance, LabPointStruct *out_point)
 {
-    *out_position_point_id = instance->position_point_id;
+    LabPointsMapReader_GetPointByID(instance->points_reader, instance->position_point_id, out_point);
 }
 
 /*****************************************************************************************************************************/
 
 void Player_Setup(Player instance, LabPointsMapReader points_reader, uint32 spawn_point_id)
 {
-    instance->position_inside_lab_point.x = 0;
-    instance->position_inside_lab_point.y = 0;
+    instance->position_coords.x = 0;
+    instance->position_coords.y = 0;
     
     instance->speed_multiplier = 1;
     instance->position_point_id = spawn_point_id;

@@ -5,33 +5,30 @@
 #include "gameserver/gameserver-command.h"
 #include "gameserver/gameserver-command-types.h"
 
-typedef struct PlayerMovePayload 
+typedef struct PlayerInitPayload 
 {
-	uint32 	directions[2];
-} PlayerMovePayload;
+	uint32 	dummy;
+} PlayerInitPayload;
 
-typedef struct PlayerMoveResponsePayload 
+typedef struct PlayerInitResponsePayload 
 {
-	CORE_Bool 	is_ok;
-} PlayerMoveResponsePayload;
+	PositionStruct 	position_coords;
+	LabPointStruct 	position_point;
+} PlayerInitResponsePayload;
 
-CORE_Bool CommandPlayerMove_Process(struct GameServerCommand 			*game_server_command, 
+CORE_Bool CommandPlayerInit_Process(struct GameServerCommand 			*game_server_command, 
 									struct GameServerCommandResponse	*out_response_command,
 									CORE_Bool 							*out_is_have_response)
 {
-	LabSession 					*sessions;
-	uint32 						sessions_size;
-	LabSession 					session;
-	Player 						player;
-	MoveDirection 				directions[2];
-	uint32 						directions_size;
 	uint32 						session_index;
 	uint32 						player_index;
-	const PlayerMovePayload 	*payload;
-	const uint8					*payload_raw;
+	LabSession 					session;
+	Player 						player;
+	LabSession 					*sessions;
+	uint32 						sessions_size;
 	uint32 						payload_size;
-	PlayerMoveResponsePayload 	response_payload;
-
+	const uint8 				*payload_raw;	
+	PlayerInitResponsePayload 	response_payload;
 
 
 	GameServerCommand_GetSessionsPtr(game_server_command, &sessions, &sessions_size);
@@ -39,13 +36,11 @@ CORE_Bool CommandPlayerMove_Process(struct GameServerCommand 			*game_server_com
 	GameServerCommand_GetPlayerIndex(game_server_command, &player_index);
 	GameServerCommand_GetPayloadPtr(game_server_command, &payload_raw, &payload_size);
 
-	if (payload_size != sizeof(PlayerMovePayload))
+	if (payload_size != sizeof(PlayerInitPayload))
 	{
-		CORE_DebugError("payload_size != sizeof(PlayerMovePayload)\n");
+		CORE_DebugError("payload_size != sizeof(PlayerInitPayload)\n");
 		return FALSE;
 	}
-
-	payload = (const PlayerMovePayload *) payload_raw;
 
 	if (LabSession_HelperFindSession(sessions, 
 							 		 sessions_size, 
@@ -54,37 +49,17 @@ CORE_Bool CommandPlayerMove_Process(struct GameServerCommand 			*game_server_com
 	{
 		return FALSE;
 	}
-	CORE_DebugInfo("Found specific session\n");
 
 	if (LabSession_FindPlayer(session, player_index, &player) == FALSE)
 	{
 		return FALSE;
 	}
-	CORE_DebugInfo("Found specific player\n");
 
-	if (payload->directions[1] == 0)
-	{
-		directions[0] = payload->directions[0];
-		directions_size = 1;
-	}
-	else
-	{
-		directions[0] = payload->directions[0];
-		directions[1] = payload->directions[1];
-		directions_size = 2;
-	}
-
-	if (Player_Move(player, directions, directions_size) == TRUE)
-	{
-		response_payload.is_ok = TRUE;
-	}
-	else
-	{
-		response_payload.is_ok = FALSE;
-	}
+	Player_GetPositionCoords(player, &response_payload.position_coords);
+	Player_GetPositionPoint(player, &response_payload.position_point);
 
 	*out_is_have_response = TRUE;
-	GameServerCommandResponse_SetType(out_response_command, kCommandType_PlayerMove);
+	GameServerCommandResponse_SetType(out_response_command, kCommandType_PlayerInit);
 	if (GameServerCommandResponse_SetPayload(out_response_command, 
 										 	(const uint8 *) &response_payload,
 										 	sizeof(response_payload)) == FALSE)

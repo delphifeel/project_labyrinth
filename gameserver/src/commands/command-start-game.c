@@ -113,7 +113,7 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 	 * 			set response
 	 */
 	*out_is_have_response = TRUE;
-	GameServerCommandResponse_SetType(out_response_command, kCommandResponseType_StartGame);
+	GameServerCommandResponse_SetType(out_response_command, kCommandType_StartGame);
 	if (GameServerCommandResponse_SetPayload(out_response_command, 
 										 	(const uint8 *) &response_payload,
 										 	sizeof(response_payload)) == FALSE)
