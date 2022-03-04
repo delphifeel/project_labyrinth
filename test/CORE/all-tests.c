@@ -1,4 +1,5 @@
 extern void Test_CORE_TCPServer(void);
+extern void Test_CORE_TCPClient(void); 
 extern void Test_CORE_Object(void);
 
 #include "CORE.h"
