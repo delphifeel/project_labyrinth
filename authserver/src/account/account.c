@@ -1,6 +1,6 @@
 #include "CORE.h"
 #include "authserver/auth-command-types.h"
-#include "authserver/common.h"
+#include "authserver/account.h"
 
 
 static const AuthenticatePayload _mocked_creds[] = 
@@ -11,7 +11,7 @@ static const AuthenticatePayload _mocked_creds[] =
 };
 
 
-CORE_Bool Authentication_Find(const char *login, const char *password)
+CORE_Bool Account_LogIn(const char *login, const char *password)
 {
     uint32                          creds_array_size;
     CORE_Bool                       is_found;

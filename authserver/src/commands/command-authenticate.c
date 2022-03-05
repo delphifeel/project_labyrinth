@@ -1,8 +1,7 @@
 #include "lib/commands-processor/command.h"
 #include "authserver/auth-command-types.h"
 #include "authserver/CONFIG.h"
-#include "authserver/authentication.h"
-#include "authserver/common.h"
+#include "authserver/account.h"
 
 
 
@@ -34,7 +33,7 @@ CORE_Bool CommandAuthenticate_Process(  struct Command 	*command,
 
     payload = (const AuthenticatePayload *) payload_raw; 
 
-    if(!Authentication_Find(payload->login, payload->password)){
+    if(!Account_LogIn(payload->login, payload->password)){
         return FALSE; 
     }
     
