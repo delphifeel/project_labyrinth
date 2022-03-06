@@ -8,6 +8,9 @@
 #define MAX_PASSWORD_SIZE      (24)
 
 
+CORE_OBJECT_DEFINE(AccountRepository);
+
+
 typedef struct AuthenticatePayload
 {
     // TODO(dhatz): UTF-8 support. 
@@ -16,6 +19,14 @@ typedef struct AuthenticatePayload
 } AuthenticatePayload; 
 
 
-CORE_Bool Account_LogIn(const char *login, const char *password); 
+CORE_Bool Account_LogIn(const char *login, const char *password);
+
+void AccountRepository_Create(AccountRepository *instance_ptr); 
+void AccountRepository_Setup(AccountRepository instance, const char *url);
+void AccountRepository_Free(AccountRepository *instance_ptr); 
+void AccountRepository_SetURL(AccountRepository instance, const char *url); 
+CORE_Bool AccountRepository_Add(AccountRepository instance, const char *login, const char *password); 
+CORE_Bool AccountRepository_Find(AccountRepository instance, const char *login, const char *password);
+
 
 #endif

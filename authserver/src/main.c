@@ -1,4 +1,6 @@
 #include "authserver/auth-io-system.h"
+#include "authserver/account.h"
+
 
 
 static AuthIOSystem Server; 
@@ -10,6 +12,10 @@ static AuthIOSystem Server;
 
 int main()
 {
+    AccountRepository account_repository; 
+    AccountRepository_Create(&account_repository); 
+    AccountRepository_Setup(account_repository, "storage.csv"); 
+
     CORE_DebugPrint("[AUTH SERVER] Started\n");
     AuthIOSystem_Create(&Server);
     AuthIOSystem_Setup(Server);
