@@ -270,7 +270,7 @@ void AuthIOSystem_Setup(AuthIOSystem instance)
 
 void AuthIOSystem_Create(AuthIOSystem *instance_ptr)
 {
-    AuthIOSystem instance; 
+    AuthIOSystem instance;
     CORE_OBJECT_CREATE(instance_ptr, AuthIOSystem); 
 
     instance = *instance_ptr; 

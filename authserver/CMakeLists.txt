@@ -2,7 +2,7 @@ add_library(AuthServer
 	src/auth-io-system.c
 	src/auth-command-types.c
 	src/auth-commands-processor.c
-
+	src/account/account.c
 	src/commands/command-authenticate.c
 	src/commands/command-join-lobby.c
 )
