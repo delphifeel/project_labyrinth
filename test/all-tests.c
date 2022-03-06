@@ -9,11 +9,13 @@ int main(void)
 	CORE_DebugPrint("[TESTS] Run CORE tests\n");
 	CORETests_Run();
 
+	#if 0
 	CORE_DebugPrint("[TESTS] Run AuthServer tests\n");
 	AuthServerTests_Run();
 
 	CORE_DebugPrint("[TESTS] Run GameServer tests\n");
 	GameServerTests_Run();
+	#endif
 
 	return 0;
 }
