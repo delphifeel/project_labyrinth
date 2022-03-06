@@ -77,12 +77,10 @@ CORE_Bool AccountRepository_Add(const AccountRepository instance, const char *lo
         return FALSE;
     }
 
-    if((fp = fopen(instance->url, "w")) == NULL){
+    if((fp = fopen(instance->url, "a")) == NULL){
         CORE_DebugInfo("Cannot open file: %s", instance->url);  
         return FALSE;
     }
-
-    fseek(fp, SEEK_CUR, SEEK_END); 
 
     for(int i = 0; i < CORE_StringLength(login); i++)
         putc(login[i], fp); 
