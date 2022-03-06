@@ -14,8 +14,6 @@
  * |___________________________________________________________________________________________________________| 
  * 
  */
-// TODO(delphifeel): move to build process (-D flag)
-#define CORE_DEBUG_ENABLED
 
 #ifdef CORE_SET_TESTING_ENABLED
 	#define CORE_TESTING_ENABLED
@@ -42,38 +40,8 @@
 
 
 static const char *_CORE_module_name = NULL;
-static inline const char *_CORE_GetModuleName(const char *file_name)
-{
-	const char *temp_ptr;
 
-
-	if (_CORE_module_name == NULL)
-	{
-		temp_ptr = file_name;
-		while (*temp_ptr != 0)
-		{
-			if ((*temp_ptr == '/') ||
-				(*temp_ptr == '\\'))
-			{
-				_CORE_module_name = temp_ptr;
-			}
-
-			temp_ptr++;
-		}
-
-		if (_CORE_module_name == NULL)
-		{
-			_CORE_module_name = file_name;
-		}
-		else
-		{
-			_CORE_module_name++;
-		}
-	}
-
-	return _CORE_module_name;
-}
-
+const char *CORE_GetModuleName(const char *file_name, const char *module_name);
 
 #define _CORE_DEBUG_MESSAGE_PRE(_TYPE, _TYPE_SYMBOL)													\
 		(CORE_DebugPrint(																				\
@@ -82,7 +50,7 @@ static inline const char *_CORE_GetModuleName(const char *file_name)
 			(_TYPE), 																					\
 			_COREDEBUG_RESET_SYMBOL,																	\
 			_COREDEBUG_FILE_SYMBOL,																		\
-			_CORE_GetModuleName(__FILE__),																\
+			CORE_GetModuleName(__FILE__, _CORE_module_name),																\
 			__LINE__, 																					\
 			_COREDEBUG_RESET_SYMBOL,																	\
 			_COREDEBUG_FUNC_SYMBOL,																		\

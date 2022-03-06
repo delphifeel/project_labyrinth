@@ -3,8 +3,10 @@
 
 static GameServer Server;
 
-int main()
+int main(void)
 {
 	GameServer_Create(&Server);
 	GameServer_Setup(Server);
+
+	return 0;
 }

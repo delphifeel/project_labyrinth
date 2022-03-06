@@ -1,11 +1,33 @@
 cmake_minimum_required(VERSION 3.10)
 project(ProjectLabyrinth LANGUAGES C VERSION 0.0.0.1)
+
 add_compile_options(
-	-Wall 
-	-pedantic 
-	--std=gnu99
-	#-DCORE_SET_TESTING_ENABLED
 	-DCORE_SET_DEBUG_COLORED
+	#-DCORE_SET_TESTING_ENABLED
+)
+
+
+set(LOCAL_COMPLILE_OPTIONS
+	$<$<NOT:$<CONFIG:RELEASE>>:
+		-std=c89 -pedantic -Wall 
+    	-Wno-missing-braces -Wextra -Wno-missing-field-initializers -Wformat=2 
+    	-Wswitch-default -Wswitch-enum -Wcast-align -Wpointer-arith 
+    	-Wbad-function-cast -Wstrict-overflow=5 -Wstrict-prototypes -Winline 
+    	-Wundef -Wnested-externs -Wcast-qual -Wshadow -Wunreachable-code 
+    	-Wlogical-op -Wfloat-equal -Wstrict-aliasing=2 -Wredundant-decls 
+    	-Wold-style-definition -Wno-variadic-macros
+    	-ggdb3 
+    	-O0 
+    	-fno-omit-frame-pointer -ffloat-store -fno-common -fstrict-aliasing 
+    	-lm
+    >
+    $<$<CONFIG:RELEASE>:
+    	-lm -std=c89 -pedantic 
+    	-Wno-variadic-macros
+    	-O3
+    	-DNDEBUG
+     	-funroll-loops
+    >
 )
 
 
@@ -41,4 +63,9 @@ target_include_directories(ProjectLabyrinthGameServer PUBLIC
 )
 target_link_libraries(ProjectLabyrinthGameServer PUBLIC 
 	GameServer
+)
+target_compile_options(ProjectLabyrinthGameServer PRIVATE ${LOCAL_COMPLILE_OPTIONS})
+target_compile_options(ProjectLabyrinthAuthServer PRIVATE ${LOCAL_COMPLILE_OPTIONS})
+target_compile_options(ProjectLabyrinthTest PRIVATE 
+	${LOCAL_COMPLILE_OPTIONS}
 )

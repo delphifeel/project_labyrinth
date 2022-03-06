@@ -1,4 +1,5 @@
 add_library(CORE 
+	src/CORE-debug.c
 	src/CORE-system.c
 	src/disjoint-set.c
 	src/CORE-tcp-server.c
