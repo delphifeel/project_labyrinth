@@ -7,7 +7,7 @@
 #include "CORE/CORE-file.h"
 #include "CORE/CORE-object.h"
 #include "CORE/CORE-system.h"
-#include "CORE/CORE-array.h"
+#include "CORE/CORE-safe-array.h"
 
 #include "CORE/CORE-tcp-server.h"
 #include "CORE/CORE-tcp-client.h"

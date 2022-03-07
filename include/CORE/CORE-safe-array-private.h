@@ -5,7 +5,7 @@
 
 #define _CARR_VAR(NAME, SUFFIX) 			(_##NAME_##SUFFIX)
 
-#define _CORE_Array_CheckBounds(NAME, INDEX)                 	\
+#define _CSafeArray_CheckBounds(NAME, INDEX)                 	\
 	CORE_AssertWithMessage(                                 	\
 		INDEX < _CARR_VAR(NAME, capacity),                   	\
 		"`%s` error: out of bounds\n",        		     		\
