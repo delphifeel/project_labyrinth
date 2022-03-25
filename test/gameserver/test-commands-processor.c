@@ -120,14 +120,14 @@ void Test_CommandStartGame()
     payload.players[0].player_id = 1;
     memcpy(payload.players[0].player_token, gameserver_mocked_token, TOKEN_SIZE);
 
-    payload.players[1].player_id = 2;
+    /*payload.players[1].player_id = 2;
     memcpy(payload.players[1].player_token, gameserver_mocked_token, TOKEN_SIZE);
 
     payload.players[2].player_id = 3;
     memcpy(payload.players[2].player_token, gameserver_mocked_token, TOKEN_SIZE);
 
     payload.players[3].player_id = 4;
-    memcpy(payload.players[3].player_token, gameserver_mocked_token, TOKEN_SIZE);
+    memcpy(payload.players[3].player_token, gameserver_mocked_token, TOKEN_SIZE);*/
 
 
     command_type = kCommandType_StartGame;
