@@ -62,7 +62,7 @@ static void _OnHandleClose(uv_handle_t* handle)
 
     _UVHandleGetContext(handle, &instance);
 
-    CORE_DebugInfo("Close connection to server\n");
+    // CORE_DebugInfo("Close connection to server\n");
     if (instance->on_close_connection != NULL)
     {
         instance->on_close_connection(instance, instance->context);
@@ -99,7 +99,7 @@ static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *bu
 
     if (nread > 0) 
     {
-        CORE_DebugInfo("Read %lu bytes\n", nread);
+        // CORE_DebugInfo("Read %lu bytes\n", nread);
         if (instance->on_read != NULL)
         {
             instance->on_read(instance, instance->context, (const uint8 *) buf->base, nread);
@@ -130,13 +130,13 @@ static void _OnConnected(uv_connect_t *connection, int status)
     }
 
     _UVHandleGetContext((uv_handle_t *) connection->handle, &instance);
-    CORE_DebugInfo("Connected to server (status %d)\n", status);
+    // CORE_DebugInfo("Connected to server (status %d)\n", status);
     if (instance->on_connected != NULL)
     {
         instance->on_connected(instance, instance->context);
     }
 
-    CORE_DebugInfo("Start read...\n");
+    // CORE_DebugInfo("Start read...\n");
     uv_read_start(connection->handle, _AllocBuffer, _OnReadBuffer);
 }
 
@@ -161,7 +161,7 @@ void CORE_TCPClient_Write(CORE_TCPClient instance, const uint8 data[], uint32 da
         CORE_DebugError("Write error\n");
     }
 
-    CORE_DebugInfo("Send %u bytes to server\n", data_size);
+    // CORE_DebugInfo("Send %u bytes to server\n", data_size);
 }
 
 /*****************************************************************************************************************************/
@@ -230,7 +230,7 @@ CORE_Bool CORE_TCPClient_Connect(CORE_TCPClient instance, const char *dest_addre
         return FALSE;
     }
 
-    CORE_DebugInfo("Connected to %s, port %u\n", dest_address, instance->server_port);
+    // CORE_DebugInfo("Connected to %s, port %u\n", dest_address, instance->server_port);
 
     uv_run(instance->uv_loop, UV_RUN_DEFAULT);
 

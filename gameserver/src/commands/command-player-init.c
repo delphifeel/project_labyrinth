@@ -60,6 +60,7 @@ CORE_Bool CommandPlayerInit_Process(struct GameServerCommand 			*game_server_com
 
 	*out_is_have_response = TRUE;
 	GameServerCommandResponse_SetType(out_response_command, kCommandType_PlayerInit);
+	GameServerCommandResponse_AddPlayerIndex(out_response_command, player_index);
 	if (GameServerCommandResponse_SetPayload(out_response_command, 
 										 	(const uint8 *) &response_payload,
 										 	sizeof(response_payload)) == FALSE)

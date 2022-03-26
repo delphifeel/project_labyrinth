@@ -44,13 +44,13 @@ static void _TCPServerOnError(CORE_TCPServer tcp_server, void *context, const ch
 static void _TCPServerOnNewConnection(CORE_TCPServer tcp_server, void *context, 
                                       CORE_TCPServer_ClientConnection client_connection)
 {
-    CORE_DebugInfo("TCP Server - new connection\n");
+    // CORE_DebugInfo("TCP Server - new connection\n");
 }
 
 static void _TCPServerOnCloseConnection(CORE_TCPServer tcp_server, void *context, 
                                         CORE_TCPServer_ClientConnection client_connection)
 {
-    CORE_DebugInfo("TCP Server - close connection\n");
+    // CORE_DebugInfo("TCP Server - close connection\n");
 }
 
 #define _MIN_COMMAND_SIZE   (48)
@@ -222,6 +222,8 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
     uint32                                  iter_player_index;
 
 
+    printf("BUFFER: %d\n", data_size);
+
     instance = (CommandsIOSystem) context;
     
     GameServerCommand_Init(&command);
@@ -289,7 +291,6 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
                         &response_buffer_size) == FALSE)
     {
         CORE_DebugError("Command processing error\n");
-        CORE_TCPServer_CloseConnection(tcp_server, client_connection);
         return;
     }
 
@@ -315,7 +316,6 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
         return;
     }
 
-    CORE_DebugInfo("Send response to specific players in session ...\n");
     for (uint32 i = 0; i < response_receivers_indexes_size; i++)
     {
         iter_player_index = response_receivers_indexes[i];
@@ -325,7 +325,7 @@ static void _TCPServerOnRead(CORE_TCPServer tcp_server, void *context,
             continue;
         }
 
-        CORE_DebugInfo("Send to player #%u ...\n", iter_player_index);
+        CORE_DebugInfo("Send response to player #%u\n", iter_player_index);
         CORE_TCPServer_Write(tcp_server, iter_client_connection, response_buffer, response_buffer_size);
     }
 }
