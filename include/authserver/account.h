@@ -1,7 +1,7 @@
 # ifndef _ACCOUNT_H_
 # define _ACCOUNT_H_
 
-#include "CORE.h"
+#include "CCORE.h"
 
 
 #define MAX_LOGIN_SIZE         (36)
@@ -16,6 +16,6 @@ typedef struct AuthenticatePayload
 } AuthenticatePayload; 
 
 
-CORE_Bool Account_LogIn(const char *login, const char *password); 
+bool Account_LogIn(const char *login, const char *password); 
 
 #endif

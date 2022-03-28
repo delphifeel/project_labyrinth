@@ -1,6 +1,6 @@
 extern void Test_AuthCommandsProcessor();
 
-#include "CORE.h"
+#include "CCORE.h"
 
 void AuthServerTests_Run()
 {

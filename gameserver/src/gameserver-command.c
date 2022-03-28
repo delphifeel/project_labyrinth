@@ -75,7 +75,7 @@ void GameServerCommand_SetPlayerToken(struct GameServerCommand *instance, const 
 	memcpy(instance->player_token, player_token, TOKEN_SIZE);
 }
 
-CORE_Bool GameServerCommand_SetPayload(struct GameServerCommand *instance, const uint8 payload[], uint32 payload_size)
+bool GameServerCommand_SetPayload(struct GameServerCommand *instance, const uint8 payload[], uint32 payload_size)
 {
 	return Command_SetPayload(&instance->base_command, payload, payload_size);
 }

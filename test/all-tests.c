@@ -1,14 +1,10 @@
-#include "CORE.h"
+#include "CCORE.h"
 
-extern void CORETests_Run(void);
 extern void AuthServerTests_Run(void);
 extern void GameServerTests_Run(void);
 
 int main(void)
 {
-	CORE_DebugPrint("[TESTS] Run CORE tests\n");
-	CORETests_Run();
-
 	#if 0
 	CORE_DebugPrint("[TESTS] Run AuthServer tests\n");
 	AuthServerTests_Run();

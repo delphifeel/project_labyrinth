@@ -2,7 +2,6 @@ add_library(GameServerTests
 	all-tests.c
 	test-command.c
 	test-commands-processor.c
-	test-disjoint-set.c
 	test-lab-generation.c
 	test-lab-session.c
 	#test-player.c
@@ -12,8 +11,7 @@ target_include_directories(GameServerTests PUBLIC
 	"${PROJECT_SOURCE_DIR}/lib/commands-processor/include"
 )
 target_link_libraries(GameServerTests
-	CORE
+	CCORE
 	GameServer	
 	CommandsProcessor
-	uv
 )

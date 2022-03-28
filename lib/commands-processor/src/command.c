@@ -24,7 +24,7 @@ void Command_SetType(struct Command *instance, uint32 command_type)
 	instance->type = command_type;
 }
 
-CORE_Bool Command_SetPayload(struct Command *instance, const uint8 payload[], uint32 payload_size)
+bool Command_SetPayload(struct Command *instance, const uint8 payload[], uint32 payload_size)
 {
 	CORE_Assert(payload_size > 0);
 	CORE_AssertPointer(payload);
@@ -32,12 +32,12 @@ CORE_Bool Command_SetPayload(struct Command *instance, const uint8 payload[], ui
 	if (payload_size > sizeof(instance->payload))
 	{
 		CORE_DebugError("payload_size > sizeof(instance->payload)\n");
-		return FALSE;
+		return false;
 	}
 
 	instance->payload_size = payload_size;
 	memcpy(instance->payload, payload, payload_size);
-	return TRUE;
+	return true;
 }
 
 /*****************************************************************************************************************************/

@@ -21,6 +21,7 @@ target_include_directories(GameServer PUBLIC
 )
 
 target_link_libraries(GameServer PUBLIC 
-	CORE
+	CCORE
 	CommandsProcessor
+	TCP
 )

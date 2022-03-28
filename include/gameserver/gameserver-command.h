@@ -1,7 +1,7 @@
 #ifndef _GAMESERVER_COMMAND_H_
 #define _GAMESERVER_COMMAND_H_
 
-#include "CORE.h"
+#include "CCORE.h"
 #include "common.h"
 #include "lab-session.h"
 
@@ -23,7 +23,7 @@ void 		GameServerCommand_SetSessionsPtr(struct GameServerCommand *instance, LabS
 void 		GameServerCommand_SetSessionIndex(struct GameServerCommand *instance, uint32 session_index);
 void 		GameServerCommand_SetPlayerIndex(struct GameServerCommand *instance, uint32 player_index);
 void 		GameServerCommand_SetPlayerToken(struct GameServerCommand *instance, const uint8 player_token[TOKEN_SIZE]);
-CORE_Bool 	GameServerCommand_SetPayload(struct GameServerCommand *instance, const uint8 payload[], uint32 payload_size);
+bool 	GameServerCommand_SetPayload(struct GameServerCommand *instance, const uint8 payload[], uint32 payload_size);
 
 void 		GameServerCommand_Init(struct GameServerCommand *instance);
 

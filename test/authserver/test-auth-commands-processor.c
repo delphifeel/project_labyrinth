@@ -31,7 +31,7 @@
 
 void Test_CommandJoinLobby(AuthCommandsProcessor commands_processor)
 {
-    CORE_Bool                is_have_response;
+    bool                is_have_response;
     struct Command           command;
     struct Command           response_command;
     uint32                   command_type;
@@ -49,14 +49,14 @@ void Test_CommandJoinLobby(AuthCommandsProcessor commands_processor)
     Command_SetType(&command, command_type);
     Command_SetPayload(&command, GET_PAYLOAD, sizeof(GET_PAYLOAD));
     
-    CORE_Assert(AuthCommandsProcessor_Process(commands_processor, command_type, &command, &response_command, &is_have_response) == TRUE);
-    CORE_Assert(is_have_response == TRUE);
+    CORE_Assert(AuthCommandsProcessor_Process(commands_processor, command_type, &command, &response_command, &is_have_response) == true);
+    CORE_Assert(is_have_response == true);
 
     Command_GetType(&response_command, &command_type);
     CORE_Assert(command_type == kCommandResponseType_JoinLobby);
     Command_GetPayloadPtr(&response_command, &response_payload_ptr, &response_payload_size);
     // CORE_Assert(response_payload_size == sizeof(uint32));
-    // CORE_Assert(*((uint32 *) response_payload_ptr) == TRUE);
+    // CORE_Assert(*((uint32 *) response_payload_ptr) == true);
 }
 
 /**
@@ -72,7 +72,7 @@ void Test_CommandJoinLobby(AuthCommandsProcessor commands_processor)
 
 void Test_CommandAuthenticate(AuthCommandsProcessor commands_processor)
 {
-    CORE_Bool                is_have_response;
+    bool                is_have_response;
     struct Command           command;
     struct Command           response_command;
     uint32                   command_type;
@@ -95,8 +95,8 @@ void Test_CommandAuthenticate(AuthCommandsProcessor commands_processor)
     Command_SetType(&command, command_type);
     Command_SetPayload(&command, GET_PAYLOAD, sizeof(GET_PAYLOAD));
     
-    CORE_Assert(AuthCommandsProcessor_Process(commands_processor, command_type, &command, &response_command, &is_have_response) == TRUE);
-    CORE_Assert(is_have_response == TRUE);
+    CORE_Assert(AuthCommandsProcessor_Process(commands_processor, command_type, &command, &response_command, &is_have_response) == true);
+    CORE_Assert(is_have_response == true);
 
     Command_GetType(&response_command, &command_type);
     CORE_Assert(command_type == kCommandResponseType_Authenticate);

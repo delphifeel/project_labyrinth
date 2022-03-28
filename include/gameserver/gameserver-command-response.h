@@ -1,7 +1,7 @@
 #ifndef _GAMESERVER_COMMAND_RESPONSE_H_
 #define _GAMESERVER_COMMAND_RESPONSE_H_
 
-#include "CORE.h"
+#include "CCORE.h"
 
 /*****************************************************************************************************************************/
 
@@ -18,8 +18,8 @@ void 		GameServerCommandResponse_GetPayloadPtr(struct GameServerCommandResponse 
 													uint32 								*out_payload_size);
 
 void 		GameServerCommandResponse_SetType(struct GameServerCommandResponse *instance, uint32 command_type);
-CORE_Bool 	GameServerCommandResponse_AddPlayerIndex(struct GameServerCommandResponse *instance, uint32 player_index);
-CORE_Bool 	GameServerCommandResponse_SetPayload(struct GameServerCommandResponse 	*instance, 
+bool 	GameServerCommandResponse_AddPlayerIndex(struct GameServerCommandResponse *instance, uint32 player_index);
+bool 	GameServerCommandResponse_SetPayload(struct GameServerCommandResponse 	*instance, 
 												 const uint8 						payload[], 
 												 uint32 							payload_size);
 

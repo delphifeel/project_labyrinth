@@ -13,9 +13,9 @@ typedef struct AuthenticateResponsePayload
 
 
 
-CORE_Bool CommandAuthenticate_Process(  struct Command 	*command, 
+bool CommandAuthenticate_Process(  struct Command 	*command, 
                                         struct Command 	*out_response_command, 
-                                        CORE_Bool     	*out_is_have_response)
+                                        bool     	*out_is_have_response)
 {
     const AuthenticatePayload       *payload;
     const uint8                     *payload_raw;
@@ -28,25 +28,25 @@ CORE_Bool CommandAuthenticate_Process(  struct Command 	*command,
     if (payload_size != sizeof(AuthenticatePayload))
     {
         CORE_DebugError("payload_size != sizeof(AuthenticatePayload)\n");
-        return FALSE; 
+        return false; 
     }
 
     payload = (const AuthenticatePayload *) payload_raw; 
 
     if(!Account_LogIn(payload->login, payload->password)){
-        return FALSE; 
+        return false; 
     }
     
-    *out_is_have_response = TRUE;
+    *out_is_have_response = true;
     Command_SetType(out_response_command, kCommandResponseType_Authenticate);
 
     memcpy(response_payload.token, mocked_token, TOKEN_SIZE);
     if (Command_SetPayload( out_response_command, 
                             (const uint8 *) &response_payload, 
-                            sizeof(AuthenticateResponsePayload)) == FALSE)
+                            sizeof(AuthenticateResponsePayload)) == false)
     {
-        return FALSE;
+        return false;
     }
 
-    return TRUE; 
+    return true; 
 }

@@ -10,6 +10,7 @@ target_include_directories(AuthServer PUBLIC
 	"${PROJECT_SOURCE_DIR}/include"
 )
 target_link_libraries(AuthServer PUBLIC 
-	CORE
+	CCORE
 	CommandsProcessor
+	TCP
 )

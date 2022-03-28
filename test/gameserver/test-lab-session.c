@@ -1,4 +1,4 @@
-#include "CORE.h"
+#include "CCORE.h"
 #include "gameserver/lab-points-map.h"
 #include "gameserver/lab-session.h"
 
@@ -60,16 +60,16 @@ void Test_LabSessionLabyrinthToJSON()
 {
 	LabSession instance;
 	char *json;
-	CORE_FileHandle FileToWrite;
+	CFile FileToWrite;
 
 	LabSession_Create(&instance);
 	LabSession_Setup(instance, 5);
 
 	LabSession_MapToJSON(instance, &json);
 
-	FileToWrite = CORE_FileOpen("data-prim.json", "w");
-	CORE_FileWrite(json, sizeof(char), strlen(json), FileToWrite);
-	CORE_FileClose(FileToWrite);
+	FileToWrite = CFile_Open("data-prim.json", "w");
+	CFile_Write(json, sizeof(char), strlen(json), FileToWrite);
+	CFile_Close(FileToWrite);
 
 	LabSession_Free(&instance);
 	CORE_MemFree(json);

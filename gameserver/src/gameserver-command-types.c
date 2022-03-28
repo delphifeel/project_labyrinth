@@ -4,9 +4,9 @@
 /*****************************************************************************************************************************/
 
 #define _DEFINE_PROCESS_FUNC(_NAME) 																	\
-	extern CORE_Bool _NAME(	struct GameServerCommand 			*command, 								\
+	extern bool _NAME(	struct GameServerCommand 			*command, 								\
 							struct GameServerCommandResponse 	*out_response_command,					\
-							CORE_Bool 							*out_is_have_response) 					\
+							bool 							*out_is_have_response) 					\
 
 /*****************************************************************************************************************************/
 

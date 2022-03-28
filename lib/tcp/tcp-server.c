@@ -1,11 +1,11 @@
 #include <uv.h>
-#include "CORE/CORE-tcp-server.h"
+#include "lib/tcp/tcp-server.h"
 
 /*****************************************************************************************************************************/
 
-#define CORE_TCPSERVER_DEFAULT_BACKLOG 		(128)
+#define TCPSERVER_DEFAULT_BACKLOG 		(128)
 
-CORE_OBJECT_INTERFACE(CORE_TCPServer,
+CORE_OBJECT_INTERFACE(TCPServer,
     void                    *context;
 
 	/*
@@ -37,22 +37,22 @@ CORE_OBJECT_INTERFACE(CORE_TCPServer,
 
 /*****************************************************************************************************************************/
 
-static inline CORE_TCPServer_ClientConnection _UVClientToClientConnection(uv_stream_t *client)
+static inline TCPServer_ClientConnection _UVClientToClientConnection(uv_stream_t *client)
 {
-    return (CORE_TCPServer_ClientConnection) client;
+    return (TCPServer_ClientConnection) client;
 }
 
-static inline uv_stream_t* _ClientConnectionToUVClient(CORE_TCPServer_ClientConnection client_connection)
+static inline uv_stream_t* _ClientConnectionToUVClient(TCPServer_ClientConnection client_connection)
 {
     return (uv_stream_t *) client_connection;
 }
 
-static void _UVHandleSetContext(uv_handle_t *handle, CORE_TCPServer instance)
+static void _UVHandleSetContext(uv_handle_t *handle, TCPServer instance)
 {
     uv_handle_set_data(handle, instance);
 }
 
-static void _UVHandleGetContext(uv_handle_t *handle, CORE_TCPServer *instance_ptr)
+static void _UVHandleGetContext(uv_handle_t *handle, TCPServer *instance_ptr)
 {
     *instance_ptr = uv_handle_get_data(handle);
 }
@@ -70,7 +70,7 @@ static void _OnHandleClose(uv_handle_t* handle)
 
 static void _OnWriteBuffer(uv_write_t* request, int status) 
 {
-    CORE_TCPServer instance;
+    TCPServer instance;
 
 
     _UVHandleGetContext((uv_handle_t *) request, &instance);
@@ -86,8 +86,8 @@ static void _OnWriteBuffer(uv_write_t* request, int status)
 
 static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf) 
 {
-    CORE_TCPServer 	                    instance;
-    CORE_TCPServer_ClientConnection     client_connection;
+    TCPServer 	                    instance;
+    TCPServer_ClientConnection     client_connection;
 
 
     client_connection = _UVClientToClientConnection(client);
@@ -119,9 +119,9 @@ static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *bu
 
 static void _OnNewConnection(uv_stream_t *server, int status)
 {
-	CORE_TCPServer                      instance;
+	TCPServer                      instance;
 	uv_tcp_t                            *client;
-    CORE_TCPServer_ClientConnection     client_connection;
+    TCPServer_ClientConnection     client_connection;
 
 
 	_UVHandleGetContext((uv_handle_t *) server, &instance);
@@ -135,7 +135,7 @@ static void _OnNewConnection(uv_stream_t *server, int status)
         return;
     }
 
-    client = (uv_tcp_t *) CORE_MemAlloc(sizeof(uv_tcp_t));
+    client = (uv_tcp_t *) CORE_MemAlloc(sizeof(uv_tcp_t), 1);
 
     uv_tcp_init(instance->uv_loop, client);
     _UVHandleSetContext((uv_handle_t *) client, instance);
@@ -159,7 +159,7 @@ static void _OnNewConnection(uv_stream_t *server, int status)
     uv_read_start((uv_stream_t *) client, _AllocBuffer, _OnReadBuffer);
 }
 
-void CORE_TCPServer_Write(CORE_TCPServer instance, CORE_TCPServer_ClientConnection client_connection,
+void TCPServer_Write(TCPServer instance, TCPServer_ClientConnection client_connection,
                           const uint8 data[], uint32 data_size)
 {
     CORE_AssertPointer(data);
@@ -167,7 +167,7 @@ void CORE_TCPServer_Write(CORE_TCPServer instance, CORE_TCPServer_ClientConnecti
     char *data_alloced;
 
 
-    data_alloced = CORE_MemAlloc(data_size);
+    data_alloced = CORE_MemAlloc(sizeof(char), data_size);
     memcpy(data_alloced, data, data_size);
 
     instance->temp_write_buffer.base = data_alloced;
@@ -184,7 +184,7 @@ void CORE_TCPServer_Write(CORE_TCPServer instance, CORE_TCPServer_ClientConnecti
     }
 }
 
-void CORE_TCPServer_CloseConnection(CORE_TCPServer instance, CORE_TCPServer_ClientConnection client_connection)
+void TCPServer_CloseConnection(TCPServer instance, TCPServer_ClientConnection client_connection)
 {
     CORE_AssertPointer(client_connection);
 
@@ -196,28 +196,28 @@ void CORE_TCPServer_CloseConnection(CORE_TCPServer instance, CORE_TCPServer_Clie
 
 /*****************************************************************************************************************************/
 
-void CORE_TCPServer_OnRead(CORE_TCPServer instance, OnReadFunc on_read)
+void TCPServer_OnRead(TCPServer instance, OnReadFunc on_read)
 {
     CORE_AssertPointer(on_read);
 
     instance->on_read = on_read;
 }
 
-void CORE_TCPServer_OnError(CORE_TCPServer instance, OnErrorFunc on_error)
+void TCPServer_OnError(TCPServer instance, OnErrorFunc on_error)
 {
     CORE_AssertPointer(on_error);
 
     instance->on_error = on_error;
 }
 
-void CORE_TCPServer_OnNewConnection(CORE_TCPServer instance, OnNewConnectionFunc on_new_connection)
+void TCPServer_OnNewConnection(TCPServer instance, OnNewConnectionFunc on_new_connection)
 {
     CORE_AssertPointer(on_new_connection);
 
     instance->on_new_connection = on_new_connection;
 }
 
-void CORE_TCPServer_OnCloseConnection(CORE_TCPServer instance, OnCloseConnectionFunc on_close_connection)
+void TCPServer_OnCloseConnection(TCPServer instance, OnCloseConnectionFunc on_close_connection)
 {
 	CORE_AssertPointer(on_close_connection);
 
@@ -226,14 +226,14 @@ void CORE_TCPServer_OnCloseConnection(CORE_TCPServer instance, OnCloseConnection
 
 /*****************************************************************************************************************************/
 
-void CORE_TCPServer_SetContext(CORE_TCPServer instance, void *context)
+void TCPServer_SetContext(TCPServer instance, void *context)
 {
     instance->context = context;
 }
 
 /*****************************************************************************************************************************/
 
-void CORE_TCPServer_Setup(CORE_TCPServer instance, uint32 port)
+void TCPServer_Setup(TCPServer instance, uint32 port)
 {
 	CORE_AssertPointer(instance->on_read);
 
@@ -248,12 +248,12 @@ void CORE_TCPServer_Setup(CORE_TCPServer instance, uint32 port)
     uv_tcp_bind(&instance->uv_tcp_server, (const struct sockaddr *) &instance->addr, 0);
 }
 
-void CORE_TCPServer_Start(CORE_TCPServer instance)
+void TCPServer_Start(TCPServer instance)
 {
     int32 error;
 
 
-    error = uv_listen((uv_stream_t *) &instance->uv_tcp_server, CORE_TCPSERVER_DEFAULT_BACKLOG, _OnNewConnection);
+    error = uv_listen((uv_stream_t *) &instance->uv_tcp_server, TCPSERVER_DEFAULT_BACKLOG, _OnNewConnection);
     if (error) 
     {
     	if (instance->on_error != NULL)
@@ -269,9 +269,9 @@ void CORE_TCPServer_Start(CORE_TCPServer instance)
 
 /*****************************************************************************************************************************/
 
-void CORE_TCPServer_Create(CORE_TCPServer *instance_ptr)
+void TCPServer_Create(TCPServer *instance_ptr)
 {
-	CORE_OBJECT_CREATE(instance_ptr, CORE_TCPServer);
+	CORE_OBJECT_CREATE(instance_ptr, TCPServer);
 
 	(*instance_ptr)->on_read = NULL;
 	(*instance_ptr)->on_new_connection = NULL;
@@ -283,9 +283,9 @@ void CORE_TCPServer_Create(CORE_TCPServer *instance_ptr)
 	CORE_MemZero(&(*instance_ptr)->temp_write_request_handle, sizeof(uv_write_t));
 }
 
-void CORE_TCPServer_Free(CORE_TCPServer *instance_ptr)
+void TCPServer_Free(TCPServer *instance_ptr)
 {
-    CORE_TCPServer instance = *instance_ptr;
+    TCPServer instance = *instance_ptr;
     
     uv_loop_close(instance->uv_loop);
 

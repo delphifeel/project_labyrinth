@@ -28,19 +28,19 @@ void GameServerCommandResponse_SetType(struct GameServerCommandResponse *instanc
 	Command_SetType(&instance->base_command, command_type);
 }
 
-CORE_Bool GameServerCommandResponse_AddPlayerIndex(struct GameServerCommandResponse *instance, uint32 player_index)
+bool GameServerCommandResponse_AddPlayerIndex(struct GameServerCommandResponse *instance, uint32 player_index)
 {
 	if (instance->player_index_array_size >= _GAMESERVERCOMMANDRESPONSE__ARRAY_MAX_SIZE)
 	{
 		CORE_DebugError("Players index array is full\n");
-		return FALSE;
+		return false;
 	}
 
 	instance->player_index_array[instance->player_index_array_size++] = player_index;
-	return TRUE;
+	return true;
 }
 
-CORE_Bool GameServerCommandResponse_SetPayload(struct GameServerCommandResponse *instance, const uint8 payload[], uint32 payload_size)
+bool GameServerCommandResponse_SetPayload(struct GameServerCommandResponse *instance, const uint8 payload[], uint32 payload_size)
 {
 	return Command_SetPayload(&instance->base_command, payload, payload_size);
 }

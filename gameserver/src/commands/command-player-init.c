@@ -16,9 +16,9 @@ typedef struct PlayerInitResponsePayload
 	LabPointStruct 	position_point;
 } PlayerInitResponsePayload;
 
-CORE_Bool CommandPlayerInit_Process(struct GameServerCommand 			*game_server_command, 
+bool CommandPlayerInit_Process(struct GameServerCommand 			*game_server_command, 
 									struct GameServerCommandResponse	*out_response_command,
-									CORE_Bool 							*out_is_have_response)
+									bool 							*out_is_have_response)
 {
 	uint32 						session_index;
 	uint32 						player_index;
@@ -39,34 +39,34 @@ CORE_Bool CommandPlayerInit_Process(struct GameServerCommand 			*game_server_com
 	if (payload_size != sizeof(PlayerInitPayload))
 	{
 		CORE_DebugError("payload_size != sizeof(PlayerInitPayload)\n");
-		return FALSE;
+		return false;
 	}
 
 	if (LabSession_HelperFindSession(sessions, 
 							 		 sessions_size, 
 							 		 session_index,
-							 		 &session) == FALSE)
+							 		 &session) == false)
 	{
-		return FALSE;
+		return false;
 	}
 
-	if (LabSession_FindPlayer(session, player_index, &player) == FALSE)
+	if (LabSession_FindPlayer(session, player_index, &player) == false)
 	{
-		return FALSE;
+		return false;
 	}
 
 	Player_GetPositionCoords(player, &response_payload.position_coords);
 	Player_GetPositionPoint(player, &response_payload.position_point);
 
-	*out_is_have_response = TRUE;
+	*out_is_have_response = true;
 	GameServerCommandResponse_SetType(out_response_command, kCommandType_PlayerInit);
 	GameServerCommandResponse_AddPlayerIndex(out_response_command, player_index);
 	if (GameServerCommandResponse_SetPayload(out_response_command, 
 										 	(const uint8 *) &response_payload,
-										 	sizeof(response_payload)) == FALSE)
+										 	sizeof(response_payload)) == false)
 	{
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }

@@ -1,7 +1,7 @@
 #ifndef __LAB_POINTS_MAP_H__
 #define __LAB_POINTS_MAP_H__
 
-#include "CORE.h"
+#include "CCORE.h"
 
 #define LABPOINT_SIZE 	(40)
 
@@ -13,8 +13,8 @@ typedef struct LabPointStruct {
 	uint32 			right_connection_id; 
 	uint32 			bottom_connection_id; 
 	uint32 			left_connection_id; 
-	CORE_Bool 		is_exit; 
-	CORE_Bool 		is_spawn;
+	bool 		is_exit; 
+	bool 		is_spawn;
 } LabPointStruct;
 
 CORE_OBJECT_DEFINE(LabPointsMap);

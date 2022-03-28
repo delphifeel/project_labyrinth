@@ -1,6 +1,6 @@
 #include <string.h> 
 
-#include "CORE.h"
+#include "CCORE.h"
 #include "gameserver/player.h"
 
 /*****************************************************************************************************************************/
@@ -21,14 +21,14 @@ CORE_OBJECT_INTERFACE(Player,
 
 static PositionStruct _min_possible_position;
 static PositionStruct _max_possible_position;
-static CORE_Bool      _min_max_set = FALSE;
+static bool      _min_max_set = false;
 
 static void _GetPossibleMinMaxPosition(const PositionStruct **out_min_possible_position_ptr,
                                        const PositionStruct **out_max_possible_position_ptr)
 {
-    if (_min_max_set == FALSE)
+    if (_min_max_set == false)
     {
-        _min_max_set = TRUE;
+        _min_max_set = true;
         int32 LABPOINT_SIZE_HALF = LABPOINT_SIZE >> 1;
         _min_possible_position.x = -LABPOINT_SIZE_HALF;
         _min_possible_position.y = -LABPOINT_SIZE_HALF;
@@ -42,7 +42,7 @@ static void _GetPossibleMinMaxPosition(const PositionStruct **out_min_possible_p
 
 /*****************************************************************************************************************************/
 
-CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 directions_size)
+bool Player_Move(Player instance, const MoveDirection *directions, uint32 directions_size)
 {
     CORE_AssertPointer(directions);
 
@@ -52,13 +52,13 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
     int32                   new_position_y;
     const PositionStruct    *min_possible_position;
     const PositionStruct    *max_possible_position;
-    CORE_Bool               can_move;
+    bool               can_move;
 
 
     if (directions_size > MAX_DIRECTION_SIZE) 
     {
         CORE_DebugError("directions max size is 2\n"); 
-        return FALSE; 
+        return false; 
     }
 
     new_position_x = instance->position_coords.x;
@@ -83,13 +83,13 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
                 break; 
             default:
                 CORE_DebugError("Unknown direction\n");
-                return FALSE;
+                return false;
         }
     }
 
     _GetPossibleMinMaxPosition(&min_possible_position, &max_possible_position);
     Player_GetPositionPoint(instance, &result_lab_point);
-    can_move = TRUE;
+    can_move = true;
     do
     {
         if (new_position_x < min_possible_position->x)
@@ -100,7 +100,7 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
                 new_position_x = max_possible_position->x;
                 break;
             }
-            can_move = FALSE;
+            can_move = false;
         }
         if (new_position_y < min_possible_position->y)
         {
@@ -110,7 +110,7 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
                 new_position_y = max_possible_position->y;
                 break;
             }
-            can_move = FALSE;
+            can_move = false;
         }
         if (new_position_x > max_possible_position->x)
         {
@@ -120,7 +120,7 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
                 new_position_x = min_possible_position->x;
                 break;
             }
-            can_move = FALSE;
+            can_move = false;
         }
         if (new_position_y > max_possible_position->y)
         {
@@ -130,14 +130,14 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
                 new_position_y = min_possible_position->y;
                 break;
             }
-            can_move = FALSE;
+            can_move = false;
         }
     } while (0);
 
-    if (can_move == FALSE)
+    if (can_move == false)
     {
         CORE_DebugError("Can't move that side - there is a wall\n");
-        return FALSE;
+        return false;
     }
 
     if (result_point_id != instance->position_point_id)
@@ -149,7 +149,7 @@ CORE_Bool Player_Move(Player instance, const MoveDirection *directions, uint32 d
     CORE_DebugInfo("Player %u moves to the coords [%d:%d]\n", instance->id, new_position_x, new_position_y);
     instance->position_coords.x = new_position_x;
     instance->position_coords.y = new_position_y;
-    return TRUE; 
+    return true; 
 }
 
 void Player_SetToken(Player instance, const uint8 token[TOKEN_SIZE])

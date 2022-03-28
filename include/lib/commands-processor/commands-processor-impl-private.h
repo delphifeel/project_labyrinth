@@ -14,11 +14,11 @@ CORE_OBJECT_INTERFACE(_NAME,                                                    
                                                                                                                         \
 /********************************************************************************************************************/  \
                                                                                                                         \
-CORE_Bool _NAME##_Process(  _NAME               instance,                                                               \
+bool _NAME##_Process(  _NAME               instance,                                                               \
                             uint32              command_type,                                                           \
                             _IN_COMMAND_TYPE    command,                                                                \
                             _OUT_COMMAND_TYPE   out_response_command,                                                   \
-                            CORE_Bool           *out_is_have_response)                                                  \
+                            bool           *out_is_have_response)                                                  \
 {                                                                                                                       \
 	CORE_AssertPointer(instance->command_to_process_func_array);                                                        \
                                                                                                                         \
@@ -28,7 +28,7 @@ CORE_Bool _NAME##_Process(  _NAME               instance,                       
     if (command_type >= instance->command_to_process_func_array_size)                                                   \
     {                                                                                                                   \
     	CORE_DebugError("Command type doesn't exists\n");                                                               \
-    	return FALSE;                                                                                                   \
+    	return false;                                                                                                   \
     }                                                                                                                   \
                                                                                                                         \
     CORE_DebugInfo("Processing command %u\n", command_type);                                                            \
@@ -37,17 +37,17 @@ CORE_Bool _NAME##_Process(  _NAME               instance,                       
     if (command_to_process_func.command_type != command_type)                                                           \
     {                                                                                                                   \
         CORE_DebugError("Wrong order in `command_to_process_func_array`. `command` index is not %u\n", command_type);   \
-        return FALSE;                                                                                                   \
+        return false;                                                                                                   \
     }                                                                                                                   \
                                                                                                                         \
-    if (command_to_process_func.process_func(command, out_response_command, out_is_have_response) == FALSE)             \
+    if (command_to_process_func.process_func(command, out_response_command, out_is_have_response) == false)             \
     {                                                                                                                   \
         CORE_DebugError("Command %u processing error\n", command_type);                                                 \
-        return FALSE;                                                                                                   \
+        return false;                                                                                                   \
     }                                                                                                                   \
                                                                                                                         \
     CORE_DebugInfo("Processing completed %u\n", command_type);                                                          \
-    return TRUE;                                                                                                        \
+    return true;                                                                                                        \
 }                                                                                                                       \
                                                                                                                         \
 void _NAME##_Setup(_NAME                                instance,                                                       \

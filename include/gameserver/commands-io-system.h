@@ -1,7 +1,7 @@
 #ifndef _COMMANDS_IO_SYSTEM_
 #define _COMMANDS_IO_SYSTEM_
 
-#include "CORE.h"
+#include "CCORE.h"
 #include "lib/commands-processor/command.h"
 #include "lab-session.h"
 

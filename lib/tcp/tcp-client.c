@@ -1,11 +1,11 @@
 #include <uv.h>
-#include "CORE.h"
+#include "lib/tcp/tcp-client.h"
 
 /*****************************************************************************************************************************/
 
-#define CORE_TCPSERVER_DEFAULT_BACKLOG 		(128)
+#define TCPSERVER_DEFAULT_BACKLOG 		(128)
 
-CORE_OBJECT_INTERFACE(CORE_TCPClient,
+CORE_OBJECT_INTERFACE(TCPClient,
     void                    *context;
 
 	/*
@@ -25,10 +25,10 @@ CORE_OBJECT_INTERFACE(CORE_TCPClient,
     /*
      *      callbacks
      */
-    CORE_TCPClient_OnReadFunc               on_read;
-    CORE_TCPClient_OnWriteFunc              on_write;
-    CORE_TCPClient_OnConnectedFunc          on_connected;
-    CORE_TCPClient_OnCloseConnectionFunc    on_close_connection;
+    TCPClient_OnReadFunc               on_read;
+    TCPClient_OnWriteFunc              on_write;
+    TCPClient_OnConnectedFunc          on_connected;
+    TCPClient_OnCloseConnectionFunc    on_close_connection;
 
     /* 		temp fields related to write process. 
      *		DO NOT RELY ON IT, CAUSE IT CAN BE CHANGED ANYTIME.
@@ -39,12 +39,12 @@ CORE_OBJECT_INTERFACE(CORE_TCPClient,
 
 /*****************************************************************************************************************************/
 
-static void _UVHandleSetContext(uv_handle_t *handle, CORE_TCPClient instance)
+static void _UVHandleSetContext(uv_handle_t *handle, TCPClient instance)
 {
     uv_handle_set_data(handle, instance);
 }
 
-static void _UVHandleGetContext(uv_handle_t *handle, CORE_TCPClient *instance_ptr)
+static void _UVHandleGetContext(uv_handle_t *handle, TCPClient *instance_ptr)
 {
     *instance_ptr = uv_handle_get_data(handle);
 }
@@ -57,7 +57,7 @@ static void _AllocBuffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *b
 
 static void _OnHandleClose(uv_handle_t* handle) 
 {   
-    CORE_TCPClient     instance;
+    TCPClient     instance;
 
 
     _UVHandleGetContext(handle, &instance);
@@ -71,7 +71,7 @@ static void _OnHandleClose(uv_handle_t* handle)
 
 static void _OnWriteBuffer(uv_write_t* request, int status) 
 {
-    CORE_TCPClient instance;
+    TCPClient instance;
 
 
     _UVHandleGetContext((uv_handle_t *) request, &instance);
@@ -92,7 +92,7 @@ static void _OnWriteBuffer(uv_write_t* request, int status)
 
 static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf) 
 {
-    CORE_TCPClient 	instance;
+    TCPClient 	instance;
 
 
     _UVHandleGetContext((uv_handle_t *) client, &instance);
@@ -120,7 +120,7 @@ static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *bu
 
 static void _OnConnected(uv_connect_t *connection, int status)
 {
-    CORE_TCPClient instance;
+    TCPClient instance;
 
 
 	if (status < 0) 
@@ -140,14 +140,14 @@ static void _OnConnected(uv_connect_t *connection, int status)
     uv_read_start(connection->handle, _AllocBuffer, _OnReadBuffer);
 }
 
-void CORE_TCPClient_Write(CORE_TCPClient instance, const uint8 data[], uint32 data_size)
+void TCPClient_Write(TCPClient instance, const uint8 data[], uint32 data_size)
 {
     CORE_AssertPointer(data);
 
     char *data_alloced;
 
 
-    data_alloced = CORE_MemAlloc(data_size);
+    data_alloced = CORE_MemAlloc(sizeof(char), data_size);
     memcpy(data_alloced, data, data_size);
 
     instance->temp_write_buffer.base = data_alloced;
@@ -166,28 +166,28 @@ void CORE_TCPClient_Write(CORE_TCPClient instance, const uint8 data[], uint32 da
 
 /*****************************************************************************************************************************/
 
-void CORE_TCPClient_OnRead(CORE_TCPClient instance, CORE_TCPClient_OnReadFunc on_read)
+void TCPClient_OnRead(TCPClient instance, TCPClient_OnReadFunc on_read)
 {
     CORE_AssertPointer(on_read);
 
     instance->on_read = on_read;
 }
 
-void CORE_TCPClient_OnWrite(CORE_TCPClient instance, CORE_TCPClient_OnWriteFunc on_write)
+void TCPClient_OnWrite(TCPClient instance, TCPClient_OnWriteFunc on_write)
 {
     CORE_AssertPointer(on_write);
 
     instance->on_write = on_write;
 }
 
-void CORE_TCPClient_OnConnected(CORE_TCPClient instance, CORE_TCPClient_OnConnectedFunc on_connected)
+void TCPClient_OnConnected(TCPClient instance, TCPClient_OnConnectedFunc on_connected)
 {
     CORE_AssertPointer(on_connected);
 
     instance->on_connected = on_connected;
 }
 
-void CORE_TCPClient_OnCloseConnection(CORE_TCPClient instance, CORE_TCPClient_OnCloseConnectionFunc on_close_connection)
+void TCPClient_OnCloseConnection(TCPClient instance, TCPClient_OnCloseConnectionFunc on_close_connection)
 {
 	CORE_AssertPointer(on_close_connection);
 
@@ -196,14 +196,14 @@ void CORE_TCPClient_OnCloseConnection(CORE_TCPClient instance, CORE_TCPClient_On
 
 /*****************************************************************************************************************************/
 
-void CORE_TCPClient_SetContext(CORE_TCPClient instance, void *context)
+void TCPClient_SetContext(TCPClient instance, void *context)
 {
     instance->context = context;
 }
 
 /*****************************************************************************************************************************/
 
-CORE_Bool CORE_TCPClient_Connect(CORE_TCPClient instance, const char *dest_address, uint32 dest_port)
+bool TCPClient_Connect(TCPClient instance, const char *dest_address, uint32 dest_port)
 {
     instance->server_port = dest_port;
     uv_loop_init(&instance->uv_loop_struct);
@@ -212,14 +212,14 @@ CORE_Bool CORE_TCPClient_Connect(CORE_TCPClient instance, const char *dest_addre
     if (uv_tcp_init(instance->uv_loop, &instance->uv_tcp_client) != 0)
     {
         CORE_DebugError("TCP Init error\n");
-        return FALSE;
+        return false;
     }
     _UVHandleSetContext((uv_handle_t *) &instance->uv_tcp_client, instance);
 
     if (uv_ip4_addr(dest_address, instance->server_port, &instance->server_addr) != 0)
     {
         CORE_DebugError("IP4 address create error\n");
-        return FALSE;
+        return false;
     }
     if (uv_tcp_connect(&instance->uv_connection, 
                        &instance->uv_tcp_client, 
@@ -227,29 +227,29 @@ CORE_Bool CORE_TCPClient_Connect(CORE_TCPClient instance, const char *dest_addre
                        _OnConnected) != 0)
     {
         CORE_DebugError("TCP connect error\n");
-        return FALSE;
+        return false;
     }
 
     // CORE_DebugInfo("Connected to %s, port %u\n", dest_address, instance->server_port);
 
     uv_run(instance->uv_loop, UV_RUN_DEFAULT);
 
-    return TRUE;
+    return true;
 }
 
-CORE_Bool CORE_TCPClient_Disconnect(CORE_TCPClient instance)
+bool TCPClient_Disconnect(TCPClient instance)
 {
     uv_close((uv_handle_t *) instance->uv_connection.handle, _OnHandleClose);
-    return TRUE;
+    return true;
 }
 
 /*****************************************************************************************************************************/
 
-void CORE_TCPClient_Create(CORE_TCPClient *instance_ptr)
+void TCPClient_Create(TCPClient *instance_ptr)
 {
-	CORE_OBJECT_CREATE(instance_ptr, CORE_TCPClient);
+	CORE_OBJECT_CREATE(instance_ptr, TCPClient);
     
-    CORE_TCPClient instance = *instance_ptr;
+    TCPClient instance = *instance_ptr;
 
 	instance->on_read = NULL;
     instance->on_write = NULL;
@@ -264,9 +264,9 @@ void CORE_TCPClient_Create(CORE_TCPClient *instance_ptr)
     CORE_MemZero(&instance->temp_write_request_handle, sizeof(instance->temp_write_request_handle));
 }
 
-void CORE_TCPClient_Free(CORE_TCPClient *instance_ptr)
+void TCPClient_Free(TCPClient *instance_ptr)
 {
-    CORE_TCPClient instance = *instance_ptr;
+    TCPClient instance = *instance_ptr;
 
     uv_loop_close(instance->uv_loop);
 

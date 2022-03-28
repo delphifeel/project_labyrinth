@@ -5,7 +5,7 @@ static AuthIOSystem Server;
 
 int main(void)
 {
-    CORE_DebugPrint("[AUTH SERVER] Started\n");
+    CORE_DebugStdOut("[AUTH SERVER] Started\n");
     AuthIOSystem_Create(&Server);
     AuthIOSystem_Setup(Server);
     AuthIOSystem_Start(Server); 

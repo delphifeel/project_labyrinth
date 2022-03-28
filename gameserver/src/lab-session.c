@@ -1,4 +1,4 @@
-#include "CORE.h"
+#include "CCORE.h"
 #include "gameserver/lab-generation.h"
 #include "gameserver/lab-session.h"
 
@@ -21,14 +21,14 @@ CORE_OBJECT_INTERFACE(LabSession,
 	uint32  			spawn_points_size;
 	uint32  			spawn_points_assoc_with_player_count;
 
-	CORE_Bool 			is_session_started;
+	bool 			is_session_started;
 
 	/* etc */
 );
 
 /*****************************************************************************************************************************/
 
-CORE_Bool LabSession_HelperFindSession(LabSession sessions[], uint32 sessions_size, uint32 index, LabSession *out_session)
+bool LabSession_HelperFindSession(LabSession sessions[], uint32 sessions_size, uint32 index, LabSession *out_session)
 {
 	CORE_AssertPointer(sessions);
 	CORE_AssertPointer(out_session);
@@ -36,37 +36,37 @@ CORE_Bool LabSession_HelperFindSession(LabSession sessions[], uint32 sessions_si
 	if (index + 1 > sessions_size)
 	{
 		CORE_DebugError("Session index out of bounds\n");
-		return FALSE;
+		return false;
 	}
 
 	*out_session = sessions[index];
 	if (*out_session == NULL)
 	{
 		CORE_DebugError("Found session is NULL\n");
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 /*****************************************************************************************************************************/
 
-CORE_Bool LabSession_FindPlayer(LabSession instance, uint32 player_index, Player *out_player)
+bool LabSession_FindPlayer(LabSession instance, uint32 player_index, Player *out_player)
 {
 	if (player_index + 1 > instance->players_map_size)
 	{
 		CORE_DebugError("Player index out of bounds\n");
-		return FALSE;
+		return false;
 	}
 
 	*out_player = instance->players_map[player_index];
-	return TRUE;
+	return true;
 }
 
-CORE_Bool LabSession_AddPlayer(LabSession instance, uint32 player_id, const uint8 player_token[TOKEN_SIZE], uint32 *out_added_player_index)
+bool LabSession_AddPlayer(LabSession instance, uint32 player_id, const uint8 player_token[TOKEN_SIZE], uint32 *out_added_player_index)
 {
 	CORE_AssertPointer(out_added_player_index);
-	CORE_Assert(instance->is_session_started == FALSE);
+	CORE_Assert(instance->is_session_started == false);
 
 	Player new_player;
 	uint32 player_spawn_point_id;
@@ -75,7 +75,7 @@ CORE_Bool LabSession_AddPlayer(LabSession instance, uint32 player_id, const uint
 	if (instance->players_map_size == instance->players_map_capacity)
 	{
 		CORE_DebugError("No more free spots - session is FULL\n");
-		return FALSE;
+		return false;
 	}
 
 	*out_added_player_index = instance->players_map_size;
@@ -83,7 +83,7 @@ CORE_Bool LabSession_AddPlayer(LabSession instance, uint32 player_id, const uint
 	if (instance->spawn_points_assoc_with_player_count == instance->spawn_points_size)
 	{
 		CORE_DebugError("No more spawn points available\n");
-		return FALSE;
+		return false;
 	}
 
 	player_spawn_point_id = instance->spawn_points[instance->spawn_points_assoc_with_player_count++];
@@ -101,14 +101,14 @@ CORE_Bool LabSession_AddPlayer(LabSession instance, uint32 player_id, const uint
 	);
 	instance->players_map[instance->players_map_size] = new_player;
 	instance->players_map_size++;
-	return TRUE;
+	return true;
 }
 
 void LabSession_Start(LabSession instance)
 {
-	CORE_Assert(instance->is_session_started == FALSE);
+	CORE_Assert(instance->is_session_started == false);
 
-	instance->is_session_started = TRUE;
+	instance->is_session_started = true;
 	CORE_DebugInfo("Session started\n");
 }
 
@@ -129,9 +129,9 @@ void LabSession_MapToJSON(LabSession instance, char **json)
 void LabSession_Setup(LabSession instance, uint32 players_count)
 {
 	CORE_DebugInfo("Setup session. Player count: %u\n", players_count);
-	instance->is_session_started = FALSE;
+	instance->is_session_started = false;
 
-	instance->players_map = CORE_MemAlloc(sizeof(Player) * players_count);
+	instance->players_map = CORE_MemAlloc(sizeof(Player), players_count);
 	instance->players_map_size = 0;
 	instance->players_map_capacity = players_count;
 

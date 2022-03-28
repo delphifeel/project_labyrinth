@@ -25,9 +25,9 @@ typedef struct StartGameResponsePayload
 	} players[SESSION_PLAYERS_COUNT];
 } StartGameResponsePayload;
 
-CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_command, 
+bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_command, 
 									struct GameServerCommandResponse 	*out_response_command,
-									CORE_Bool 							*out_is_have_response)
+									bool 							*out_is_have_response)
 {
 	LabSession 					*sessions;
 	uint32 						sessions_size;
@@ -42,7 +42,7 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 	if (payload_size != sizeof(StartGamePayload))
 	{
 		CORE_DebugError("payload_size != sizeof(StartGamePayload)\n");
-		return FALSE;
+		return false;
 	}
 
 	payload = (const StartGamePayload *) payload_raw;
@@ -52,11 +52,11 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 	 * 			find free session
 	 */
 	LabSession 	new_session;
-	CORE_Bool 	found_free_session;
+	bool 	found_free_session;
 	uint32  	new_session_index;
 
 
-	found_free_session = FALSE;
+	found_free_session = false;
 
 	for (uint32 i = 0; i < sessions_size; i++)
 	{
@@ -65,16 +65,16 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 			continue;
 		}
 
-		found_free_session = TRUE;
+		found_free_session = true;
 		new_session_index = i;
 		CORE_DebugInfo("Found free session (index %u)\n", new_session_index);
 		break;
 	}
 
-	if (found_free_session == FALSE)
+	if (found_free_session == false)
 	{
 		CORE_DebugError("No free session.\n");
-		return FALSE;
+		return false;
 	}
 
 	LabSession_Create(&new_session);
@@ -112,13 +112,13 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 	/**
 	 * 			set response
 	 */
-	*out_is_have_response = TRUE;
+	*out_is_have_response = true;
 	GameServerCommandResponse_SetType(out_response_command, kCommandType_StartGame);
 	if (GameServerCommandResponse_SetPayload(out_response_command, 
 										 	(const uint8 *) &response_payload,
-										 	sizeof(response_payload)) == FALSE)
+										 	sizeof(response_payload)) == false)
 	{
-		return FALSE;
+		return false;
 	}
 
 	/**
@@ -126,5 +126,5 @@ CORE_Bool CommandStartGame_Process(	struct GameServerCommand 			*game_server_com
 	 */
 	LabSession_Start(new_session);
 
-	return TRUE;
+	return true;
 }

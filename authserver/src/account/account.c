@@ -1,4 +1,4 @@
-#include "CORE.h"
+#include "CCORE.h"
 #include "authserver/auth-command-types.h"
 #include "authserver/account.h"
 
@@ -11,29 +11,29 @@ static const AuthenticatePayload _mocked_creds[] =
 };
 
 
-CORE_Bool Account_LogIn(const char *login, const char *password)
+bool Account_LogIn(const char *login, const char *password)
 {
     uint32                          creds_array_size;
-    CORE_Bool                       is_found;
+    bool                       is_found;
 
-    is_found = FALSE; 
+    is_found = false; 
     creds_array_size = sizeof(_mocked_creds) / sizeof(AuthenticatePayload); 
 
     for (uint32 i = 0; i < creds_array_size; i++)
     {
-        if ((CORE_StringEqual(login, _mocked_creds[i].login) == TRUE) && 
-            (CORE_StringEqual(password, _mocked_creds[i].password) == TRUE))
+        if (CORE_StrEqual(login, _mocked_creds[i].login) && 
+            CORE_StrEqual(password, _mocked_creds[i].password))
         {
             CORE_DebugInfo("Found user: %s - return auth creds\n", login);
-            is_found = TRUE;
+            is_found = true;
             break;
         }
     }
 
-    if (is_found == FALSE)
+    if (is_found == false)
     {
         CORE_DebugError("Can't login - user not found: %s\n", login);
-        return FALSE;
+        return false;
     }
 
     return is_found;

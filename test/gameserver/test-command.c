@@ -34,7 +34,7 @@ void Test_Command()
 
 	// Command_Init(&command);
 
-	// CORE_Assert(Command_ParseFromBuffer(&command, buffer, sizeof(buffer)) == TRUE);
+	// CORE_Assert(Command_ParseFromBuffer(&command, buffer, sizeof(buffer)) == true);
 
 	// Command_GetType(&command, &temp_uint);
 	// CORE_Assert(temp_uint == command_type);

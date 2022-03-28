@@ -1,4 +1,4 @@
-#include "CORE.h"
+#include "CCORE.h"
 #include "gameserver/game-server.h"
 
 static GameServer Server;

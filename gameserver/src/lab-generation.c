@@ -2,8 +2,7 @@
 #include <time.h>
 
 #include "gameserver/lab-generation.h"
-#include "CORE.h"
-#include "CORE/disjoint-set.h"
+#include "CCORE.h"
 
 /*****************************************************************************************************************************/
 
@@ -45,8 +44,8 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 		lab_point.right_connection_id = 0;
 		lab_point.left_connection_id = 0;
 		lab_point.bottom_connection_id = 0;
-		lab_point.is_exit = FALSE;
-		lab_point.is_spawn = FALSE;
+		lab_point.is_exit = false;
+		lab_point.is_spawn = false;
 
 		LabPointsMap_AddPoint(temp_points_map, lab_point);
 	}
@@ -55,7 +54,7 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 	// set exit point
 	LabPointsMap_GetPointByID(temp_points_map, p / 2 + 1, &lab_point);
 	CORE_DebugInfo("Set %u as exit\n", p / 2 + 1);
-	lab_point.is_exit = TRUE;
+	lab_point.is_exit = true;
 	LabPointsMap_ChangePoint(temp_points_map, lab_point);
 
 
@@ -106,7 +105,7 @@ static void INTERNAL_FillRectangleLab(LabPointsMap temp_points_map, uint32 *spaw
 
 		LabPointsMap_GetPointByID(temp_points_map, possible_spawn_points[i], &lab_point);
 
-		lab_point.is_spawn = TRUE; 
+		lab_point.is_spawn = true; 
 		LabPointsMap_ChangePoint(temp_points_map, lab_point);
 		spawn_points[added_points] = possible_spawn_points[i];
 		added_points++;
@@ -212,7 +211,7 @@ static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst
 	LabPointStruct 	current_lab_point_handle;
 	LabPointStruct 	temp_lab_point_handle;
 	LabPointStruct 	lab_point; 
-	DisjointSet 	disjoint_set_handle;
+	CDisjointSet 	disjoint_set_handle;
 	uint32 			vertex_count;
 	uint32 			id;
 	Edge 			*sorted_edges;
@@ -222,8 +221,8 @@ static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst
 	uint32 			subsets_left;
 
 
-	sorted_edges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);
-	mst_edges = CORE_MemAlloc(sizeof(Edge) * MATRIX_SIZE * MATRIX_SIZE * 4);
+	sorted_edges = CORE_MemAlloc(sizeof(Edge), MATRIX_SIZE * MATRIX_SIZE * 4);
+	mst_edges = CORE_MemAlloc(sizeof(Edge), MATRIX_SIZE * MATRIX_SIZE * 4);
 
 	// get all possible edges
 	sorted_edges_size = 0;
@@ -270,13 +269,13 @@ static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst
 
 
 	// create disjoint set from edges and union all possible edges according to Kruskal's algo
-	DisjointSet_Create(&disjoint_set_handle);
-	DisjointSet_Setup(disjoint_set_handle, vertex_count + 1);
+	CDisjointSet_Create(&disjoint_set_handle);
+	CDisjointSet_Setup(disjoint_set_handle, vertex_count + 1);
 	mst_edges_size = 0;
 	
 	for (uint32 i = 0; i < sorted_edges_size; i++)
 	{
-		if (DisjointSet_Union(disjoint_set_handle, sorted_edges[i].from, sorted_edges[i].to) == FALSE) {
+		if (CDisjointSet_Union(disjoint_set_handle, sorted_edges[i].from, sorted_edges[i].to) == false) {
 			continue;
 		}
 
@@ -285,8 +284,8 @@ static void INTERNAL_BuildMSTMaze(LabPointsMap temp_points_map, LabPointsMap mst
 		mst_edges_size++;
 	}
 
-	DisjointSet_GetSubsetsCount(disjoint_set_handle, &subsets_left);
-	DisjointSet_Free(&disjoint_set_handle);
+	CDisjointSet_GetSubsetsCount(disjoint_set_handle, &subsets_left);
+	CDisjointSet_Free(&disjoint_set_handle);
 
 	CORE_DebugInfo("subsets_left: %u\n", subsets_left);
 	CORE_DebugInfo("mst_edges_size: %u\n", mst_edges_size);
@@ -332,7 +331,7 @@ void LabGeneration_Execute(LabPointsMap generated_lab_points_map, uint32 **out_s
 	LabPointsMap_Create(&temp_points_map);
 
 	*out_spawn_points_size = SPAWN_POINTS_COUNT;
-	*out_spawn_points = CORE_MemAlloc(sizeof(uint32) * *out_spawn_points_size);
+	*out_spawn_points = CORE_MemAlloc(sizeof(uint32), *out_spawn_points_size);
 	INTERNAL_FillRectangleLab(temp_points_map, *out_spawn_points);
 
 	INTERNAL_BuildMSTMaze(temp_points_map, generated_lab_points_map);

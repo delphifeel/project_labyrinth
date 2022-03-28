@@ -71,7 +71,7 @@ void Test_CommandPlayerMove()
 
 	GameServerCommandsProcessor_Create(&commands_processor);
 	GameServerCommandsProcessor_Setup(commands_processor, GetGameServerCommandToProcessFunc(), GetGameServerCommandToProcessFuncSize());
-	// CORE_Assert(GameServerCommandsProcessor_Process(commands_processor, co(struct Command *) &command, (struct Command *) &response_command) == TRUE);
+	// CORE_Assert(GameServerCommandsProcessor_Process(commands_processor, co(struct Command *) &command, (struct Command *) &response_command) == true);
 
 	_FreeSession(&sessions[0]);
 	GameServerCommandsProcessor_Free(&commands_processor);
@@ -109,7 +109,7 @@ void Test_CommandStartGame()
 	StartGamePayload 						payload;
 	const StartGameResponsePayload 			*response_payload_ptr;
 	uint32 									response_payload_size;
-	CORE_Bool  								is_have_response;
+	bool  								is_have_response;
 	uint32 									command_type;
 	LabSession  							sessions[1];
 
@@ -137,7 +137,7 @@ void Test_CommandStartGame()
 	GameServerCommand_SetSessionsPtr(&command, sessions, 1);
 	GameServerCommand_SetPayload(&command, (const uint8 *) &payload, sizeof(payload));
 
-	is_have_response = FALSE;
+	is_have_response = false;
 
 	GameServerCommandsProcessor_Create(&commands_processor);
 	GameServerCommandsProcessor_Setup(commands_processor, GetGameServerCommandToProcessFunc(), GetGameServerCommandToProcessFuncSize());
@@ -146,10 +146,10 @@ void Test_CommandStartGame()
 											command_type, 
 											&command, 
 											&response_command,
-											&is_have_response) == TRUE
+											&is_have_response) == true
 	);
 
-	CORE_Assert(is_have_response == TRUE);
+	CORE_Assert(is_have_response == true);
 
 	GameServerCommandResponse_GetType(&response_command, &command_type);
 	CORE_Assert(command_type == kCommandType_StartGame);

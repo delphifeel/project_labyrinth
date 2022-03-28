@@ -1,8 +1,7 @@
-#include <pthread.h>
-
-#include "CORE.h"
+#include "CCORE.h"
 #include "authserver/CONFIG.h"
 #include "lib/commands-processor/command.h"
+#include "lib/tcp/tcp-client.h"
 #include "authserver/auth-command-types.h"
 #include "gameserver/gameserver-command-types.h"
 
@@ -47,7 +46,7 @@ static StartGamePayload             _start_game_payload;
 static JoinLobbyResponsePayload     _response_payload;
 
 
-static void _SetStartGameResponse(CORE_TCPClient tcp_client, void *context, const uint8 data[], uint32 data_size)
+static void _SetStartGameResponse(TCPClient tcp_client, void *context, const uint8 data[], uint32 data_size)
 {
     if (data_size != 8 + sizeof(StartGameResponsePayload))
     {
@@ -57,11 +56,11 @@ static void _SetStartGameResponse(CORE_TCPClient tcp_client, void *context, cons
 
     memcpy(&_response_payload.structure, data + 8, sizeof(_response_payload.structure));
 
-    CORE_TCPClient_Disconnect(tcp_client);
-    CORE_TCPClient_Free(&tcp_client);
+    TCPClient_Disconnect(tcp_client);
+    TCPClient_Free(&tcp_client);
 }
 
-static void _SendData(CORE_TCPClient tcp_client, void *context)
+static void _SendData(TCPClient tcp_client, void *context)
 {
     uint8 buffer[48 + sizeof(_start_game_payload)];
     uint8 *buffer_ptr;
@@ -92,19 +91,19 @@ static void _SendData(CORE_TCPClient tcp_client, void *context)
     // payload
     memcpy(buffer_ptr, &_start_game_payload, sizeof(_start_game_payload));
 
-    CORE_TCPClient_Write(tcp_client, (const uint8 *) buffer, sizeof(buffer));
+    TCPClient_Write(tcp_client, (const uint8 *) buffer, sizeof(buffer));
 }
 
 static void _ProcessStartGame()
 {
-    CORE_TCPClient tcp_client;
+    TCPClient tcp_client;
 
 
-    CORE_TCPClient_Create(&tcp_client);
-    CORE_TCPClient_OnConnected(tcp_client, _SendData);
-    CORE_TCPClient_OnRead(tcp_client, _SetStartGameResponse);
+    TCPClient_Create(&tcp_client);
+    TCPClient_OnConnected(tcp_client, _SendData);
+    TCPClient_OnRead(tcp_client, _SetStartGameResponse);
 
-    CORE_TCPClient_Connect(tcp_client, GAMESERVER_IP_ADDRESS, GAMESERVER_PORT);
+    TCPClient_Connect(tcp_client, GAMESERVER_IP_ADDRESS, GAMESERVER_PORT);
 }
 
 static void _AddPlayerToLobby(const JoinLobbyPayload *payload)
@@ -122,9 +121,9 @@ static void _AddPlayerToLobby(const JoinLobbyPayload *payload)
     CORE_DebugInfo("Player joined lobby. Player id: %d\n", player_id);
 }
 
-CORE_Bool CommandJoinLobby_Process(struct Command 	*command, 
+bool CommandJoinLobby_Process(struct Command 	*command, 
                                    struct Command 	*out_response_command, 
-                                   CORE_Bool     	*out_is_have_response)
+                                   bool     	*out_is_have_response)
 {
     const JoinLobbyPayload          *payload;
     const uint8                     *payload_raw;
@@ -136,7 +135,7 @@ CORE_Bool CommandJoinLobby_Process(struct Command 	*command,
     if (payload_size != sizeof(JoinLobbyPayload))
     {
         CORE_DebugError("payload_size != sizeof(JoinLobbyPayload)\n");
-        return FALSE; 
+        return false; 
     }
 
     payload = (const JoinLobbyPayload *) payload_raw; 
@@ -164,15 +163,15 @@ CORE_Bool CommandJoinLobby_Process(struct Command 	*command,
         status = 1;
     } while (0);
 
-    *out_is_have_response = TRUE;
+    *out_is_have_response = true;
     Command_SetType(out_response_command, kCommandResponseType_JoinLobby);
     _response_payload.status_code = status;
     if (Command_SetPayload( out_response_command, 
                             (const uint8 *) &_response_payload, 
-                            sizeof(_response_payload)) == FALSE)
+                            sizeof(_response_payload)) == false)
     {
-        return FALSE;
+        return false;
     }
 
-    return TRUE; 
+    return true; 
 }

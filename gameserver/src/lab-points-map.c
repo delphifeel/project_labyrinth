@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "CORE.h"
+#include "CCORE.h"
 #include "gameserver/lab-points-map.h"
 
 /*****************************************************************************************************************************/
@@ -35,7 +35,7 @@ void LabPointsMap_ToJSON(LabPointsMap instance, char **json)
 
 	max_json = instance->size * RAW_JSON_OBJECT_MAX_SIZE + 40;
 	json_size_left = max_json;
-	*json = CORE_MemAlloc(sizeof(char) * max_json + 1);
+	*json = CORE_MemAlloc(sizeof(char), max_json + 1);
 	*json[0] = '\0';
 
 	lab_point_raw_json_object_char_count = sprintf(lab_point_raw_json_object, "{\"count\": %u,\"points\": {", instance->size);
@@ -73,10 +73,10 @@ void LabPointsMap_ToJSON(LabPointsMap instance, char **json)
 void LabPointsMap_AddPoint(LabPointsMap instance, LabPointStruct point)
 {
 
-	if (instance->size == instance->capacity)		// if TRUE, double capacity. 
+	if (instance->size == instance->capacity)		// if true, double capacity. 
 	{
 		instance->capacity += instance->capacity;
-		instance->points_hash_map = CORE_MemRealloc(instance->points_hash_map, sizeof(LabPointStruct) * instance->capacity);
+		instance->points_hash_map = CORE_MemRealloc(instance->points_hash_map, sizeof(LabPointStruct), instance->capacity);
 		if (instance->points_hash_map == NULL)
 		{
 			CORE_DebugError("instance->points_hash_map == NULL\n");
@@ -122,7 +122,7 @@ void LabPointsMap_Create(LabPointsMap *instance_ptr)
 
 	(*instance_ptr)->capacity = LABPOINTSMAP_DEFAULTCAPACITY;
 	(*instance_ptr)->size = 0;
-	(*instance_ptr)->points_hash_map = CORE_MemAlloc(sizeof(LabPointStruct) * ((*instance_ptr)->capacity));
+	(*instance_ptr)->points_hash_map = CORE_MemAlloc(sizeof(LabPointStruct), (*instance_ptr)->capacity);
 }
 
 void LabPointsMap_Free(LabPointsMap *instance_ptr)

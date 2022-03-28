@@ -6,10 +6,12 @@ add_compile_options(
 	#-DCORE_SET_TESTING_ENABLED
 )
 
+set(THIRD_PARTY ${PROJECT_SOURCE_DIR}/third-party-libraries)
+
 
 set(LOCAL_COMPLILE_OPTIONS
 	$<$<NOT:$<CONFIG:RELEASE>>:
-		-std=c89 -pedantic -Wall 
+		-std=c99 -pedantic -Wall 
     	-Wno-missing-braces -Wextra -Wno-missing-field-initializers -Wformat=2 
     	-Wswitch-default -Wswitch-enum -Wcast-align -Wpointer-arith 
     	-Wbad-function-cast -Wstrict-overflow=5 -Wstrict-prototypes -Winline 
@@ -22,7 +24,7 @@ set(LOCAL_COMPLILE_OPTIONS
     	-lm
     >
     $<$<CONFIG:RELEASE>:
-    	-lm -std=c89 -pedantic 
+    	-lm -std=c99 -pedantic 
     	-Wno-variadic-macros
     	-O3
     	-DNDEBUG
@@ -33,18 +35,17 @@ set(LOCAL_COMPLILE_OPTIONS
 
 add_subdirectory(gameserver)
 add_subdirectory(authserver)
-add_subdirectory(CORE)
 add_subdirectory(test)
 add_subdirectory(lib)
 
 
 # third-party libraries 
 add_subdirectory(third-party-libraries/libuv)
+add_subdirectory(third-party-libraries/libCCORE)
 
 
 add_executable(ProjectLabyrinthTest test/all-tests.c)
 target_link_libraries(ProjectLabyrinthTest PUBLIC 
-	CORETests
 	GameServerTests
 	AuthServerTests
 )
