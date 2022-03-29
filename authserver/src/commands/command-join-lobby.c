@@ -62,7 +62,7 @@ static void _SetStartGameResponse(TCPClient tcp_client, void *context, const uin
 
 static void _SendData(TCPClient tcp_client, void *context)
 {
-    uint8 buffer[48 + sizeof(_start_game_payload)];
+    uint8 buffer[512];
     uint8 *buffer_ptr;
 
 
@@ -88,10 +88,15 @@ static void _SendData(TCPClient tcp_client, void *context)
     memset(buffer_ptr, 0, 32);
     buffer_ptr += 32;
 
+    // payload size
+    *((uint32 *) buffer_ptr) = sizeof(_start_game_payload);
+    buffer_ptr += 4;
+
     // payload
     memcpy(buffer_ptr, &_start_game_payload, sizeof(_start_game_payload));
+    buffer_ptr += sizeof(_start_game_payload);
 
-    TCPClient_Write(tcp_client, (const uint8 *) buffer, sizeof(buffer));
+    TCPClient_Write(tcp_client, (const uint8 *) buffer, buffer_ptr - buffer);
 }
 
 static void _ProcessStartGame()

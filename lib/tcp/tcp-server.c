@@ -93,22 +93,17 @@ static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *bu
     client_connection = _UVClientToClientConnection(client);
     _UVHandleGetContext((uv_handle_t *) client, &instance);
 
-    if (nread > 0) 
-    {
+    if (nread > 0) {
         instance->on_read(instance, instance->context, client_connection, (const uint8 *) buf->base, nread);
     }
-    else if (nread < 0) 
-    {
-        if (nread != UV_EOF)
-        {
-        	if (instance->on_error != NULL)
-        	{
+    else if (nread < 0) {
+        if (nread != UV_EOF) {
+        	if (instance->on_error != NULL) {
         		instance->on_error(instance, instance->context, "Read error");
         	}
         }
 
-        if (instance->on_close_connection != NULL)
-    	{
+        if (instance->on_close_connection != NULL) {
     		instance->on_close_connection(instance, instance->context, client_connection);
     	}
         uv_close((uv_handle_t *) client, _OnHandleClose);

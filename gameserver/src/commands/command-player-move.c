@@ -12,13 +12,13 @@ typedef struct PlayerMovePayload
 
 typedef struct PlayerMoveResponsePayload 
 {
-    bool   is_ok;
+    bool        is_ok;
     uint32      directions[2];
 } PlayerMoveResponsePayload;
 
 bool CommandPlayerMove_Process(struct GameServerCommand            *game_server_command, 
-                                    struct GameServerCommandResponse    *out_response_command,
-                                    bool                           *out_is_have_response)
+                               struct GameServerCommandResponse    *out_response_command,
+                               bool                                *out_is_have_response)
 {
     LabSession                  *sessions;
     uint32                      sessions_size;
