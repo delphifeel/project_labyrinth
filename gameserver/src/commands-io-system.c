@@ -66,7 +66,6 @@ static int _ParseCommandFromBuffer(struct GameServerCommand *instance,
         return -1;
 
     }
-    CORE_DebugInfo("Processing buffer of size: %d\n", buffer_size);
 
     const uint8  *buffer_ptr   = buffer;
     int          bytes_used    = 0;
@@ -302,8 +301,6 @@ static void _TCPServerOnRead(TCPServer tcp_server, void *context,
 
         if (response_receivers_indexes_size == 0)
         {
-            CORE_DebugInfo("Send response to all players in session\n");
-
             for (uint32 i = 0; i < CONNECTIONS_PER_SESSION; i++)
             {
                 iter_client_connection = instance->tcp_clients_map[session_index][i];
@@ -327,7 +324,6 @@ static void _TCPServerOnRead(TCPServer tcp_server, void *context,
                 continue;
             }
 
-            CORE_DebugInfo("Send response to player #%u\n", iter_player_index);
             TCPServer_Write(tcp_server, iter_client_connection, response_buffer, response_buffer_size);
         }
 

@@ -31,8 +31,6 @@ bool _NAME##_Process(  _NAME               instance,                            
     	return false;                                                                                                   \
     }                                                                                                                   \
                                                                                                                         \
-    CORE_DebugInfo("Processing command %u\n", command_type);                                                            \
-                                                                                                                        \
     command_to_process_func = instance->command_to_process_func_array[command_type];                                    \
     if (command_to_process_func.command_type != command_type)                                                           \
     {                                                                                                                   \
@@ -46,7 +44,6 @@ bool _NAME##_Process(  _NAME               instance,                            
         return false;                                                                                                   \
     }                                                                                                                   \
                                                                                                                         \
-    CORE_DebugInfo("Processing completed %u\n", command_type);                                                          \
     return true;                                                                                                        \
 }                                                                                                                       \
                                                                                                                         \

@@ -19,9 +19,9 @@ CORE_OBJECT_INTERFACE(Player,
 
 /*****************************************************************************************************************************/
 
-static PositionStruct _min_possible_position;
-static PositionStruct _max_possible_position;
-static bool      _min_max_set = false;
+static PositionStruct   _min_possible_position;
+static PositionStruct   _max_possible_position;
+static bool             _min_max_set = false;
 
 static void _GetPossibleMinMaxPosition(const PositionStruct **out_min_possible_position_ptr,
                                        const PositionStruct **out_max_possible_position_ptr)
@@ -92,7 +92,7 @@ bool Player_Move(Player instance, const MoveDirection *directions, uint32 direct
     can_move = true;
     do
     {
-        if (new_position_x < min_possible_position->x)
+        if (new_position_x <= min_possible_position->x)
         {
             if (result_lab_point.left_connection_id != 0)
             {
@@ -102,7 +102,7 @@ bool Player_Move(Player instance, const MoveDirection *directions, uint32 direct
             }
             can_move = false;
         }
-        if (new_position_y < min_possible_position->y)
+        if (new_position_y <= min_possible_position->y)
         {
             if (result_lab_point.bottom_connection_id != 0)
             {
@@ -112,7 +112,7 @@ bool Player_Move(Player instance, const MoveDirection *directions, uint32 direct
             }
             can_move = false;
         }
-        if (new_position_x > max_possible_position->x)
+        if (new_position_x >= max_possible_position->x)
         {
             if (result_lab_point.right_connection_id != 0)
             {
@@ -122,7 +122,7 @@ bool Player_Move(Player instance, const MoveDirection *directions, uint32 direct
             }
             can_move = false;
         }
-        if (new_position_y > max_possible_position->y)
+        if (new_position_y >= max_possible_position->y)
         {
             if (result_lab_point.top_connection_id != 0)
             {
@@ -136,17 +136,15 @@ bool Player_Move(Player instance, const MoveDirection *directions, uint32 direct
 
     if (can_move == false)
     {
-        CORE_DebugError("Can't move that side - there is a wall\n");
+        // can't move there - there is a wall
         return false;
     }
 
     if (result_point_id != instance->position_point_id)
     {
-        CORE_DebugInfo("Player %u moves to the point %u \n", instance->id, result_point_id);
         instance->position_point_id = result_point_id;
     }
 
-    CORE_DebugInfo("Player %u moves to the coords [%d:%d]\n", instance->id, new_position_x, new_position_y);
     instance->position_coords.x = new_position_x;
     instance->position_coords.y = new_position_y;
     return true; 

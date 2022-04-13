@@ -3,18 +3,18 @@
 
 #include "CCORE.h"
 
-#define LABPOINT_SIZE 	(40)
+#define LABPOINT_SIZE   (20)
 
 /*****************************************************************************************************************************/
 
 typedef struct LabPointStruct {
-	uint32			Id; 
-	uint32 			top_connection_id; 
-	uint32 			right_connection_id; 
-	uint32 			bottom_connection_id; 
-	uint32 			left_connection_id; 
-	bool 		is_exit; 
-	bool 		is_spawn;
+    uint32          Id; 
+    uint32          top_connection_id; 
+    uint32          right_connection_id; 
+    uint32          bottom_connection_id; 
+    uint32          left_connection_id; 
+    bool            is_exit; 
+    bool            is_spawn;
 } LabPointStruct;
 
 CORE_OBJECT_DEFINE(LabPointsMap);
