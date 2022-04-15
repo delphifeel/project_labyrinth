@@ -17,6 +17,18 @@ CORE_OBJECT_INTERFACE(LabPointsMap,
 
 /*****************************************************************************************************************************/
 
+void LabPointsMap_HelperPointToRoomInfo(const LabPointStruct *point, RoomInfo *room_info)
+{
+	room_info->has_top_connection     = point->top_connection_id != 0;
+	room_info->has_right_connection   = point->right_connection_id != 0;
+	room_info->has_bottom_connection  = point->bottom_connection_id != 0;
+	room_info->has_left_connection    = point->left_connection_id != 0;
+	room_info->is_exit                = point->is_exit == true;
+	room_info->is_spawn               = point->is_spawn == true;
+}
+
+/*****************************************************************************************************************************/
+
 void LabPointsMap_ToJSON(LabPointsMap instance, char **json)
 {
 	#define RAW_JSON_OBJECT_MAX_SIZE 	(120)

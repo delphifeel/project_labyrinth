@@ -3,11 +3,12 @@
 
 #include "CCORE.h"
 
-#define LABPOINT_SIZE   (20)
+#define ROOM_SIZE   (40)
 
 /*****************************************************************************************************************************/
 
-typedef struct LabPointStruct {
+typedef struct LabPointStruct 
+{
     uint32          Id; 
     uint32          top_connection_id; 
     uint32          right_connection_id; 
@@ -17,9 +18,21 @@ typedef struct LabPointStruct {
     bool            is_spawn;
 } LabPointStruct;
 
+typedef struct RoomInfo 
+{
+    uint32          has_top_connection; 
+    uint32          has_right_connection; 
+    uint32          has_bottom_connection; 
+    uint32          has_left_connection; 
+    uint32          is_exit; 
+    uint32          is_spawn;
+} RoomInfo;
+
 CORE_OBJECT_DEFINE(LabPointsMap);
 
 /*****************************************************************************************************************************/
+
+void LabPointsMap_HelperPointToRoomInfo(const LabPointStruct *point, RoomInfo *room_info);
 
 void LabPointsMap_ToJSON(LabPointsMap instance, char **json);
 void LabPointsMap_ToRawData(LabPointsMap, uint8 **raw_data, uint32 *raw_data_size);

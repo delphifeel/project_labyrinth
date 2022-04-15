@@ -7,23 +7,19 @@
 
 typedef struct 
 {
-    uint32          has_top_connection; 
-    uint32          has_right_connection; 
-    uint32          has_bottom_connection; 
-    uint32          has_left_connection; 
-    uint32          is_exit; 
-    uint32          is_spawn;
-} PointInitInfo;
+    PositionStruct  position;
+    float32         speed;
+} PlayerInitInfo;
 
-typedef struct RequestPayload 
+typedef struct 
 {
     uint32  dummy;
 } RequestPayload;
 
-typedef struct ResponsePayload 
+typedef struct
 {
-    PositionStruct  position_coords;
-    PointInitInfo   point_init_info;
+    PlayerInitInfo  player_info;
+    RoomInfo        room_info;
     uint32          room_size;
 } ResponsePayload;
 
@@ -62,19 +58,13 @@ bool CommandPlayerInit_Process(struct GameServerCommand            *command,
         return false;
     }
 
-    Player_GetPositionCoords(player, &response_payload.position_coords);
+    response_payload.player_info.speed = Player_GetSpeed(player);
+    Player_GetPositionCoords(player, &response_payload.player_info.position);
     Player_GetPositionPoint(player, &position_point);
 
-    // convert position point to point init info
-    PointInitInfo *point_init_info_ptr          = &response_payload.point_init_info;
-    point_init_info_ptr->has_top_connection     = position_point.top_connection_id != 0;
-    point_init_info_ptr->has_right_connection   = position_point.right_connection_id != 0;
-    point_init_info_ptr->has_bottom_connection  = position_point.bottom_connection_id != 0;
-    point_init_info_ptr->has_left_connection    = position_point.left_connection_id != 0;
-    point_init_info_ptr->is_exit                = position_point.is_exit;
-    point_init_info_ptr->is_spawn               = position_point.is_spawn;
+    LabPointsMap_HelperPointToRoomInfo(&position_point, &response_payload.room_info);
 
-    response_payload.room_size = LABPOINT_SIZE;
+    response_payload.room_size = ROOM_SIZE;
 
     *is_have_response = true;
     GameServerCommandResponse_SetType(response_command, kCommandType_PlayerInit);

@@ -5,18 +5,20 @@
 #include "gameserver/gameserver-command.h"
 #include "gameserver/gameserver-command-types.h"
 
-typedef struct PlayerMovePayload 
+typedef struct
 {
     uint32  directions[2];
-} PlayerMovePayload;
+} RequestPayload;
 
-typedef struct PlayerMoveResponsePayload 
+typedef struct 
 {
     uint32          is_ok;
     uint32          directions[2];
-    PositionStruct  position_coords;
-} PlayerMoveResponsePayload;
+    PositionStruct  player_position;
+    RoomInfo        room_info;
+} ResponsePayload;
 
+// TODO: pass session and player in function args 
 bool CommandPlayerMove_Process(struct GameServerCommand            *command, 
                                struct GameServerCommandResponse    *response_command,
                                bool                                *is_have_response)
@@ -29,10 +31,11 @@ bool CommandPlayerMove_Process(struct GameServerCommand            *command,
     uint32                      directions_size;
     uint32                      session_index;
     uint32                      player_index;
-    const PlayerMovePayload     *payload;
+    const RequestPayload        *payload;
     const uint8                 *payload_raw;
     uint32                      payload_size;
-    PlayerMoveResponsePayload   response_payload;
+    ResponsePayload             response_payload;
+    LabPointStruct              point;
 
 
 
@@ -41,62 +44,53 @@ bool CommandPlayerMove_Process(struct GameServerCommand            *command,
     GameServerCommand_GetPlayerIndex(command, &player_index);
     GameServerCommand_GetPayloadPtr(command, &payload_raw, &payload_size);
 
-    if (payload_size != sizeof(PlayerMovePayload))
+    if (payload_size != sizeof(RequestPayload))
     {
-        CORE_DebugError("payload_size != sizeof(PlayerMovePayload)\n");
+        CORE_DebugError("payload_size != sizeof(RequestPayload)\n");
         return false;
     }
 
-    payload = (const PlayerMovePayload *) payload_raw;
+    payload = (const RequestPayload *) payload_raw;
 
-    if (LabSession_HelperFindSession(sessions, 
+    if (!LabSession_HelperFindSession(sessions, 
                                      sessions_size, 
                                      session_index,
-                                     &session) == false)
-    {
+                                     &session)) {
         return false;
     }
 
-    if (LabSession_FindPlayer(session, player_index, &player) == false)
-    {
+    if (!LabSession_FindPlayer(session, player_index, &player)) {
         return false;
     }
 
-    if (payload->directions[1] == 0)
-    {
+    if (payload->directions[1] == 0) {
         directions[0] = payload->directions[0];
         directions_size = 1;
     }
-    else
-    {
+    else {
         directions[0] = payload->directions[0];
         directions[1] = payload->directions[1];
         directions_size = 2;
     }
 
-    if (Player_Move(player, directions, directions_size))
-    {
+    if (Player_Move(player, directions, directions_size)) {
         response_payload.is_ok = 1;
         CORE_MemCpy(response_payload.directions, 
                     payload->directions, 
                     sizeof(response_payload.directions));
     }
-    else
-    {
+    else {
         response_payload.is_ok = 0;
         CORE_MemZero(response_payload.directions, 
                     sizeof(response_payload.directions));
     }
-    Player_GetPositionCoords(player, &response_payload.position_coords);
+    Player_GetPositionCoords(player, &response_payload.player_position);
+    Player_GetPositionPoint(player, &point);
+    LabPointsMap_HelperPointToRoomInfo(&point, &response_payload.room_info);
 
     *is_have_response = true;
     GameServerCommandResponse_SetType(response_command, kCommandType_PlayerMove);
-    if (GameServerCommandResponse_SetPayload(response_command, 
-                                            (const uint8 *) &response_payload,
-                                            sizeof(response_payload)) == false)
-    {
-        return false;
-    }
-
-    return true;
+    return GameServerCommandResponse_SetPayload(response_command, 
+                                                (const uint8 *) &response_payload,
+                                                sizeof(response_payload));
 }

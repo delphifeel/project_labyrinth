@@ -9,27 +9,28 @@
 
 typedef struct PositionStruct
 { 
-	int32	x; 
-	int32  	y; 
+	float32		x; 
+	float32  	y; 
 } PositionStruct; 
 
 CORE_OBJECT_DEFINE(Player);
 
 /*****************************************************************************************************************************/
 
-bool Player_Move(Player instance, const MoveDirection *directions, uint32 directions_size);
+bool Player_Move(Player player, const MoveDirection *directions, uint32 directions_size);
 
-void Player_SetToken(Player instance, const uint8 token[TOKEN_SIZE]);
-void Player_GetTokenPtr(Player instance, const uint8 *out_token_ptr[TOKEN_SIZE]);
-void Player_SetId(Player instance, uint32 id);
-void Player_GetId(Player instance, uint32 *id);
-void Player_GetPositionCoords(Player instance, PositionStruct *out_position);
-void Player_GetPositionPoint(Player instance, LabPointStruct *out_point);
+void Player_SetToken(Player player, const uint8 token[TOKEN_SIZE]);
+void Player_GetTokenPtr(Player player, const uint8 *out_token_ptr[TOKEN_SIZE]);
+void Player_SetId(Player player, uint32 id);
+void Player_GetId(Player player, uint32 *id);
+void Player_GetPositionCoords(Player player, PositionStruct *out_position);
+void Player_GetPositionPoint(Player player, LabPointStruct *out_point);
+float32 Player_GetSpeed(Player player);
 
-void Player_Setup(Player instance, LabPointsMapReader points_reader, uint32 spawn_point_id);
+void Player_Setup(Player player, LabPointsMapReader points_reader, uint32 spawn_point_id);
 
-void Player_Create(Player* instance_ptr);
-void Player_Free(Player* instance_ptr);
+void Player_Create(Player* player_ptr);
+void Player_Free(Player* player_ptr);
 
 /*****************************************************************************************************************************/
 
