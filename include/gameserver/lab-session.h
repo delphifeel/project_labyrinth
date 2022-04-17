@@ -8,26 +8,29 @@
 /*****************************************************************************************************************************/
 
 /*
- *	LabSession - object containing specific game session.
- *	On setup it's create labyrinth and spawn players on spawn points.
+ *  LabSession - object containing specific game session.
+ *  On setup it's create labyrinth and spawn players on spawn points.
  */
 CORE_OBJECT_DEFINE(LabSession);
 
 /*****************************************************************************************************************************/
 
-bool 	LabSession_HelperFindSession(LabSession sessions[], uint32 sessions_size, uint32 index, LabSession *out_session);
+bool    LabSession_HelperFindSession(LabSession sessions[], uint32 sessions_size, uint32 index, LabSession *out_session);
 
-bool 	LabSession_AddPlayer(LabSession instance, uint32 player_id, const uint8 player_token[TOKEN_SIZE], uint32 *out_added_player_index);
-bool 	LabSession_FindPlayer(LabSession instance, uint32 player_index, Player *out_player);
-void 		LabSession_Start(LabSession instance);
+LabPointsMap LabSession_GetLabMap(LabSession session);
+bool    LabSession_AddPlayer(LabSession         instance, 
+                             uint32             player_id, 
+                             const uint8        player_token[TOKEN_SIZE], 
+                             uint32             *out_added_player_index);
 
-void 		LabSession_GetLabPointsReader(LabSession instance, LabPointsMapReader *out_lab_points_reader);
-void        LabSession_MapToJSON(LabSession instance, char **json);
+bool    LabSession_FindPlayer(LabSession instance, uint32 player_index, Player *out_player);
+void    LabSession_Start(LabSession instance);
 
-void 		LabSession_Setup(LabSession instance, uint32 players_count);
+void    LabSession_MapToJSON(LabSession instance, char **json);
+void    LabSession_Setup(LabSession instance, uint32 players_count);
 
-void 		LabSession_Create(LabSession* instance_ptr);
-void 		LabSession_Free(LabSession* instance_ptr);
+void    LabSession_Create(LabSession* instance_ptr);
+void    LabSession_Free(LabSession* instance_ptr);
 
 /*****************************************************************************************************************************/
 

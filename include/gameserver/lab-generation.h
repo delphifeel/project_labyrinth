@@ -6,7 +6,9 @@
 
 /*****************************************************************************************************************************/
 
-void LabGeneration_Execute(LabPointsMap generated_lab_points_map, uint32 **out_spawn_points, uint32 *out_spawn_points_size);
+void LabGeneration_Execute(LabPointsMap *generated_lab_points_map, 
+                           uint32       **out_spawn_points, 
+                           uint32       *out_spawn_points_size);
 
 /*****************************************************************************************************************************/
 

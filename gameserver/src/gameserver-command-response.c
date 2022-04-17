@@ -30,8 +30,7 @@ void GameServerCommandResponse_SetType(struct GameServerCommandResponse *instanc
 
 bool GameServerCommandResponse_AddPlayerIndex(struct GameServerCommandResponse *instance, uint32 player_index)
 {
-	if (instance->player_index_array_size >= _GAMESERVERCOMMANDRESPONSE__ARRAY_MAX_SIZE)
-	{
+	if (instance->player_index_array_size >= _GAMESERVERCOMMANDRESPONSE__ARRAY_MAX_SIZE) {
 		CORE_DebugError("Players index array is full\n");
 		return false;
 	}

@@ -2,47 +2,30 @@
 #define __LAB_POINTS_MAP_H__
 
 #include "CCORE.h"
+#include "player.h"
+#include "room-info.h"
 
 #define ROOM_SIZE   (40)
 
+CORE_OBJECT_DEFINE(Player);
+
 /*****************************************************************************************************************************/
-
-typedef struct LabPointStruct 
-{
-    uint32          Id; 
-    uint32          top_connection_id; 
-    uint32          right_connection_id; 
-    uint32          bottom_connection_id; 
-    uint32          left_connection_id; 
-    bool            is_exit; 
-    bool            is_spawn;
-} LabPointStruct;
-
-typedef struct RoomInfo 
-{
-    uint32          has_top_connection; 
-    uint32          has_right_connection; 
-    uint32          has_bottom_connection; 
-    uint32          has_left_connection; 
-    uint32          is_exit; 
-    uint32          is_spawn;
-} RoomInfo;
 
 CORE_OBJECT_DEFINE(LabPointsMap);
 
 /*****************************************************************************************************************************/
 
-void LabPointsMap_HelperPointToRoomInfo(const LabPointStruct *point, RoomInfo *room_info);
+void LabPointsMap_GetRoomInfoByPointId(LabPointsMap instance, uint32 point_id, RoomInfo *room_info);
 
 void LabPointsMap_ToJSON(LabPointsMap instance, char **json);
 void LabPointsMap_ToRawData(LabPointsMap, uint8 **raw_data, uint32 *raw_data_size);
-void LabPointsMap_AddPoint(LabPointsMap instance, LabPointStruct point);
+
+void LabPointsMap_AssignPlayerToPoint(LabPointsMap instance, Player player, uint point_id);
 void LabPointsMap_ChangePoint(LabPointsMap instance, LabPointStruct point);
 void LabPointsMap_GetPointByID(LabPointsMap instance, uint32 id, LabPointStruct *out_point);
 void LabPointsMap_GetSize(LabPointsMap instance, uint32 *size);
-void LabPointsMap_GetCapacity(LabPointsMap instance, uint32 *capacity);
 
-void LabPointsMap_Create(LabPointsMap* instance_ptr);
+void LabPointsMap_Create(LabPointsMap* instance_ptr, uint size);
 void LabPointsMap_Free(LabPointsMap* instance_ptr);
 
 /*****************************************************************************************************************************/

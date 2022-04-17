@@ -36,9 +36,7 @@ static void Test_GenerateLab()
 	uint32  		spawn_points_size;
 	
 
-	LabPointsMap_Create(&generated_map);
-
-	LabGeneration_Execute(generated_map, &spawn_points, &spawn_points_size);
+	LabGeneration_Execute(&generated_map, &spawn_points, &spawn_points_size);
 	_ValidateGeneratedMap(generated_map);
 
 	CORE_MemFree(spawn_points);

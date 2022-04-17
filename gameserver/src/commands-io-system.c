@@ -299,13 +299,11 @@ static void _TCPServerOnRead(TCPServer tcp_server, void *context,
             &response_receivers_indexes_size
         );
 
-        if (response_receivers_indexes_size == 0)
-        {
-            for (uint32 i = 0; i < CONNECTIONS_PER_SESSION; i++)
-            {
+        // respond to all players
+        if (response_receivers_indexes_size == 0) {
+            for (uint32 i = 0; i < CONNECTIONS_PER_SESSION; i++) {
                 iter_client_connection = instance->tcp_clients_map[session_index][i];
-                if (iter_client_connection == NULL)
-                {
+                if (iter_client_connection == NULL) {
                     continue;
                 }
 
@@ -315,12 +313,11 @@ static void _TCPServerOnRead(TCPServer tcp_server, void *context,
             return;
         }
 
-        for (uint32 i = 0; i < response_receivers_indexes_size; i++)
-        {
+        // respond to specific players
+        for (uint32 i = 0; i < response_receivers_indexes_size; i++) {
             iter_player_index = response_receivers_indexes[i];
             iter_client_connection = instance->tcp_clients_map[session_index][iter_player_index];
-            if (iter_client_connection == NULL)
-            {
+            if (iter_client_connection == NULL) {
                 continue;
             }
 

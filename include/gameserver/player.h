@@ -3,15 +3,12 @@
 
 #include "CCORE.h"
 #include "common.h"
-#include "lab-points-map-reader.h"
+#include "lab-points-map.h"
+
+typedef struct LabPointStruct LabPointStruct;
+CORE_OBJECT_DEFINE(LabPointsMap);
 
 /*****************************************************************************************************************************/
-
-typedef struct PositionStruct
-{ 
-	float32		x; 
-	float32  	y; 
-} PositionStruct; 
 
 CORE_OBJECT_DEFINE(Player);
 
@@ -27,7 +24,7 @@ void Player_GetPositionCoords(Player player, PositionStruct *out_position);
 void Player_GetPositionPoint(Player player, LabPointStruct *out_point);
 float32 Player_GetSpeed(Player player);
 
-void Player_Setup(Player player, LabPointsMapReader points_reader, uint32 spawn_point_id);
+void Player_Setup(Player player, LabPointsMap lab_map, uint32 spawn_point_id);
 
 void Player_Create(Player* player_ptr);
 void Player_Free(Player* player_ptr);
