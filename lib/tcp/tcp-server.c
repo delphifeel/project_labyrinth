@@ -27,13 +27,12 @@ CORE_OBJECT_INTERFACE(TCPServer,
     OnErrorFunc             on_error;
     OnNewConnectionFunc     on_new_connection;
     OnCloseConnectionFunc	on_close_connection;
-
-    /* 		temp fields related to write process. 
-     *		DO NOT RELY ON IT, CAUSE IT CAN BE CHANGED ANYTIME.
-     */
-    uv_write_t  			temp_write_request_handle;
-    uv_buf_t  				temp_write_buffer;
 );
+
+typedef struct {
+    uv_write_t  req;
+    uv_buf_t    buf;
+} WriteRecord;
 
 /*****************************************************************************************************************************/
 
@@ -68,14 +67,11 @@ static void _OnHandleClose(uv_handle_t* handle)
     CORE_MemFree(handle);
 }
 
-static void _OnWriteBuffer(uv_write_t* request, int status) 
+static void _OnWriteBuffer(uv_write_t *req, int status) 
 {
-    TCPServer instance;
-
-
-    _UVHandleGetContext((uv_handle_t *) request, &instance);
-    CORE_MemFree(instance->temp_write_buffer.base);
-    CORE_MemZero(&instance->temp_write_buffer, sizeof(uv_buf_t));
+    WriteRecord *write_record = (WriteRecord *) req;
+    free(write_record->buf.base);
+    free(write_record);
 
     if (status < 0)
     {
@@ -159,18 +155,17 @@ void TCPServer_Write(TCPServer instance, TCPServer_ClientConnection client_conne
 {
     CORE_AssertPointer(data);
 
-    char *data_alloced;
+    WriteRecord *write_record = CORE_MemAlloc(sizeof(WriteRecord), 1);
+    char *data_alloced = CORE_MemAlloc(sizeof(char), data_size);
+    CORE_MemCpy(data_alloced, data, data_size);
 
-
-    data_alloced = CORE_MemAlloc(sizeof(char), data_size);
-    memcpy(data_alloced, data, data_size);
-
-    instance->temp_write_buffer.base = data_alloced;
-    instance->temp_write_buffer.len = data_size;
-
-    _UVHandleSetContext((uv_handle_t *) &instance->temp_write_request_handle, instance);
-    if (uv_write(&instance->temp_write_request_handle, _ClientConnectionToUVClient(client_connection), 
-                 &instance->temp_write_buffer, 1, _OnWriteBuffer) != 0)
+    write_record->buf.base  = data_alloced;
+    write_record->buf.len   = data_size;
+    if (uv_write((uv_write_t *) write_record, 
+                 _ClientConnectionToUVClient(client_connection), 
+                 &write_record->buf, 
+                 1, 
+                 _OnWriteBuffer) != 0)
     {
         if (instance->on_error != NULL)
         {
@@ -267,23 +262,19 @@ void TCPServer_Start(TCPServer instance)
 void TCPServer_Create(TCPServer *instance_ptr)
 {
 	CORE_OBJECT_CREATE(instance_ptr, TCPServer);
+    TCPServer instance = *instance_ptr;
 
-	(*instance_ptr)->on_read = NULL;
-	(*instance_ptr)->on_new_connection = NULL;
-    (*instance_ptr)->on_close_connection = NULL;
-	(*instance_ptr)->on_error = NULL;
-    (*instance_ptr)->context = NULL;
-
-	CORE_MemZero(&(*instance_ptr)->temp_write_buffer, sizeof(uv_buf_t));
-	CORE_MemZero(&(*instance_ptr)->temp_write_request_handle, sizeof(uv_write_t));
+	instance->on_read = NULL;
+	instance->on_new_connection = NULL;
+    instance->on_close_connection = NULL;
+	instance->on_error = NULL;
+    instance->context = NULL;
 }
 
 void TCPServer_Free(TCPServer *instance_ptr)
 {
     TCPServer instance = *instance_ptr;
-    
     uv_loop_close(instance->uv_loop);
-
 	CORE_OBJECT_FREE(instance_ptr);
 }
 
