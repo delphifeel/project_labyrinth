@@ -91,6 +91,7 @@ bool CommandPlayerInit_Process(struct GameServerCommand            *command,
 
     *is_have_response = true;
     GameServerCommandResponse_SetType(response_command, kCommandType_PlayerInit);
+    GameServerCommandResponse_AddPlayerIndex(response_command, player_index);
     return GameServerCommandResponse_SetPayload(response_command, 
                                                 response_buff,
                                                 response_buff_size);
