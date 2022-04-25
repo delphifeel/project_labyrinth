@@ -62,7 +62,7 @@ static void _SetStartGameResponse(TCPClient tcp_client, void *context, const uin
 
 static void _SendData(TCPClient tcp_client, void *context)
 {
-    uint8 buffer[512];
+    uint8 buffer[2048];
     uint8 *buffer_ptr;
 
 

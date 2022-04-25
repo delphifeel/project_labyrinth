@@ -30,7 +30,7 @@ static const uint8 gameserver_mocked_token[32] =
  * 		Max players per session
  */
 // #define SESSION_PLAYERS_COUNT	(40)
-#define SESSION_PLAYERS_COUNT       (1)
+#define SESSION_PLAYERS_COUNT       (2)
 
 /*
  * 		CommandsIOSystem: Default port for client-server communication

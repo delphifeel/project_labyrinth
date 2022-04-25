@@ -28,7 +28,7 @@ static const uint8 mocked_token[32] =
  *      Max users per lobby
  */
 // #define LOBBY_USERS_COUNT    (40)
-#define LOBBY_USERS_COUNT       (1)
+#define LOBBY_USERS_COUNT       (2)
 
 
 /**

@@ -7,6 +7,8 @@ static const AuthenticatePayload _mocked_creds[] =
 {
     {"delphifeel", "1234"},
     {"dhatz", "1234"},
+    {"dhat1", "1234"},
+    {"dhat2", "1234"},
     {"cherniki", "12345"},
 };
 
