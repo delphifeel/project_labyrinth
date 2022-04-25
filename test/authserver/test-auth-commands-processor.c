@@ -1,6 +1,6 @@
 #include "authserver/auth-command-types.h"
 #include "authserver/auth-commands-processor.h"
-#include "authserver/CONFIG.h"
+#include "authserver/config.h"
 
 #define INIT_PAYLOAD(_size)                         \
     const uint32    _payload_max_size = (_size);    \

@@ -1,7 +1,7 @@
 #ifndef _ROOM_INFO_PRIVATE_H_
 #define _ROOM_INFO_PRIVATE_H_
 
-#include "CONFIG.h"
+#include "config.h"
 
 struct RoomInfo
 {

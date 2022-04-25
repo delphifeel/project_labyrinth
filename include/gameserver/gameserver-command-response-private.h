@@ -2,7 +2,7 @@
 #define _GAMESERVER_COMMAND_RESPONSE_PRIVATE_H_
 
 #include <lib/commands-processor/command.h>
-#include "gameserver/CONFIG.h"
+#include "gameserver/config.h"
 
 #define _GAMESERVERCOMMANDRESPONSE__ARRAY_MAX_SIZE 	(SESSION_PLAYERS_COUNT)
 
