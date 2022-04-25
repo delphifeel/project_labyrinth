@@ -228,11 +228,11 @@ static void _TCPServerOnRead(TCPServer                      tcp_server,
 
 
     instance = (CommandsIOSystem) context;
-    
-    GameServerCommand_Init(&command);
-    GameServerCommandResponse_Init(&response_command);
 
     do {
+        GameServerCommand_Init(&command);
+        GameServerCommandResponse_Init(&response_command);
+
         data += data_bytes_used;
         data_bytes_used = _ParseCommandFromBuffer(&command, data, data_size);
         if (data_bytes_used < 0) {
