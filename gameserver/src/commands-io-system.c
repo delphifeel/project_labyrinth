@@ -236,7 +236,6 @@ static void _TCPServerOnRead(TCPServer                      tcp_server,
         data += data_bytes_used;
         data_bytes_used = _ParseCommandFromBuffer(&command, data, data_size);
         if (data_bytes_used < 0) {
-            TCPServer_CloseConnection(tcp_server, client_connection);
             return;
         }
         data_size -= data_bytes_used;
@@ -268,7 +267,6 @@ static void _TCPServerOnRead(TCPServer                      tcp_server,
             (player_index > CONNECTIONS_PER_SESSION - 1))
         {
             CORE_DebugError("Command session_index or player_index out of bounds\n");
-            TCPServer_CloseConnection(tcp_server, client_connection);
             return;
         }
 
