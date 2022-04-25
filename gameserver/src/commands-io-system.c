@@ -3,7 +3,7 @@
 #include "lib/commands-processor/commands-processor.h"
 #include "lib/tcp/tcp-server.h"
 #include "gameserver/commands-io-system.h"
-#include "gameserver/CONFIG.h"
+#include "gameserver/config.h"
 #include "gameserver/gameserver-command-response.h"
 #include "gameserver/gameserver-command-types.h"
 #include "gameserver/gameserver-commands-processor.h"

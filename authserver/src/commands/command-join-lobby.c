@@ -1,5 +1,5 @@
 #include "CCORE.h"
-#include "authserver/CONFIG.h"
+#include "authserver/config.h"
 #include "lib/commands-processor/command.h"
 #include "lib/tcp/tcp-client.h"
 #include "authserver/auth-command-types.h"

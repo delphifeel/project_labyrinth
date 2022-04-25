@@ -1,5 +1,5 @@
 #include "lib/commands-processor/command.h"
-#include "gameserver/CONFIG.h"
+#include "gameserver/config.h"
 #include "gameserver/player.h"
 #include "lib/commands-processor/command.h"
 #include "gameserver/gameserver-command-response.h"
@@ -39,11 +39,10 @@ bool CommandStartGame_Process(  struct GameServerCommand            *game_server
     GameServerCommand_GetSessionsPtr(game_server_command, &sessions, &sessions_size);
     GameServerCommand_GetPayloadPtr(game_server_command, &payload_raw, &payload_size);
 
-    // if (payload_size != sizeof(StartGamePayload))
-    // {
-    //     CORE_DebugError("payload_size != sizeof(StartGamePayload)\n");
-    //     return false;
-    // }
+    if (payload_size != sizeof(StartGamePayload)) {
+        CORE_DebugError("payload_size != sizeof(StartGamePayload)\n");
+        return false;
+    }
 
     payload = (const StartGamePayload *) payload_raw;
 

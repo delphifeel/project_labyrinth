@@ -2,7 +2,7 @@
 #include <lib/commands-processor/command.h>
 #include <lib/tcp/tcp-server.h>
 #include "authserver/auth-io-system.h"
-#include "authserver/CONFIG.h"
+#include "authserver/config.h"
 #include "authserver/auth-command-types.h"
 #include "authserver/auth-commands-processor.h"
 

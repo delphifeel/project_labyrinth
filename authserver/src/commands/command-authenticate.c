@@ -1,6 +1,6 @@
 #include "lib/commands-processor/command.h"
 #include "authserver/auth-command-types.h"
-#include "authserver/CONFIG.h"
+#include "authserver/config.h"
 #include "authserver/account.h"
 
 
