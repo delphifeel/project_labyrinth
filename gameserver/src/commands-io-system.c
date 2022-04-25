@@ -205,9 +205,11 @@ static bool _ProcessCommand(CommandsIOSystem                        instance,
     return true;
 }
 
-static void _TCPServerOnRead(TCPServer tcp_server, void *context, 
-                             TCPServer_ClientConnection client_connection,
-                             const uint8 data[], uint32 data_size)
+static void _TCPServerOnRead(TCPServer                      tcp_server, 
+                             void                           *context, 
+                             TCPServer_ClientConnection     client_connection,
+                             const uint8                    data[], 
+                             uint32                         data_size)
 {
     uint32                                  command_type;
     struct GameServerCommand                command;
