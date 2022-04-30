@@ -5,32 +5,25 @@
 #include "authserver/auth-command-types.h"
 #include "gameserver/gameserver-command-types.h"
 
-typedef struct JoinLobbyPayload
+typedef struct RequestPayload
 {
     uint8       token[TOKEN_SIZE];
-} JoinLobbyPayload;
+} RequestPayload;
 
-typedef struct StartGameResponsePayload 
+enum
 {
-    struct 
-    {
-        uint32  player_id;
-        uint32  player_index;   
-        uint32  session_index;
-    } players[LOBBY_USERS_COUNT];
-} StartGameResponsePayload;
+    STATUS_ERROR,
+    STATUS_JOINED_LOBBY,
+    STATUS_LOBBY_COMPLETED,
+};
 
-typedef struct JoinLobbyResponsePayload
+typedef struct ResponsePayload
 {
-    /**
-     *  status code possible values:
-     *      0 - error
-     *      1 - joined lobby successfully
-     *      2 - lobby is full. start game
-     */
     uint32                      status_code;
-    StartGameResponsePayload    structure;
-} JoinLobbyResponsePayload;
+    uint32                      player_id;
+    uint32                      player_index;
+    uint32                      session_index;
+} ResponsePayload;
 
 typedef struct StartGamePayload 
 {
@@ -41,26 +34,17 @@ typedef struct StartGamePayload
     } players[LOBBY_USERS_COUNT];
 } StartGamePayload;
 
-static uint32                       _users_in_lobby         = 0;
-static StartGamePayload             _start_game_payload;
-static JoinLobbyResponsePayload     _response_payload;
+static uint32              _users_in_lobby         = 0;
+static StartGamePayload    _start_game_payload;
+static ResponsePayload     _response_payload;
 
-
-static void _SetStartGameResponse(TCPClient tcp_client, void *context, const uint8 data[], uint32 data_size)
+static void _GotRespFromGS(TCPClient tcp_client, void *context, const uint8 data[], uint32 data_size)
 {
-    if (data_size != 8 + sizeof(StartGameResponsePayload))
-    {
-        CORE_DebugError("payload size is small (Expected %lu, Got %u)\n", sizeof(StartGameResponsePayload), data_size - 8);
-        return;
-    }
-
-    memcpy(&_response_payload.structure, data + 8, sizeof(_response_payload.structure));
-
     TCPClient_Disconnect(tcp_client);
     TCPClient_Free(&tcp_client);
 }
 
-static void _SendData(TCPClient tcp_client, void *context)
+static void _SendStartGameToGS(TCPClient tcp_client, void *context)
 {
     uint8 buffer[2048];
     uint8 *buffer_ptr;
@@ -99,22 +83,22 @@ static void _SendData(TCPClient tcp_client, void *context)
     TCPClient_Write(tcp_client, (const uint8 *) buffer, buffer_ptr - buffer);
 }
 
-static void _ProcessStartGame()
+static void _ProcessFullLobby()
 {
     TCPClient tcp_client;
 
 
+    CORE_DebugInfo("Lobby is full. Send `StartGame` to game server\n");
     TCPClient_Create(&tcp_client);
-    TCPClient_OnConnected(tcp_client, _SendData);
-    TCPClient_OnRead(tcp_client, _SetStartGameResponse);
+    TCPClient_OnConnected(tcp_client, _SendStartGameToGS);
+    TCPClient_OnRead(tcp_client, _GotRespFromGS);
 
     TCPClient_Connect(tcp_client, GAMESERVER_IP_ADDRESS, GAMESERVER_PORT);
 }
 
-static void _AddPlayerToLobby(const JoinLobbyPayload *payload)
+static void _AddPlayerToLobby(const RequestPayload *payload)
 {
     uint32 player_id = _users_in_lobby + 1;
-
 
     _start_game_payload.players[_users_in_lobby].player_id = player_id;
     memcpy(
@@ -124,33 +108,37 @@ static void _AddPlayerToLobby(const JoinLobbyPayload *payload)
     );
     _users_in_lobby++;
     CORE_DebugInfo("Player joined lobby. Player id: %d\n", player_id);
+
+    _response_payload.player_id = player_id;
+    _response_payload.player_index = player_id - 1;
+    _response_payload.session_index = 0;
 }
 
 bool CommandJoinLobby_Process(struct Command 	*command, 
                                    struct Command 	*out_response_command, 
                                    bool     	*out_is_have_response)
 {
-    const JoinLobbyPayload          *payload;
-    const uint8                     *payload_raw;
-    uint32                          payload_size; 
-    uint32                          status;
+    const RequestPayload          *payload;
+    const uint8                   *payload_raw;
+    uint32                        payload_size; 
+    uint32                        status;
 
     Command_GetPayloadPtr(command, &payload_raw, &payload_size); 
 
-    if (payload_size != sizeof(JoinLobbyPayload))
+    if (payload_size != sizeof(RequestPayload))
     {
-        CORE_DebugError("payload_size != sizeof(JoinLobbyPayload)\n");
+        CORE_DebugError("payload_size != sizeof(RequestPayload)\n");
         return false; 
     }
 
-    payload = (const JoinLobbyPayload *) payload_raw; 
+    payload = (const RequestPayload *) payload_raw; 
 
     do 
     {
         if (memcmp(payload->token, mocked_token, TOKEN_SIZE) != 0)
         {
             CORE_DebugError("Invalid token\n");
-            status = 0;
+            status = STATUS_ERROR;
             break;
         }
 
@@ -158,22 +146,21 @@ bool CommandJoinLobby_Process(struct Command 	*command,
 
         if (_users_in_lobby == LOBBY_USERS_COUNT)
         {
-            status = 2;
-            CORE_DebugInfo("Lobby is full. Send `StartGame` to game server\n");
             _users_in_lobby = 0;
-            _ProcessStartGame();
+            status = STATUS_LOBBY_COMPLETED;
+            _ProcessFullLobby();
             break;
         }
 
-        status = 1;
+        status = STATUS_JOINED_LOBBY;
     } while (0);
 
     *out_is_have_response = true;
     Command_SetType(out_response_command, kCommandResponseType_JoinLobby);
     _response_payload.status_code = status;
-    if (Command_SetPayload( out_response_command, 
-                            (const uint8 *) &_response_payload, 
-                            sizeof(_response_payload)) == false)
+    if (Command_SetPayload(out_response_command, 
+                           (const uint8 *) &_response_payload, 
+                           sizeof(_response_payload)) == false)
     {
         return false;
     }

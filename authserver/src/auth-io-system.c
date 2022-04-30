@@ -140,19 +140,9 @@ static bool _IsSendBufferToAllConnections(struct Command *response_command)
 
 
     Command_GetType(response_command, &command_type);
-    if (command_type != kCommandType_JoinLobby)
-    {
-        return false;
-    }
-
     Command_GetPayloadPtr(response_command, &payload, &payload_size);
     status_code = * (uint32 *) payload;
-    if (status_code != 2)
-    {
-        return false;
-    }
-
-    return true;
+    return ((command_type == kCommandType_JoinLobby) && (status_code == 2));
 }
 
 static void _TCP_ServerOnRead(TCPServer tcp_server, void *context,
