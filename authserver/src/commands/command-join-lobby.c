@@ -38,13 +38,13 @@ static uint32              _users_in_lobby         = 0;
 static StartGamePayload    _start_game_payload;
 static ResponsePayload     _response_payload;
 
-static void _GotRespFromGS(TCPClient tcp_client, void *context, const uint8 data[], uint32 data_size)
+static void _GotRespFromGS(TCPClient *tcp_client, void *context, const uint8 data[], uint32 data_size)
 {
     TCPClient_Disconnect(tcp_client);
-    TCPClient_Free(&tcp_client);
+    TCPClient_Free(tcp_client);
 }
 
-static void _SendStartGameToGS(TCPClient tcp_client, void *context)
+static void _SendStartGameToGS(TCPClient *tcp_client, void *context)
 {
     uint8 buffer[2048];
     uint8 *buffer_ptr;
@@ -85,11 +85,10 @@ static void _SendStartGameToGS(TCPClient tcp_client, void *context)
 
 static void _ProcessFullLobby()
 {
-    TCPClient tcp_client;
+    TCPClient *tcp_client = TCPClient_Create();
 
 
     CORE_DebugInfo("Lobby is full. Send `StartGame` to game server\n");
-    TCPClient_Create(&tcp_client);
     TCPClient_OnConnected(tcp_client, _SendStartGameToGS);
     TCPClient_OnRead(tcp_client, _GotRespFromGS);
 

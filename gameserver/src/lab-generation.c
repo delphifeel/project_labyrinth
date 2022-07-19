@@ -219,7 +219,7 @@ static void _BuildMSTFrom(LabPointsMap fully_connected_map, LabPointsMap mst_poi
     LabPointStruct  current_lab_point_handle;
     LabPointStruct  temp_lab_point_handle;
     LabPointStruct  lab_point; 
-    CDisjointSet    disjoint_set_handle;
+    CDisjointSet    *disjoint_set_handle;
     uint32          vertex_count;
     uint32          id;
     Edge            *sorted_edges;
@@ -278,8 +278,7 @@ static void _BuildMSTFrom(LabPointsMap fully_connected_map, LabPointsMap mst_poi
 
     // create disjoint set from edges and 
     // union all edges according to Kruskal's algo
-    CDisjointSet_Create(&disjoint_set_handle);
-    CDisjointSet_Setup(disjoint_set_handle, vertex_count + 1);
+    disjoint_set_handle = CDisjointSet_Create(vertex_count + 1);
     mst_edges_size = 0;
     
     for (uint32 i = 0; i < sorted_edges_size; i++) {

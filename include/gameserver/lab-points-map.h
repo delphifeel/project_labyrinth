@@ -7,11 +7,11 @@
 
 #define ROOM_SIZE   (40)
 
-CORE_OBJECT_DEFINE(Player);
+typedef struct Player_s *Player;
 
 /*****************************************************************************************************************************/
 
-CORE_OBJECT_DEFINE(LabPointsMap);
+typedef struct LabPointsMap_s *LabPointsMap;
 
 /*****************************************************************************************************************************/
 

@@ -6,11 +6,11 @@
 #include "lab-points-map.h"
 
 typedef struct LabPointStruct LabPointStruct;
-CORE_OBJECT_DEFINE(LabPointsMap);
+typedef struct LabPointsMap_s *LabPointsMap;
 
 /*****************************************************************************************************************************/
 
-CORE_OBJECT_DEFINE(Player);
+typedef struct Player_s *Player;
 
 /*****************************************************************************************************************************/
 

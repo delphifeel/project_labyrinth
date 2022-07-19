@@ -11,7 +11,7 @@
  *  LabSession - object containing specific game session.
  *  On setup it's create labyrinth and spawn players on spawn points.
  */
-CORE_OBJECT_DEFINE(LabSession);
+typedef struct LabSession_s *LabSession;
 
 /*****************************************************************************************************************************/
 

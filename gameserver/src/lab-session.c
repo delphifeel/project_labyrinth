@@ -3,7 +3,8 @@
 #include "gameserver/lab-session.h"
 
 
-CORE_OBJECT_INTERFACE(LabSession,
+typedef struct LabSession_s
+{
     LabPointsMap        labyrinth_map;
 
     /**
@@ -23,7 +24,7 @@ CORE_OBJECT_INTERFACE(LabSession,
     bool                is_session_started;
 
     /* etc */
-);
+} *LabSession;
 
 /*****************************************************************************************************************************/
 
@@ -145,7 +146,7 @@ void LabSession_Setup(LabSession instance, uint32 players_count)
 
 void LabSession_Create(LabSession *instance_ptr)
 {
-    CORE_OBJECT_CREATE(instance_ptr, LabSession);
+    *instance_ptr = CORE_MemAlloc(sizeof(struct LabSession_s), 1);
     LabSession instance = *instance_ptr;
 }
 
@@ -160,7 +161,7 @@ void LabSession_Free(LabSession *instance_ptr)
     }
 
     CORE_MemFree((*instance_ptr)->players_map);
-    CORE_OBJECT_FREE(instance_ptr);
+    CORE_MemFree(*instance_ptr);
 }
 
 /*****************************************************************************************************************************/

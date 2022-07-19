@@ -7,14 +7,15 @@
 
 #define MAX_DIRECTIONS      (2)
 
-CORE_OBJECT_INTERFACE(Player,
+typedef struct Player_s
+{
     LabPointsMap                lab_map;
     uint32                      id;
     float32                     speed;
     uint32                      position_point_id;
     PositionStruct              position_coords;
     uint8                       token[TOKEN_SIZE];
-);
+} *Player;
 
 /*****************************************************************************************************************************/
 
@@ -181,7 +182,7 @@ void Player_Setup(Player player, LabPointsMap lab_map, uint32 spawn_point_id)
 
 void Player_Create(Player *player_ptr)
 {
-    CORE_OBJECT_CREATE(player_ptr, Player);
+    *player_ptr = CORE_MemAlloc(sizeof(struct Player_s), 1);
     Player player = *player_ptr;
 
     CORE_MemZero(player->token, sizeof(player->token));
@@ -189,5 +190,5 @@ void Player_Create(Player *player_ptr)
 
 void Player_Free(Player *player_ptr) 
 {
-    CORE_OBJECT_FREE(player_ptr); 
+    CORE_MemFree(*player_ptr); 
 }

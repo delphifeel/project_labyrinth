@@ -5,10 +5,11 @@
 
 /*****************************************************************************************************************************/
 
-CORE_OBJECT_INTERFACE(GameServer,
+typedef struct GameServer_s
+{
 	LabSession 				sessions[SESSIONS_CAPACITY];
 	CommandsIOSystem 		commands_io_system;
-);
+} *GameServer;
 
 /*****************************************************************************************************************************/
 
@@ -45,7 +46,7 @@ void GameServer_Setup(GameServer instance)
 
 void GameServer_Create(GameServer *instance_ptr)
 {
-	CORE_OBJECT_CREATE(instance_ptr, GameServer);
+	*instance_ptr = CORE_MemAlloc(sizeof(struct GameServer_s), 1);
 
 	CORE_DebugInfo("Init sessions\n");
 	_PrepareSessions(*instance_ptr);
@@ -59,7 +60,7 @@ void GameServer_Free(GameServer *instance_ptr)
 	CommandsIOSystem_Free(&(*instance_ptr)->commands_io_system);
 	_FreeSessions(*instance_ptr);
 
-	CORE_OBJECT_FREE(instance_ptr);
+	CORE_MemFree(*instance_ptr);
 }
 
 /*****************************************************************************************************************************/

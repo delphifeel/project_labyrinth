@@ -5,11 +5,11 @@
 
 #define _COMMANDS_PROCESSOR_DEFINE(_NAME, _IN_COMMAND_TYPE, _OUT_COMMAND_TYPE)								\
 																											\
-CORE_OBJECT_DEFINE(_NAME);																					\
+typedef struct _NAME##_s *_NAME;																				\
 																											\
-typedef bool (*_NAME##CommandProcessFunc)(_IN_COMMAND_TYPE 	command, 								\
+typedef bool (*_NAME##CommandProcessFunc)(_IN_COMMAND_TYPE 	command, 										\
 												_OUT_COMMAND_TYPE 	out_response_command,					\
-												bool 			*out_is_have_response);					\
+												bool 			*out_is_have_response);						\
 																											\
 typedef struct _NAME##_CommandToProcessFunc																	\
 {																											\

@@ -9,7 +9,7 @@
  *      Client/Server communication using `AuthStruct` objects
  */
 
-CORE_OBJECT_DEFINE(AuthIOSystem);
+typedef struct AuthIOSystem_s *AuthIOSystem;
 
 /*****************************************************************************************************************************/
 

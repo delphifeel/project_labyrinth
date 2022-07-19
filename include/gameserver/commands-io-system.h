@@ -12,7 +12,7 @@
  *      Client/Server communication using `CommandStruct` objects
  */
 
-CORE_OBJECT_DEFINE(CommandsIOSystem);
+typedef struct CommandsIOSystem_s *CommandsIOSystem;
 
 /*****************************************************************************************************************************/
 

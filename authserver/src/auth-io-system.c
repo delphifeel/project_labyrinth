@@ -10,29 +10,30 @@
 
 /*****************************************************************************************************************************/
 
-CORE_OBJECT_INTERFACE(AuthIOSystem, 
-    TCPServer                      tcp_server;
-    AuthCommandsProcessor               commands_processor;
+typedef struct AuthIOSystem_s
+{ 
+    TCPServer                      *tcp_server;
+    AuthCommandsProcessor          commands_processor;
 
     TCPServer_ClientConnection     tcp_clients_map[AUTH_IO_MAX_CONNECTIONS];
-);
+} *AuthIOSystem;
 
 /*****************************************************************************************************************************/
 
-static void _TCP_ServerOnError(TCPServer tcp_server, void *context, const char *error_message)
+static void _TCP_ServerOnError(TCPServer *tcp_server, void *context, const char *error_message)
 {
     CORE_DebugError("TCP Server error: %s\n", error_message); 
 }
 
 
-static void _TCP_ServerOnNewConnection(TCPServer tcp_server, void *context, 
+static void _TCP_ServerOnNewConnection(TCPServer *tcp_server, void *context, 
                                       TCPServer_ClientConnection client_connection)
 {
     CORE_DebugInfo("TCP Server - new connection\n"); 
 }
 
 
-static void _TCP_ServerOnCloseConnection(TCPServer tcp_server, void *context, 
+static void _TCP_ServerOnCloseConnection(TCPServer *tcp_server, void *context, 
                                         TCPServer_ClientConnection client_connection)
 {
     CORE_DebugInfo("TCP Server - close connection\n");
@@ -145,7 +146,7 @@ static bool _IsSendBufferToAllConnections(struct Command *response_command)
     return ((command_type == kCommandType_JoinLobby) && (status_code == 2));
 }
 
-static void _TCP_ServerOnRead(TCPServer tcp_server, void *context,
+static void _TCP_ServerOnRead(TCPServer *tcp_server, void *context,
                              TCPServer_ClientConnection client_connection, 
                              const uint8 data[], uint32 data_size)
 {
@@ -262,13 +263,13 @@ void AuthIOSystem_Setup(AuthIOSystem instance)
 void AuthIOSystem_Create(AuthIOSystem *instance_ptr)
 {
     AuthIOSystem instance;
-    CORE_OBJECT_CREATE(instance_ptr, AuthIOSystem); 
+    *instance_ptr = CORE_MemAlloc(sizeof(struct AuthIOSystem_s), 1);
 
     instance = *instance_ptr; 
 
     CORE_MemZero(&instance->tcp_clients_map, sizeof(instance->tcp_clients_map));
 
-    TCPServer_Create(&instance->tcp_server);
+    instance->tcp_server = TCPServer_Create();
     AuthCommandsProcessor_Create(&instance->commands_processor);
 }
 /*****************************************************************************************************************************/
@@ -277,7 +278,7 @@ void AuthIOSystem_Create(AuthIOSystem *instance_ptr)
 void AuthIOSystem_Free(AuthIOSystem *instance_ptr)
 {
     AuthCommandsProcessor_Free(&(*instance_ptr)->commands_processor);
-    TCPServer_Free(&(*instance_ptr)->tcp_server); 
+    TCPServer_Free((*instance_ptr)->tcp_server); 
 
-    CORE_OBJECT_FREE(instance_ptr); 
+    CORE_MemFree(*instance_ptr); 
 }

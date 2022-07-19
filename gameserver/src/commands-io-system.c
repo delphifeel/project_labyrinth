@@ -16,12 +16,13 @@
 
 /*****************************************************************************************************************************/
 
-CORE_OBJECT_INTERFACE(CommandsIOSystem,
+typedef struct CommandsIOSystem_s
+{
     LabSession                             *sessions;
     uint32                                 sessions_size;
 
     GameServerCommandsProcessor            commands_processor;
-	TCPServer                              tcp_server;
+	TCPServer                              *tcp_server;
 
     // OnCommandGetFunc   on_command_get;          
 
@@ -32,22 +33,22 @@ CORE_OBJECT_INTERFACE(CommandsIOSystem,
      *      2nd index - player index
      */
     TCPServer_ClientConnection   tcp_clients_map[SESSIONS_CAPACITY][CONNECTIONS_PER_SESSION];
-);
+} *CommandsIOSystem;
 
 /*****************************************************************************************************************************/
 
-static void _TCPServerOnError(TCPServer tcp_server, void *context, const char *error_message)
+static void _TCPServerOnError(TCPServer *tcp_server, void *context, const char *error_message)
 {
     CORE_DebugError("TCP Server error: %s\n", error_message);
 }
 
-static void _TCPServerOnNewConnection(TCPServer tcp_server, void *context, 
+static void _TCPServerOnNewConnection(TCPServer *tcp_server, void *context, 
                                       TCPServer_ClientConnection client_connection)
 {
     // CORE_DebugInfo("TCP Server - new connection\n");
 }
 
-static void _TCPServerOnCloseConnection(TCPServer tcp_server, void *context, 
+static void _TCPServerOnCloseConnection(TCPServer *tcp_server, void *context, 
                                         TCPServer_ClientConnection client_connection)
 {
     // CORE_DebugInfo("TCP Server - close connection\n");
@@ -205,7 +206,7 @@ static bool _ProcessCommand(CommandsIOSystem                        instance,
     return true;
 }
 
-static void _TCPServerOnRead(TCPServer                      tcp_server, 
+static void _TCPServerOnRead(TCPServer                      *tcp_server, 
                              void                           *context, 
                              TCPServer_ClientConnection     client_connection,
                              const uint8                    data[], 
@@ -361,20 +362,20 @@ void CommandsIOSystem_Create(CommandsIOSystem *instance_ptr)
     CommandsIOSystem instance;
 
 
-	CORE_OBJECT_CREATE(instance_ptr, CommandsIOSystem);
+	*instance_ptr = CORE_MemAlloc(sizeof(struct CommandsIOSystem_s), 1);
     instance = *instance_ptr;
 
     CORE_MemZero(&instance->tcp_clients_map, sizeof(instance->tcp_clients_map));
-    TCPServer_Create(&instance->tcp_server);
+    instance->tcp_server = TCPServer_Create();
     GameServerCommandsProcessor_Create(&instance->commands_processor);
 }
 
 void CommandsIOSystem_Free(CommandsIOSystem *instance_ptr)
 {
     GameServerCommandsProcessor_Free(&(*instance_ptr)->commands_processor);
-    TCPServer_Free(&(*instance_ptr)->tcp_server);
+    TCPServer_Free((*instance_ptr)->tcp_server);
 
-	CORE_OBJECT_FREE(instance_ptr);
+	CORE_MemFree(*instance_ptr);
 }
 
 /*****************************************************************************************************************************/

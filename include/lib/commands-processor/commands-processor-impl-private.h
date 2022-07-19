@@ -7,10 +7,11 @@
 
 #define _COMMANDS_PROCESSOR_IMPLEMENTATION(_NAME, _IN_COMMAND_TYPE, _OUT_COMMAND_TYPE)                                  \
                                                                                                                         \
-CORE_OBJECT_INTERFACE(_NAME,                                                                                            \
+typedef struct _NAME##_s                                                                                                \
+{                                                                                                                       \
 	const _NAME##_CommandToProcessFunc     *command_to_process_func_array;                                              \
     uint32                                 command_to_process_func_array_size;                                          \
-);                                                                                                                      \
+} *_NAME;                                                                                                               \
                                                                                                                         \
 /********************************************************************************************************************/  \
                                                                                                                         \
@@ -65,7 +66,7 @@ void _NAME##_Create(_NAME *instance_ptr)                                        
 	_NAME instance;                                                                                                     \
                                                                                                                         \
                                                                                                                         \
-	CORE_OBJECT_CREATE(instance_ptr, _NAME);                                                                            \
+	*instance_ptr = CORE_MemAlloc(sizeof(struct _NAME##_s), 1);                                                         \
 	instance = *instance_ptr;                                                                                           \
                                                                                                                         \
 	instance->command_to_process_func_array = NULL;                                                                     \
@@ -73,7 +74,7 @@ void _NAME##_Create(_NAME *instance_ptr)                                        
                                                                                                                         \
 void _NAME##_Free(_NAME *instance_ptr)                                                                                  \
 {                                                                                                                       \
-	CORE_OBJECT_FREE(instance_ptr);                                                                                     \
+	CORE_MemFree(*instance_ptr);                                                                                        \
 }                                                                                                                       \
 
 /********************************************************************************************************************/

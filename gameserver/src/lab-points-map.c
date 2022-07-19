@@ -5,11 +5,12 @@
 
 /*****************************************************************************************************************************/
 
-CORE_OBJECT_INTERFACE(LabPointsMap,
+typedef struct LabPointsMap_s
+{
     LabPointStruct          *points_hash_map;
-    CList /*of Player*/     *each_point_players;
+    CList /*of Player*/     **each_point_players;
     uint32                  size;
-);
+} *LabPointsMap;
 
 /*****************************************************************************************************************************/
 
@@ -91,12 +92,12 @@ void LabPointsMap_AssignPlayerToPoint(LabPointsMap instance, Player player, uint
 
     if (prev_point.Id != point_id) {
         // remove player from old point
-        CList prev_point_players = instance->each_point_players[prev_point.Id - 1];
+        CList *prev_point_players = instance->each_point_players[prev_point.Id - 1];
         CORE_Assert(CList_Remove(prev_point_players, player));
     }
 
     // assign player to @point_id 
-    CList curr_point_players = instance->each_point_players[point_id - 1];
+    CList *curr_point_players = instance->each_point_players[point_id - 1];
     CList_Append(curr_point_players, player);
 }
 
@@ -124,15 +125,15 @@ void LabPointsMap_GetSize(LabPointsMap instance, uint32 *size)
 
 void LabPointsMap_Create(LabPointsMap *instance_ptr, uint size)
 {
-    CORE_OBJECT_CREATE(instance_ptr, LabPointsMap);
+    *instance_ptr = CORE_MemAlloc(sizeof(struct LabPointsMap_s), 1);
     LabPointsMap instance = *instance_ptr;
 
     instance->size = size;
     instance->points_hash_map = CORE_MemCalloc(sizeof(LabPointStruct), instance->size);
-    instance->each_point_players = CORE_MemCalloc(sizeof(CList), instance->size);
+    instance->each_point_players = CORE_MemCalloc(sizeof(CList *), instance->size);
 
     for (uint i = 0; i < instance->size; i++) {
-        CList_Create(&instance->each_point_players[i]);
+        instance->each_point_players[i] = CList_Create();
     }
 }
 
@@ -145,7 +146,7 @@ void LabPointsMap_Free(LabPointsMap *instance_ptr)
     CORE_MemFree(instance->each_point_players);
 
     CORE_MemFree(instance->points_hash_map);
-    CORE_OBJECT_FREE(instance_ptr);
+    CORE_MemFree(*instance_ptr);
 }
 
 /*****************************************************************************************************************************/
