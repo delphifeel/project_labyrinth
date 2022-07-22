@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(ProjectLabyrinth LANGUAGES C VERSION 0.0.0.1)
+project(ProjectLabyrinth LANGUAGES C VERSION 0.2)
 
 add_compile_options(
 	-DCORE_SET_DEBUG_COLORED
@@ -33,40 +33,26 @@ set(LOCAL_COMPLILE_OPTIONS
 )
 
 
-add_subdirectory(gameserver)
-add_subdirectory(authserver)
-add_subdirectory(test)
-add_subdirectory(lib)
+add_subdirectory(libs)
+add_subdirectory(modules)
 
 
 # third-party libraries 
 add_subdirectory(third-party-libraries/libuv)
 add_subdirectory(third-party-libraries/libCCORE)
 
+# Tests
 
 add_executable(ProjectLabyrinthTest test/all-tests.c)
-target_link_libraries(ProjectLabyrinthTest PUBLIC 
-	GameServerTests
-	AuthServerTests
-)
-
-add_executable(ProjectLabyrinthAuthServer authserver/src/main.c)
-target_include_directories(ProjectLabyrinthAuthServer PUBLIC 
-	"${PROJECT_SOURCE_DIR}/include"
-)
-target_link_libraries(ProjectLabyrinthAuthServer PUBLIC 
-	AuthServer
-)
-
-add_executable(ProjectLabyrinthGameServer gameserver/src/main.c)
-target_include_directories(ProjectLabyrinthGameServer PUBLIC 
-	"${PROJECT_SOURCE_DIR}/include"
-)
-target_link_libraries(ProjectLabyrinthGameServer PUBLIC 
-	GameServer
-)
-target_compile_options(ProjectLabyrinthGameServer PRIVATE ${LOCAL_COMPLILE_OPTIONS})
-target_compile_options(ProjectLabyrinthAuthServer PRIVATE ${LOCAL_COMPLILE_OPTIONS})
 target_compile_options(ProjectLabyrinthTest PRIVATE 
 	${LOCAL_COMPLILE_OPTIONS}
+)
+target_include_directories(ProjectLabyrinthTest PUBLIC
+	"${PROJECT_SOURCE_DIR}/include"
+	"${THIRD_PARTY}/libCCORE/include"
+)
+target_link_libraries(ProjectLabyrinthTest PRIVATE
+	CCORE
+	IOSystem
+	Packet
 )

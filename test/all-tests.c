@@ -1,17 +1,13 @@
-#include "CCORE.h"
-
-extern void AuthServerTests_Run(void);
-extern void GameServerTests_Run(void);
+#include "modules/modules-tests.h"
+#include "libs/libs-tests.h"
 
 int main(void)
 {
-	#if 0
-	CORE_DebugPrint("[TESTS] Run AuthServer tests\n");
-	AuthServerTests_Run();
+	CORE_DebugStdOut("[TESTS STARTED]\n");
 
-	CORE_DebugPrint("[TESTS] Run GameServer tests\n");
-	GameServerTests_Run();
-	#endif
+	Modules_TestsRun();
+	Libs_TestsRun();
 
+	CORE_DebugStdOut("[ALL TESTS PASSED]\n");
 	return 0;
 }
