@@ -59,28 +59,19 @@ static bool _ParsePacketFromBuffer(Packet *packet, const uint8 buffer[], uint bu
 
     const uint8 *buffer_ptr = buffer;
 
-    // 0...4    (4 bytes)   - validation header
-    uint32 validation_header;
-    _BytesToNumber(buffer_ptr, sizeof(uint32), validation_header);
-    if (validation_header != _PACKET_VALIDATION_HEADER) {
-        CORE_DebugError("no validation header - `buffer` is not a packet\n");
-        return false;
-    }
-    buffer_ptr += 4;
-
-    // 4...8   (4 bytes)  - type
+    // 0...4   (4 bytes)  - type
     _BytesToNumber(buffer_ptr, sizeof(uint32), packet->type);
     buffer_ptr  += 4;
 
-    // 8...40   (32 bytes) - player token
+    // 4...36   (32 bytes) - player token
     CORE_MemCpy(packet->player_token, buffer_ptr, sizeof(packet->player_token));
     buffer_ptr += sizeof(packet->player_token);
 
-    // 40...44   (4 bytes) - payload size
+    // 36...40   (4 bytes) - payload size
     _BytesToNumber(buffer_ptr, sizeof(uint32), packet->payload_size);
     buffer_ptr += 4;
 
-    // 44...~   (~ bytes) - payload
+    // 40...~   (~ bytes) - payload
     CORE_MemNewCopy(packet->payload, buffer_ptr, packet->payload_size);
     buffer_ptr += packet->payload_size;
     return true;
@@ -116,26 +107,21 @@ void Packet_ToBuffer(const Packet *packet, uint8 **buffer_ptr, uint *buffer_len)
     uint8 *buffer   = CORE_MemAlloc(sizeof(uint8), *buffer_len);
     *buffer_ptr     = buffer;
 
-    // 0...4    (4 bytes)   - validation header
-    uint32 *validation_header = (uint32 *) buffer;
-    *validation_header = _PACKET_VALIDATION_HEADER;
-    buffer += 4;
-
-    // 4...8   (4 bytes)  - type
+    // 0...4   (4 bytes)  - type
     uint32 *type = (uint32 *) buffer;
     *type = packet->type;
     buffer += 4;
 
-    // 8...40   (32 bytes) - player token
+    // 4...36   (32 bytes) - player token
     CORE_MemCpy(buffer, packet->player_token, sizeof(packet->player_token));
     buffer += 32;
 
-    // 40...44   (4 bytes) - payload size
+    // 36...40   (4 bytes) - payload size
     uint32 *payload_size = (uint32 *) buffer;
     *payload_size = packet->payload_size;
     buffer += 4;
 
-    // 44...~   (~ bytes) - payload
+    // 40...~   (~ bytes) - payload
     CORE_MemCpy(buffer, packet->payload, packet->payload_size);
     buffer += packet->payload_size;
 }
