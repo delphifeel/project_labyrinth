@@ -1,11 +1,13 @@
 #include "modules/iosystem/iosystem.h"
 #include "libs/tcp/tcp-server.h"
+#include "libs/utils/chunk-splitter.h"
 #include "config.h"
 
 
 /*****************************************************************************************************************************/
 
-#define CONNECTIONS_PER_SESSION  (SESSION_PLAYERS_COUNT)
+#define _CONNECTIONS_PER_SESSION  (SESSION_PLAYERS_COUNT)
+#define _VALIDATION_HEADER        (0xDEADBEE)
 
 /*****************************************************************************************************************************/
 
@@ -15,7 +17,7 @@ typedef struct IOSystem_s
     TCPServer                              *tcp_server;
 
     // array of [session index] [player index]
-    TCPServer_ClientConnection   tcp_clients_map[SESSIONS_CAPACITY][CONNECTIONS_PER_SESSION];
+    TCPServer_ClientConnection   tcp_clients_map[SESSIONS_CAPACITY][_CONNECTIONS_PER_SESSION];
 } IOSystem;
 
 /*****************************************************************************************************************************/
@@ -45,8 +47,23 @@ static void _TCPServerOnRead(TCPServer                      *tcp_server,
                              const uint8                    data[], 
                              uint32                         data_len)
 {
-    IOSystem *ioSystem = (IOSystem *) context;
-    ioSystem->on_read(data, data_len);
+    IOSystem    *ioSystem               = (IOSystem *) context;
+    uint32       chunk_size             = 0;
+    const uint8 *data_ptr               = data;
+    const uint8 *data_end               = data + data_len;
+    const uint8 *chunk                  = NULL;
+    uint32       data_bytes_left        = data_len;
+
+    while (GetNextChunk(data_ptr, data_bytes_left, &chunk, &chunk_size, _VALIDATION_HEADER)) {
+        data_ptr = chunk + chunk_size;
+        data_bytes_left = data_end - data_ptr;
+
+        // remove header from chunk
+        chunk += sizeof(uint32);
+        chunk_size -= sizeof(uint32);
+
+        ioSystem->on_read(chunk, chunk_size);
+    }
 }
 
 /*****************************************************************************************************************************/

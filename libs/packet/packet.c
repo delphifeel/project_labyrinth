@@ -1,8 +1,6 @@
 #include <stddef.h>
 #include "libs/packet/packet.h"
-
-
-#define _PACKET_VALIDATION_HEADER (0xDEADBEEF)
+#include "libs/utils/bytes-to-number.h"
 
 
 typedef struct Packet_s
@@ -14,33 +12,6 @@ typedef struct Packet_s
 } Packet;
 
 #define _PACKET_MIN_SIZE  (offsetof(Packet, payload))
-
-
-// TODO: move to libCCORE
-static uint8_t  _is_little_endian_test_buffer[2]    = {0x01, 0x00};
-static int      _is_little_endian                   = -1;
-static inline int _IsLittleEndian(void)
-{
-    if (_is_little_endian != -1)
-        return _is_little_endian;
-        
-    _is_little_endian = (*(int *) _is_little_endian_test_buffer) == 1;
-    return _is_little_endian;
-}
-
-#define _BytesToNumber(bytes, bytes_len, variable)  do {    \
-    CORE_Assert(sizeof(variable) == bytes_len);             \
-    variable = 0;                                           \
-    if (_IsLittleEndian()) {                                \
-        for (int i = 0; i < sizeof(variable); i++) {        \
-            variable += bytes[i] << (i * 8);                \
-        }                                                   \
-    } else {                                                \
-        for (int i = sizeof(variable) - 1; i >= 0; i--) {   \
-            variable += bytes[i] << (i * 8);                \
-        }                                                   \
-    }                                                       \
-} while (0)
 
 
 static inline uint _CalcPacketSize(const Packet *packet)
@@ -60,7 +31,7 @@ static bool _ParsePacketFromBuffer(Packet *packet, const uint8 buffer[], uint bu
     const uint8 *buffer_ptr = buffer;
 
     // 0...4   (4 bytes)  - type
-    _BytesToNumber(buffer_ptr, sizeof(uint32), packet->type);
+    BytesToNumber(buffer_ptr, sizeof(uint32), packet->type);
     buffer_ptr  += 4;
 
     // 4...36   (32 bytes) - player token
@@ -68,7 +39,7 @@ static bool _ParsePacketFromBuffer(Packet *packet, const uint8 buffer[], uint bu
     buffer_ptr += sizeof(packet->player_token);
 
     // 36...40   (4 bytes) - payload size
-    _BytesToNumber(buffer_ptr, sizeof(uint32), packet->payload_size);
+    BytesToNumber(buffer_ptr, sizeof(uint32), packet->payload_size);
     buffer_ptr += 4;
 
     // 40...~   (~ bytes) - payload

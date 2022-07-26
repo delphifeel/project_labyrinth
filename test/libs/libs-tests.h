@@ -1,4 +1,5 @@
 #include "packet/packet-tests.h"
+#include "utils/utils-tests.h"
 
 #define RUN_TEST(NAME) do {                 \
     CORE_DebugStdOut(#NAME " tests...");    \
@@ -9,4 +10,5 @@
 void Libs_TestsRun(void)
 {
     RUN_TEST(Packet);
+    RUN_TEST(Utils);
 }

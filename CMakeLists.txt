@@ -3,7 +3,6 @@ project(ProjectLabyrinth LANGUAGES C VERSION 0.2)
 
 add_compile_options(
 	-DCORE_SET_DEBUG_COLORED
-	#-DCORE_SET_TESTING_ENABLED
 )
 
 set(THIRD_PARTY ${PROJECT_SOURCE_DIR}/third-party-libraries)
@@ -55,4 +54,5 @@ target_link_libraries(ProjectLabyrinthTest PRIVATE
 	CCORE
 	IOSystem
 	Packet
+	Utils
 )

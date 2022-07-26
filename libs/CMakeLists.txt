@@ -26,3 +26,13 @@ add_library(Packet
 target_include_directories(Packet PUBLIC
 	${COMMON_INCLUDE}
 )
+
+
+# Utils
+add_library(Utils 
+	utils/bytes-to-number.c
+	utils/chunk-splitter.c
+)
+target_include_directories(Utils PUBLIC
+	${COMMON_INCLUDE}
+)
