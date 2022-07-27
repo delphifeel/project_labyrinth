@@ -55,4 +55,5 @@ target_link_libraries(ProjectLabyrinthTest PRIVATE
 	IOSystem
 	Packet
 	Utils
+	Labyrinth
 )

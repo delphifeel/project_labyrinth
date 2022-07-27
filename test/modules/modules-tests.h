@@ -1,4 +1,5 @@
 #include "iosystem/iosystem-tests.h"
+#include "labyrinth/labyrinth-tests.h"
 
 #define RUN_TEST(NAME) do {                 \
     CORE_DebugStdOut(#NAME " tests...");    \
@@ -9,4 +10,5 @@
 void Modules_TestsRun(void)
 {
     RUN_TEST(IOSystem);
+    RUN_TEST(Labyrinth);
 }

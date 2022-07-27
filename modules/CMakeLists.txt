@@ -11,3 +11,25 @@ add_library(IOSystem
 target_include_directories(IOSystem PUBLIC
 	${COMMON_INCLUDE}
 )
+
+# Player
+add_library(Player 
+	player/player.c
+)
+target_include_directories(Player PUBLIC
+	${COMMON_INCLUDE}
+)
+
+# Labyrinth
+add_library(Labyrinth 
+	labyrinth/lab-generation.c
+	labyrinth/lab-points-map.c
+	labyrinth/lab-session.c
+)
+target_include_directories(Labyrinth PUBLIC
+	${COMMON_INCLUDE}
+)
+target_link_libraries(Labyrinth PUBLIC
+	CCORE
+	Player
+)

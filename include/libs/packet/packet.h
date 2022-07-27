@@ -4,8 +4,6 @@
 #include "CCORE.h"
 
 
-#define PLAYER_TOKEN_SIZE (32)
-
 typedef struct Packet_s Packet;
 
 

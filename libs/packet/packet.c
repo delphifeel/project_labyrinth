@@ -2,6 +2,9 @@
 #include "libs/packet/packet.h"
 #include "libs/utils/bytes-to-number.h"
 
+// TODO: remove PLAYER_TOKEN_SIZE to some good place to not import modules here
+#include "modules/player/player-token.h"
+
 
 typedef struct Packet_s
 {
