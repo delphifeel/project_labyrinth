@@ -3,11 +3,11 @@ set(COMMON_INCLUDE
 	"${THIRD_PARTY}/libCCORE/include"
 )
 
-# InputProcessor
-add_library(InputProcessor 
-	input-processor/input-processor.c
+# PacketProcessor
+add_library(PacketProcessor 
+	packet-processor/packet-processor.c
 )
-target_include_directories(InputProcessor PUBLIC
+target_include_directories(PacketProcessor PUBLIC
 	${COMMON_INCLUDE}
 )
 
