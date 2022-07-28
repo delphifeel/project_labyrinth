@@ -53,6 +53,26 @@ target_include_directories(ProjectLabyrinthTest PUBLIC
 target_link_libraries(ProjectLabyrinthTest PRIVATE
 	CCORE
 	IOSystem
+	InputProcessor
+	Packet
+	Utils
+	Labyrinth
+)
+
+
+# Gameserver
+add_executable(GameServer modules/gameserver/gameserver.c)
+target_compile_options(GameServer PRIVATE 
+	${LOCAL_COMPLILE_OPTIONS}
+)
+target_include_directories(GameServer PUBLIC
+	"${PROJECT_SOURCE_DIR}/include"
+	"${THIRD_PARTY}/libCCORE/include"
+)
+target_link_libraries(GameServer PRIVATE
+	CCORE
+	IOSystem
+	InputProcessor
 	Packet
 	Utils
 	Labyrinth

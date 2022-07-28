@@ -100,13 +100,17 @@ void Packet_ToBuffer(const Packet *packet, uint8 **buffer_ptr, uint *buffer_len)
     buffer += packet->payload_size;
 }
 
-Packet *Packet_Create(const uint8 buffer[], uint buffer_len)
+bool Packet_Init(Packet *packet, const uint8 buffer[], uint buffer_len)
+{
+    if (!_ParsePacketFromBuffer(packet, buffer, buffer_len)) {
+        return false;
+    }
+    return true;
+}
+
+Packet *Packet_Create(void)
 {
     Packet *packet = CORE_MemCalloc(sizeof(Packet), 1);
-    if (!_ParsePacketFromBuffer(packet, buffer, buffer_len)) {
-        return NULL;
-    }
-
     return packet;
 }
 

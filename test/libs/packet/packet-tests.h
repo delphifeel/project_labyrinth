@@ -3,8 +3,9 @@
 static void _CreatePacketFromInvalidBuffer(void)
 {
     const uint8 small_buffer[] = {0x00, 0x00};
-    Packet *packet = Packet_Create(small_buffer, sizeof(small_buffer));
-    CORE_Assert(packet == NULL);
+    Packet *packet = Packet_Create();
+    CORE_Assert(Packet_Init(packet, small_buffer, sizeof(small_buffer)) == false);
+    Packet_Free(packet);
 }
 
 static void _CreatePacketFromValidBuffer(void)
@@ -24,8 +25,8 @@ static void _CreatePacketFromValidBuffer(void)
         0x01, 0x00, 0x00, 0x00,         // payload size
         0x66,                           // payload
     };
-    Packet *packet = Packet_Create(valid_buffer, sizeof(valid_buffer));
-    CORE_Assert(packet != NULL);
+    Packet *packet = Packet_Create();
+    CORE_Assert(Packet_Init(packet, valid_buffer, sizeof(valid_buffer)) == true);
 
     CORE_Assert(Packet_GetType(packet) == 1);
     CORE_Assert(Packet_GetPayloadSize(packet) == 1);

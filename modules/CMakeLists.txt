@@ -3,6 +3,13 @@ set(COMMON_INCLUDE
 	"${THIRD_PARTY}/libCCORE/include"
 )
 
+# InputProcessor
+add_library(InputProcessor 
+	input-processor/input-processor.c
+)
+target_include_directories(InputProcessor PUBLIC
+	${COMMON_INCLUDE}
+)
 
 # IOSystem
 add_library(IOSystem 
@@ -10,6 +17,9 @@ add_library(IOSystem
 )
 target_include_directories(IOSystem PUBLIC
 	${COMMON_INCLUDE}
+)
+target_link_libraries(IOSystem PUBLIC
+	TCP
 )
 
 # Player
