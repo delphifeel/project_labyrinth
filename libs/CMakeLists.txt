@@ -18,20 +18,19 @@ target_link_libraries(TCP PRIVATE
 	uv
 )
 
-
-# Packet
-add_library(Packet 
-	packet/packet.c
+# TokensHolder
+add_library(TokensHolder 
+	tokens-holder/tokens-holder.c
 )
-target_include_directories(Packet PUBLIC
+target_include_directories(TokensHolder PUBLIC
 	${COMMON_INCLUDE}
 )
-
 
 # Utils
 add_library(Utils 
 	utils/bytes-to-number.c
 	utils/chunk-splitter.c
+	utils/array.c
 )
 target_include_directories(Utils PUBLIC
 	${COMMON_INCLUDE}

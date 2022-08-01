@@ -15,17 +15,12 @@ typedef struct LabSession_s LabSession;
 
 /*****************************************************************************************************************************/
 
-bool          LabSession_HelperFindSession(const LabSession *sessions[], 
-                                           uint              sessions_size, 
-                                           uint              index, 
-                                           const LabSession **out_session);
-
 LabPointsMap *LabSession_GetLabMap(LabSession *session);
 Player       *LabSession_FindPlayer(LabSession *session, uint player_id);
 bool          LabSession_AddPlayer(LabSession        *session, 
-                                   const uint8        player_token[PLAYER_TOKEN_SIZE], 
                                    uint              *added_player_id);
 
+bool          LabSession_IsReadyForStart(const LabSession *session);
 void          LabSession_Start(LabSession *session);
 
 void          LabSession_MapToJSON(LabSession *session, char **json);

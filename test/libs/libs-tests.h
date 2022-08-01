@@ -1,4 +1,4 @@
-#include "packet/packet-tests.h"
+#include "tokens-holder/tokens-holder-tests.h"
 #include "utils/utils-tests.h"
 
 #define RUN_TEST(NAME) do {                 \
@@ -9,6 +9,6 @@
 
 void Libs_TestsRun(void)
 {
-    RUN_TEST(Packet);
+    RUN_TEST(TokensHolder);
     RUN_TEST(Utils);
 }

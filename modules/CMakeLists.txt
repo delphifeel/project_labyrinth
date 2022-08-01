@@ -6,6 +6,9 @@ set(COMMON_INCLUDE
 # PacketProcessor
 add_library(PacketProcessor 
 	packet-processor/packet-processor.c
+	packet-processor/process-functions/process-functions.c
+	# All process functions
+	packet-processor/process-functions/process-join-lobby.c
 )
 target_include_directories(PacketProcessor PUBLIC
 	${COMMON_INCLUDE}

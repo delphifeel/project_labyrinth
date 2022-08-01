@@ -3,17 +3,13 @@
 
 #include "CCORE.h"
 
-
-typedef struct Packet_s Packet;
-
-
-uint         Packet_GetType(const Packet *packet);
-const uint8 *Packet_GetPlayerToken(const Packet *packet);
-uint         Packet_GetPayloadSize(const Packet *packet);
-const uint8 *Packet_GetPayload(const Packet *packet);
-void         Packet_ToBuffer(const Packet *packet, uint8 **buffer_ptr, uint *buffer_len);
-bool         Packet_Init(Packet *packet, const uint8 buffer[], uint buffer_len);
-Packet      *Packet_Create(void);
-void         Packet_Free(Packet *packet);
+typedef struct Packet_s
+{
+    uint          Type;
+    uint          SessionIndex;
+    uint          PlayerId;
+    uint          PayloadSize;
+    const uint8  *Payload;
+} Packet;
 
 #endif

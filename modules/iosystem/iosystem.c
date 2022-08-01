@@ -8,15 +8,14 @@
 /*****************************************************************************************************************************/
 
 #define _CONNECTIONS_PER_SESSION  (SESSION_PLAYERS_COUNT)
-#define _VALIDATION_HEADER        (0xDEADBEE)
 
 /*****************************************************************************************************************************/
 
 typedef struct IOSystem_s
 {
-    IOSystemOnReadFunc                     on_read;
-    TCPServer                              *tcp_server;
-    CMap                                   *token_to_connection_map;
+    uint32                 data_start_flag;
+    IOSystemOnReadFunc     on_read;
+    TCPServer             *tcp_server;
 } IOSystem;
 
 /*****************************************************************************************************************************/
@@ -40,23 +39,6 @@ static void _TCPServerOnCloseConnection(TCPServer *tcp_server,
     // CORE_DebugInfo("TCP Server - close connection\n");
 }
 
-static void _SaveConnectionForLaterUse(IOSystem                    *ioSystem, 
-                                       const uint8                  token[PLAYER_TOKEN_SIZE], 
-                                       TCPServer_ClientConnection   connection)
-{
-    CORE_AssertPointer(ioSystem);
-    CORE_AssertPointer(token);
-    CORE_AssertPointer(connection);
-
-
-    TCPServer_ClientConnection old_connection = CMap_Get(ioSystem->token_to_connection_map, token, PLAYER_TOKEN_SIZE);
-    if (old_connection) {
-        // connection already exist
-        return;
-    }
-    CMap_Set(ioSystem->token_to_connection_map, token, PLAYER_TOKEN_SIZE, connection);
-}
-
 static void _TCPServerOnRead(TCPServer                      *tcp_server, 
                              void                           *context, 
                              TCPServer_ClientConnection     client_connection,
@@ -69,44 +51,50 @@ static void _TCPServerOnRead(TCPServer                      *tcp_server,
     const uint8 *data_end               = data + data_len;
     const uint8 *chunk                  = NULL;
     uint32       data_bytes_left        = data_len;
-    Packet      *packet                 = Packet_Create();
 
-    while (GetNextChunk(data_ptr, data_bytes_left, &chunk, &chunk_size, _VALIDATION_HEADER)) {
+    while (GetNextChunk(data_ptr, data_bytes_left, &chunk, &chunk_size, ioSystem->data_start_flag)) {
         data_ptr = chunk + chunk_size;
         data_bytes_left = data_end - data_ptr;
 
-        // remove header from chunk
-        chunk += sizeof(uint32);
-        chunk_size -= sizeof(uint32);
-
-        if (!Packet_Init(packet, chunk, chunk_size)) {
-            CORE_DebugInfo("Invalid chunk of size: %u\n", chunk_size);
-            continue;
-        }
-        _SaveConnectionForLaterUse(ioSystem, Packet_GetPlayerToken(packet), client_connection);
-        ioSystem->on_read(packet);
+        ioSystem->on_read((IOStream) client_connection, chunk, chunk_size);
     }
-    Packet_Free(packet);
 }
 
 /*****************************************************************************************************************************/
 
 void IOSystem_OnRead(IOSystem *ioSystem, IOSystemOnReadFunc on_read)
 {
+    CORE_AssertPointer(ioSystem);
+    CORE_AssertPointer(on_read);
+
+
     ioSystem->on_read = on_read;
+}
+
+void IOSystem_Write(const IOSystem *ioSystem, IOStream ioStream, const uint8 data[], uint data_len)
+{
+    CORE_AssertPointer(ioSystem);
+    CORE_AssertPointer(ioStream);
+    CORE_AssertPointer(data);
+    CORE_Assert(data_len > 0);
+
+    TCPServer_Write(ioSystem->tcp_server, ioStream, data, data_len);
 }
 
 bool IOSystem_Start(IOSystem *ioSystem)
 {
+    CORE_AssertPointer(ioSystem);
     CORE_AssertPointer(ioSystem->on_read);
+
 
     TCPServer_Start(ioSystem->tcp_server);
     return true;
 }
 
-IOSystem *IOSystem_Create(void)
+IOSystem *IOSystem_Create(uint32 data_start_flag)
 {
     IOSystem *ioSystem = CORE_MemAlloc(sizeof(IOSystem), 1);
+    ioSystem->data_start_flag = data_start_flag;
     ioSystem->tcp_server = TCPServer_Create();
     TCPServer_OnError(ioSystem->tcp_server, _TCPServerOnError);
     TCPServer_OnNewConnection(ioSystem->tcp_server, _TCPServerOnNewConnection);
@@ -115,15 +103,15 @@ IOSystem *IOSystem_Create(void)
     TCPServer_SetContext(ioSystem->tcp_server, ioSystem);
     TCPServer_Setup(ioSystem->tcp_server, IOSYSTEM_DEFAULT_PORT);
 
-    ioSystem->token_to_connection_map = CMap_Create(SESSIONS_CAPACITY * SESSION_PLAYERS_COUNT);
-
     return ioSystem;
 }
 
 void IOSystem_Free(IOSystem *ioSystem)
 {
+    CORE_AssertPointer(ioSystem);
+
+    
     TCPServer_Free(ioSystem->tcp_server);
-    CMap_Free(&ioSystem->token_to_connection_map);
 
     CORE_MemFree(ioSystem);
 }

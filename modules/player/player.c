@@ -6,7 +6,6 @@
 typedef struct Player_s
 {
     uint      id;
-    uint8     token[PLAYER_TOKEN_SIZE];
 } Player;
 
 /*****************************************************************************************************************************/
@@ -48,18 +47,11 @@ typedef struct Player_s
 //     return true; 
 // }
 
-void Player_CopyToken(Player *player, const uint8 token[PLAYER_TOKEN_SIZE])
-{
-    CORE_MemCpy(player->token, token, PLAYER_TOKEN_SIZE);
-}
-
-void Player_GetToken(const Player *player, const uint8 *token_ptr[PLAYER_TOKEN_SIZE])
-{
-    *token_ptr = player->token;
-}
-
 uint Player_GetId(const Player *player)
 {
+    CORE_AssertPointer(player);
+
+
     return player->id;
 }
 
@@ -68,12 +60,14 @@ uint Player_GetId(const Player *player)
 Player *Player_Create(uint id)
 {
     Player *player = CORE_MemAlloc(sizeof(Player), 1);
-    CORE_MemZero(player->token, sizeof(player->token));
     player->id = id;
     return player;
 }
 
 void Player_Free(Player *player) 
 {
+    CORE_AssertPointer(player);
+
+
     CORE_MemFree(player); 
 }

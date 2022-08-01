@@ -9,11 +9,11 @@ int IsLittleEndian(void);
     CORE_Assert(sizeof(variable) <= bytes_len);             \
     variable = 0;                                           \
     if (IsLittleEndian()) {                                 \
-        for (int i = 0; i < sizeof(variable); i++) {        \
+        for (uint i = 0; i < sizeof(variable); i++) {        \
             variable += bytes[i] << (i * 8);                \
         }                                                   \
     } else {                                                \
-        for (int i = sizeof(variable) - 1; i >= 0; i--) {   \
+        for (uint i = sizeof(variable) - 1; i != 0; i--) {   \
             variable += bytes[i] << (i * 8);                \
         }                                                   \
     }                                                       \

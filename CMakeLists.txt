@@ -53,10 +53,10 @@ target_include_directories(ProjectLabyrinthTest PUBLIC
 target_link_libraries(ProjectLabyrinthTest PRIVATE
 	CCORE
 	IOSystem
-	InputProcessor
-	Packet
+	PacketProcessor
 	Utils
 	Labyrinth
+	TokensHolder
 )
 
 
@@ -72,8 +72,8 @@ target_include_directories(GameServer PUBLIC
 target_link_libraries(GameServer PRIVATE
 	CCORE
 	IOSystem
-	InputProcessor
-	Packet
+	PacketProcessor
 	Utils
 	Labyrinth
+	TokensHolder
 )

@@ -28,28 +28,14 @@ typedef struct LabSession_s
 
 /*****************************************************************************************************************************/
 
-bool LabSession_HelperFindSession(const LabSession *sessions[], 
-                                  uint              sessions_size, 
-                                  uint              index, 
-                                  const LabSession **out_session)
+static inline bool _SessionIsFull(const LabSession *session)
 {
-    CORE_AssertPointer(sessions);
-    CORE_AssertPointer(out_session);
+    return session->players_map_size == session->players_map_capacity;
+}
 
-    if (index + 1 > sessions_size)
-    {
-        CORE_DebugError("Session index out of bounds\n");
-        return false;
-    }
-
-    *out_session = sessions[index];
-    if (*out_session == NULL)
-    {
-        CORE_DebugError("Found session is NULL\n");
-        return false;
-    }
-
-    return true;
+static inline bool _NoMoreSpawnPoints(const LabSession *session)
+{
+    return session->spawn_points_assoc_with_player_count == session->spawn_points_size;
 }
 
 /*****************************************************************************************************************************/
@@ -59,12 +45,16 @@ LabPointsMap *LabSession_GetLabMap(LabSession *session)
     CORE_AssertPointer(session);
     CORE_Assert(session->is_session_started);
 
+
     return session->lab_map;
 }
 
 Player *LabSession_FindPlayer(LabSession *session, uint player_id)
 {
-    if (player_id  > session->players_map_size)
+    CORE_AssertPointer(session);
+
+
+    if (player_id > session->players_map_size)
     {
         CORE_DebugError("Player id out of bounds\n");
         return NULL;
@@ -74,7 +64,6 @@ Player *LabSession_FindPlayer(LabSession *session, uint player_id)
 }
 
 bool LabSession_AddPlayer(LabSession        *session, 
-                          const uint8        player_token[PLAYER_TOKEN_SIZE], 
                           uint              *added_player_id)
 {
     CORE_AssertPointer(session);
@@ -82,14 +71,14 @@ bool LabSession_AddPlayer(LabSession        *session,
     CORE_Assert(session->is_session_started == false);
 
 
-    if (session->players_map_size == session->players_map_capacity) {
+    if (_SessionIsFull(session)) {
         CORE_DebugError("No more free spots - session is FULL\n");
         return false;
     }
 
     *added_player_id = session->players_map_size + 1;
 
-    if (session->spawn_points_assoc_with_player_count == session->spawn_points_size) {
+    if (_NoMoreSpawnPoints(session)) {
         CORE_DebugError("No more spawn points available\n");
         return false;
     }
@@ -97,7 +86,6 @@ bool LabSession_AddPlayer(LabSession        *session,
     uint player_spawn_point_id = session->spawn_points[session->spawn_points_assoc_with_player_count++];
 
     Player *new_player = Player_Create(*added_player_id);
-    Player_CopyToken(new_player, player_token);
     LabPointsMap_AssignPlayerToPoint(session->lab_map, new_player, player_spawn_point_id);
 
     CORE_DebugInfo(
@@ -110,9 +98,17 @@ bool LabSession_AddPlayer(LabSession        *session,
     return true;
 }
 
+bool LabSession_IsReadyForStart(const LabSession *session)
+{
+    return _SessionIsFull(session);
+}
+
 void LabSession_Start(LabSession *session)
 {
+    CORE_AssertPointer(session);
+    CORE_Assert(LabSession_IsReadyForStart(session));
     CORE_Assert(session->is_session_started == false);
+
 
     session->is_session_started = true;
     CORE_DebugInfo("Session started\n");
@@ -120,6 +116,7 @@ void LabSession_Start(LabSession *session)
 
 void LabSession_MapToJSON(LabSession *session, char **json)
 {
+    CORE_AssertPointer(session);
     LabPointsMap_ToJSON(session->lab_map, json);
 }
 
@@ -127,6 +124,10 @@ void LabSession_MapToJSON(LabSession *session, char **json)
 
 void LabSession_Setup(LabSession *session, uint players_count)
 {
+    CORE_AssertPointer(session);
+    CORE_Assert(players_count > 0);
+
+
     CORE_DebugInfo("Setup session. Player count: %u\n", players_count);
     session->is_session_started = false;
 
@@ -148,6 +149,9 @@ LabSession *LabSession_Create(void)
 
 void LabSession_Free(LabSession *session)
 {
+    CORE_AssertPointer(session);
+
+
     CORE_MemFree(session->spawn_points);
     LabPointsMap_Free(session->lab_map);
     for (uint i = 0; i < session->players_map_size; i++) {
