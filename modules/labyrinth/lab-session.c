@@ -28,17 +28,17 @@ typedef struct LabSession_s
 
 /*****************************************************************************************************************************/
 
-static inline bool _SessionIsFull(const LabSession *session)
-{
-    return session->players_map_size == session->players_map_capacity;
-}
-
 static inline bool _NoMoreSpawnPoints(const LabSession *session)
 {
     return session->spawn_points_assoc_with_player_count == session->spawn_points_size;
 }
 
 /*****************************************************************************************************************************/
+
+bool LabSession_IsFull(const LabSession *session)
+{
+    return session->players_map_size == session->players_map_capacity;
+}
 
 LabPointsMap *LabSession_GetLabMap(LabSession *session)
 {
@@ -71,7 +71,7 @@ bool LabSession_AddPlayer(LabSession        *session,
     CORE_Assert(session->is_session_started == false);
 
 
-    if (_SessionIsFull(session)) {
+    if (LabSession_IsFull(session)) {
         CORE_DebugError("No more free spots - session is FULL\n");
         return false;
     }
@@ -100,7 +100,7 @@ bool LabSession_AddPlayer(LabSession        *session,
 
 bool LabSession_IsReadyForStart(const LabSession *session)
 {
-    return _SessionIsFull(session);
+    return LabSession_IsFull(session);
 }
 
 void LabSession_Start(LabSession *session)

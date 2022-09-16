@@ -14,6 +14,8 @@ typedef struct TokensHolderRecord_s
     uint    SessionIndex;
 } TokensHolderRecord;
 
+uint TokensHolder_Size(const TokensHolder *tokens_holder);
+const TokensHolderRecord *TokensHolder_Get(const TokensHolder *tokens_holder, uint index);
 bool TokensHolder_Add
 (
     TokensHolder                *tokens_holder, 

@@ -15,6 +15,7 @@ typedef struct LabSession_s LabSession;
 
 /*****************************************************************************************************************************/
 
+bool          LabSession_IsFull(const LabSession *session);
 LabPointsMap *LabSession_GetLabMap(LabSession *session);
 Player       *LabSession_FindPlayer(LabSession *session, uint player_id);
 bool          LabSession_AddPlayer(LabSession        *session, 

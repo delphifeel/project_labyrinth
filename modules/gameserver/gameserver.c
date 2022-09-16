@@ -146,39 +146,38 @@ static void _PacketToBuffer(const Packet *packet,
     CORE_Assert(*buffer_len <= buffer_size);
 }
 
-static bool _ProcessNewPlayerJoined(uint *player_id, uint *session_index)
+static bool _ProcessNewPlayerJoined(uint *player_id, uint *session_index, bool *session_ready)
 {
-    /**
-     *          find free session
-     */
-    bool        found_free_session = false;
-    uint        new_session_index  = 0;
-
+    LabSession *session = NULL;
 
     for (uint i = 0; i < _GetSessionsLen(); i++) {
-        if (_gameserver->sessions[i] == NULL) {
-            found_free_session = true;
-            new_session_index = i;
-            CORE_DebugInfo("Found free session (index %u)\n", new_session_index);
+        session = _gameserver->sessions[i];
+
+        if (session == NULL) {
+            session = LabSession_Create();
+            LabSession_Setup(session, SESSION_PLAYERS_COUNT);
+            _gameserver->sessions[i] = session;
+            *session_index = i;
+            CORE_DebugInfo("Found free session (index %u)\n", i);
+            break;
+        }
+        if ((session != NULL) && (!LabSession_IsFull(session))) {
             break;
         }
     }
 
-    if (!found_free_session) {
+    if (session == NULL) {
         CORE_DebugError("No free session.\n");
         return false;
     }
 
-    // setup new session
-    LabSession *new_session = LabSession_Create();
-    LabSession_Setup(new_session, SESSION_PLAYERS_COUNT);
-    _gameserver->sessions[new_session_index] = new_session;
-    *session_index = new_session_index;
-
-    // add new player
-    if (!LabSession_AddPlayer(new_session, player_id)) {
+    if (!LabSession_AddPlayer(session, player_id)) {
         CORE_DebugError("Can't add new player\n");
         return false;
+    }
+    if (LabSession_IsReadyForStart(session)) {
+        *session_ready = true;
+        LabSession_Start(session);
     }
     return true;
 }
@@ -193,12 +192,27 @@ static void _ProcessJoinLobby(const uint8 *token_ptr, IOStream io_stream)
     TokensHolderRecord record = {
         .IOStream = io_stream,
     };
-    if (!_ProcessNewPlayerJoined(&record.PlayerId, &record.SessionIndex)) {
+    bool session_ready = false;
+    if (!_ProcessNewPlayerJoined(&record.PlayerId, &record.SessionIndex, &session_ready)) {
         return;
     }
     CORE_MemCpy(record.Token, token_ptr, sizeof(record.Token));
     if (!TokensHolder_Add(_gameserver->tokens_holder, &record)) {
         CORE_DebugError("Add token error\n");
+    }
+
+    if (session_ready) {
+        for (uint i = 0; i < TokensHolder_Size(_gameserver->tokens_holder); i++) {
+            const TokensHolderRecord *record_ptr = TokensHolder_Get(_gameserver->tokens_holder, i);
+            Packet packet = {
+                .Type = kPacket_JoinLobby,
+                .PayloadSize = 0,
+            };
+            uint8 data_out[1024];
+            uint  data_out_len = 0;
+            _PacketToBuffer(&packet, kStatus_Ok, token_ptr, data_out, sizeof(data_out), &data_out_len);
+            IOSystem_Write(_gameserver->io_system, record_ptr->IOStream, data_out, data_out_len);
+        }
     }
 }
 
@@ -208,6 +222,7 @@ static void _OnInputRead(IOStream io_stream, const uint8 data[], uint data_len)
     const uint8    *token_ptr          = NULL;
     Packet          packet_in;
 
+    // parsing data buffer for token and Packet
     if (!_BufferToPacket(data, data_len, &token_ptr, &packet_in)) {
         CORE_DebugError("data is not valid buffer\n");
         return;
@@ -216,6 +231,8 @@ static void _OnInputRead(IOStream io_stream, const uint8 data[], uint data_len)
         _ProcessJoinLobby(token_ptr, io_stream);
         return;
     }
+
+    // looking for SessionIndex, PlayerId
     const TokensHolderRecord *record = TokensHolder_Find(_gameserver->tokens_holder, token_ptr);
     if (record == NULL) {
         CORE_DebugError("Can't find registered token\n");
@@ -241,6 +258,8 @@ static void _OnInputRead(IOStream io_stream, const uint8 data[], uint data_len)
         CORE_DebugError("Unknown packet process status code\n");
         return;
     }
+
+    // converting Packet and token to response data buffer
     uint8 data_out[1024];
     uint  data_out_len = 0;
     _PacketToBuffer(&packet_out, status, token_ptr, data_out, sizeof(data_out), &data_out_len);

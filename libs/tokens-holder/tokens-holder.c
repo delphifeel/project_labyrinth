@@ -9,6 +9,21 @@ typedef struct TokensHolder_s
 } TokensHolder;
 
 
+uint TokensHolder_Size(const TokensHolder *tokens_holder)
+{
+    return tokens_holder->tokens_len;
+}
+
+const TokensHolderRecord *TokensHolder_Get(const TokensHolder *tokens_holder, uint index)
+{
+    if (index + 1 > tokens_holder->tokens_len) {
+        CORE_DebugError("Array out of bounds\n");
+        return NULL;
+    }
+
+    return &tokens_holder->tokens[index];
+}
+
 bool TokensHolder_Add
 (
     TokensHolder                *tokens_holder, 
