@@ -11,9 +11,11 @@ add_compile_options(
 	-DCORE_SET_DEBUG_COLORED
 )
 
+set(COMMON_INCLUDE 
+	"${PROJECT_SOURCE_DIR}"
+)
+
 set(THIRD_PARTY ${PROJECT_SOURCE_DIR}/third-party-libraries)
-
-
 set(LOCAL_COMPLILE_OPTIONS
 	-Werror -Wall -Wextra 
 	$<$<NOT:$<CONFIG:RELEASE>>:
@@ -41,7 +43,7 @@ target_compile_options(ProjectLabyrinthTest PRIVATE
 	${LOCAL_COMPLILE_OPTIONS}
 )
 target_include_directories(ProjectLabyrinthTest PUBLIC
-	"${PROJECT_SOURCE_DIR}/include"
+	"${COMMON_INCLUDE}"
 )
 target_link_libraries(ProjectLabyrinthTest PRIVATE
 	IOSystem
@@ -57,8 +59,7 @@ target_link_libraries(ProjectLabyrinthTest PRIVATE
 # 	${LOCAL_COMPLILE_OPTIONS}
 # )
 # target_include_directories(GameServer PUBLIC
-# 	"${PROJECT_SOURCE_DIR}/include"
-# 	"${THIRD_PARTY}/libCCORE/include"
+# 	"${COMMON_INCLUDE}"
 # )
 # target_link_libraries(GameServer PRIVATE
 # 	IOSystem

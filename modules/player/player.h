@@ -1,7 +1,7 @@
 #ifndef _PLAYER_H_
 #define _PLAYER_H_
 
-#include "core/core.h"
+#include "libs/core/core.h"
 
 class LabPoint;
 

@@ -1,7 +1,7 @@
 #ifndef _PACKETS_H_
 #define _PACKETS_H_
 
-#include "core/core.h"
+#include "libs/core/core.h"
 
 struct Packet
 {

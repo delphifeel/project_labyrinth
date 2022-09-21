@@ -1,5 +1,5 @@
-#include "libs/utils/chunk-splitter.h"
-#include "libs/utils/bytes-to-number.h"
+#include "chunk-splitter.h"
+#include "bytes-to-number.h"
 
 
 bool GetNextChunk(const uint8   buffer[], 

@@ -1,4 +1,4 @@
-#include "modules/player/player.h"
+#include "player.h"
 
 void Player::AssignPoint(const LabPoint* point)
 {

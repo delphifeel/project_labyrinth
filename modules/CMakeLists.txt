@@ -1,6 +1,3 @@
-set(COMMON_INCLUDE 
-	"${PROJECT_SOURCE_DIR}/include"
-)
 
 # PacketProcessor
 # add_library(PacketProcessor 

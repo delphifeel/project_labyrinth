@@ -1,7 +1,7 @@
 #ifndef _LAB_SESSION_H_
 #define _LAB_SESSION_H_
 
-#include "core/core.h"
+#include "libs/core/core.h"
 #include "modules/player/player.h"
 #include "lab-points-map.h"
 

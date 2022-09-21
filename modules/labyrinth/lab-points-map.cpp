@@ -1,6 +1,6 @@
-#include "core/core.h"
-#include "config.h"
-#include "modules/labyrinth/lab-points-map.h"
+#include "libs/core/core.h"
+#include "include/config.h"
+#include "lab-points-map.h"
 
 std::optional<const LabPoint *> 
 LabPointsMap::GetPointByID(uint id) const

@@ -2,8 +2,8 @@
 #include <time.h>
 #include <cstdio>
 
-#include "core/core-dset.h"
-#include "modules/labyrinth/lab-generation.h"
+#include "libs/core/core-dset.h"
+#include "lab-generation.h"
 
 /*****************************************************************************************************************************/
 

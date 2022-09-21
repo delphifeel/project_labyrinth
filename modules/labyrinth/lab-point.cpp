@@ -1,5 +1,5 @@
 #include <algorithm>
-#include "modules/labyrinth/lab-point.h"
+#include "lab-point.h"
 
 uint LabPoint::GetId() const
 {

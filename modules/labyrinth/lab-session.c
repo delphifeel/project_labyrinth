@@ -1,6 +1,6 @@
-#include "core/core.h"
-#include "modules/labyrinth/lab-generation.h"
-#include "modules/labyrinth/lab-session.h"
+#include "libs/core/core.h"
+#include "lab-generation.h"
+#include "lab-session.h"
 
 
 typedef struct LabSession_s

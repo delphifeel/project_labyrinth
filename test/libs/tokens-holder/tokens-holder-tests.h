@@ -1,5 +1,5 @@
 #include <map>
-#include "libs/token-record.h"
+#include "modules/player/player-token.h"
 
 static void _TokensHolderWorksCorrectly(void)
 {

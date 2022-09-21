@@ -1,7 +1,7 @@
 #ifndef _CHUNK_SPLITTER_H_
 #define _CHUNK_SPLITTER_H_
 
-#include "core/core.h"
+#include "libs/core/core.h"
 
 bool GetNextChunk(const uint8   buffer[], 
                   uint32        buffer_len,

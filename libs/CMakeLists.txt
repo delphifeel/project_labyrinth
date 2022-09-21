@@ -1,7 +1,3 @@
-set(COMMON_INCLUDE 
-	"${PROJECT_SOURCE_DIR}/include"
-)
-
 
 # TCP
 add_library(TCP 
