@@ -1,45 +1,35 @@
 #include "modules/labyrinth/lab-generation.h"
 
-static void _ValidateGeneratedMap(LabPointsMap *generated_map)
+static void _ValidateGeneratedMap(const std::map<uint, LabPoint> &generated_map)
 {
-    LabPoint        point;
-
-
-    uint generated_map_size = LabPointsMap_GetSize(generated_map);
-    for (uint32 i = 0; i < generated_map_size; i++)
+    for (const auto& [_key, point] : generated_map)
     {
-        LabPointsMap_GetPointByID(generated_map, i + 1, &point);
-
-
+        const PointConnections &connections = point.GetConnections();
         // every point has AT LEAST ONE connection
-        if (point.top_connection_id != 0)
+        if (connections.Top != 0)
             continue;
 
-        if (point.right_connection_id != 0)
+        if (connections.Right != 0)
             continue;
 
-        if (point.bottom_connection_id != 0)
+        if (connections.Bottom != 0)
             continue;
 
-        if (point.left_connection_id != 0)
+        if (connections.Left != 0)
             continue;
 
-        CORE_Abort("[%u] Need to have AT LEAST ONE connection\n", i + 1);
+        CORE_Abort("[%u] Need to have AT LEAST ONE connection\n", point.GetId());
     }
 }
 
 static void _LabGenerationWorksProperly(void)
 {
-    LabPointsMap    *generated_map;
-    uint            *spawn_points;
-    uint             spawn_points_size;
+    std::map<uint, LabPoint>    generated_map;
+    std::vector<uint>           spawn_points;
     
 
-    LabGeneration_Execute(&generated_map, &spawn_points, &spawn_points_size);
+    lab::Generate(generated_map, spawn_points);
     _ValidateGeneratedMap(generated_map);
-
-    CORE_MemFree(spawn_points);
-    LabPointsMap_Free(generated_map);
 }
 
 void LabGeneration_TestsRun(void)

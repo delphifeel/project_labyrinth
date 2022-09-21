@@ -1,15 +1,15 @@
 #ifndef _PACKETS_H_
 #define _PACKETS_H_
 
-#include "CCORE.h"
+#include "core/core.h"
 
-typedef struct Packet_s
+struct Packet
 {
     uint          Type;
     uint          SessionIndex;
     uint          PlayerId;
     uint          PayloadSize;
     const uint8  *Payload;
-} Packet;
+};
 
 #endif

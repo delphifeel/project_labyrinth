@@ -1,7 +1,7 @@
 #ifndef _PACKET_PROCESSOR_H_
 #define _PACKET_PROCESSOR_H_
 
-#include "CCORE.h"
+#include "core/core.h"
 #include "libs/packet/packet.h"
 #include "modules/labyrinth/lab-session.h"
 #include "modules/iosystem/iosystem.h"

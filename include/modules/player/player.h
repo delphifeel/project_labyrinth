@@ -1,19 +1,26 @@
 #ifndef _PLAYER_H_
 #define _PLAYER_H_
 
-#include "CCORE.h"
-#include "player-token.h"
+#include "core/core.h"
 
-// TODO: tests
-typedef struct Player_s Player;
+class LabPoint;
 
-/*****************************************************************************************************************************/
+struct Player
+{
+public:
+    uint                GetId()             const { return m_id; }
+    const LabPoint*     GetAssignedPoint()  const { return m_assigned_point; }
 
-uint Player_GetId(const Player *player);
+    void AssignPoint(const LabPoint* point);
 
-Player *Player_Create(uint id);
-void Player_Free(Player *player);
+    explicit Player(uint id) : 
+        m_id(id),
+        m_assigned_point(nullptr) {}
 
-/*****************************************************************************************************************************/
+private:
+    uint                m_id;
+    // TODO: change to std::optional
+    const LabPoint*     m_assigned_point;
+};
 
 #endif

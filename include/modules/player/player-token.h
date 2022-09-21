@@ -1,8 +1,10 @@
 #ifndef _PLAYER_TOKEN_H_
 #define _PLAYER_TOKEN_H_
 
+#include <array>
+#include "core/core.h"
 
-// TODO: rename and move as TOKEN_SIZE (maybe move to TokensHolder class)
-#define PLAYER_TOKEN_SIZE (32)
+constexpr uint kPlayerTokenSize = 32;
+using PlayerToken = std::array<uint8, kPlayerTokenSize>;
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef _TCP_SERVER_H_
 #define _TCP_SERVER_H_
 
-#include "CCORE.h"
+#include "core/core.h"
 
 /*****************************************************************************************************************************/
 
@@ -10,6 +10,10 @@
  *      Right now after you call `TCPServer_Start` we are bounded to 
  *      infinite event loop so after that we can't start another TCP server. 
  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef void *TCPServer_ClientConnection;
 
@@ -37,6 +41,10 @@ void    TCPServer_Start(TCPServer *instance);
 
 TCPServer *TCPServer_Create(void);
 void    TCPServer_Free(TCPServer *instance);
+
+#ifdef __cplusplus
+}
+#endif
 
 /*****************************************************************************************************************************/
 

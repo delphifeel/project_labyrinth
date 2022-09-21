@@ -1,4 +1,4 @@
-#include "CCORE.h"
+#include "core/core.h"
 #include "modules/labyrinth/lab-generation.h"
 #include "modules/labyrinth/lab-session.h"
 
@@ -113,13 +113,6 @@ void LabSession_Start(LabSession *session)
     session->is_session_started = true;
     CORE_DebugInfo("Session started\n");
 }
-
-void LabSession_MapToJSON(LabSession *session, char **json)
-{
-    CORE_AssertPointer(session);
-    LabPointsMap_ToJSON(session->lab_map, json);
-}
-
 /*****************************************************************************************************************************/
 
 void LabSession_Setup(LabSession *session, uint players_count)

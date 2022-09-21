@@ -9,5 +9,6 @@ try_create_dir()
 
 try_create_dir $BUILD_DIR
 cd $BUILD_DIR
+export CXX="gcc-9"
 cmake ..
 make -j 8

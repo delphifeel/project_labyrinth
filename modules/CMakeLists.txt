@@ -1,22 +1,21 @@
 set(COMMON_INCLUDE 
 	"${PROJECT_SOURCE_DIR}/include"
-	"${THIRD_PARTY}/libCCORE/include"
 )
 
 # PacketProcessor
-add_library(PacketProcessor 
-	packet-processor/packet-processor.c
-	packet-processor/process-functions/process-functions.c
-	# All process functions
-	packet-processor/process-functions/process-join-lobby.c
-)
-target_include_directories(PacketProcessor PUBLIC
-	${COMMON_INCLUDE}
-)
+# add_library(PacketProcessor 
+# 	packet-processor/packet-processor.c
+# 	packet-processor/process-functions/process-functions.c
+# 	# All process functions
+# 	packet-processor/process-functions/process-join-lobby.c
+# )
+# target_include_directories(PacketProcessor PUBLIC
+# 	${COMMON_INCLUDE}
+# )
 
 # IOSystem
 add_library(IOSystem 
-	iosystem/iosystem.c
+	iosystem/iosystem.cpp
 )
 target_include_directories(IOSystem PUBLIC
 	${COMMON_INCLUDE}
@@ -27,7 +26,7 @@ target_link_libraries(IOSystem PUBLIC
 
 # Player
 add_library(Player 
-	player/player.c
+	player/player.cpp
 )
 target_include_directories(Player PUBLIC
 	${COMMON_INCLUDE}
@@ -35,14 +34,14 @@ target_include_directories(Player PUBLIC
 
 # Labyrinth
 add_library(Labyrinth 
-	labyrinth/lab-generation.c
-	labyrinth/lab-points-map.c
-	labyrinth/lab-session.c
+	labyrinth/lab-generation.cpp
+	labyrinth/lab-points-map.cpp
+	labyrinth/lab-point.cpp
+	# labyrinth/lab-session.c
 )
 target_include_directories(Labyrinth PUBLIC
 	${COMMON_INCLUDE}
 )
 target_link_libraries(Labyrinth PUBLIC
-	CCORE
 	Player
 )

@@ -1,13 +1,13 @@
 #ifndef _PACKET_TYPE_H_
 #define _PACKET_TYPE_H_
 
-typedef enum PacketType
+enum class PacketType
 {
-    kPacket_JoinLobby = 0,
+    JoinLobby = 0,
 
-    PacketTypeEnumEnd, // end flag to get enum values count
-} PacketType;
+    END, // end flag to get enum values count
+};
 
-#define PACKETTYPE_COUNT    (PacketTypeEnumEnd)
+#define PACKETTYPE_COUNT   (PacketType::END)
 
 #endif

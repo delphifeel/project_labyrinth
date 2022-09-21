@@ -1,7 +1,7 @@
 #ifndef _LAB_SESSION_H_
 #define _LAB_SESSION_H_
 
-#include "CCORE.h"
+#include "core/core.h"
 #include "modules/player/player.h"
 #include "lab-points-map.h"
 
@@ -24,7 +24,6 @@ bool          LabSession_AddPlayer(LabSession        *session,
 bool          LabSession_IsReadyForStart(const LabSession *session);
 void          LabSession_Start(LabSession *session);
 
-void          LabSession_MapToJSON(LabSession *session, char **json);
 void          LabSession_Setup(LabSession *session, uint players_count);
 
 LabSession   *LabSession_Create(void);

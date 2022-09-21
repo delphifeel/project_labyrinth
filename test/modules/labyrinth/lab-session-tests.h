@@ -1,4 +1,4 @@
-#include "CCORE.h"
+#include "core/core.h"
 #include "modules/labyrinth/lab-session.h"
 
 static void Test_LabSessionAddPlayers(void)
@@ -26,25 +26,6 @@ static void Test_LabSessionAddPlayers(void)
 
     LabSession_Free(instance);
 }
-
-// void Test_LabSessionLabyrinthToJSON(void)
-// {
-//     LabSession instance;
-//     char *json;
-//     CFile FileToWrite;
-
-//     LabSession_Create(&instance);
-//     LabSession_Setup(instance, 5);
-
-//     LabSession_MapToJSON(instance, &json);
-
-//     FileToWrite = CFile_Open("data-prim.json", "w");
-//     CFile_Write(json, sizeof(char), strlen(json), FileToWrite);
-//     CFile_Close(FileToWrite);
-
-//     LabSession_Free(&instance);
-//     CORE_MemFree(json);
-// }
 
 void LabSession_TestsRun(void)
 {

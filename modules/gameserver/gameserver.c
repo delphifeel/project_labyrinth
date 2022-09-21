@@ -1,4 +1,4 @@
-#include "CCORE.h"
+#include "core/core.h"
 #include "modules/labyrinth/lab-session.h"
 #include "modules/iosystem/iosystem.h"
 #include "modules/packet-processor/packet-processor.h"

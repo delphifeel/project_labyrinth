@@ -1,9 +1,13 @@
 #ifndef _TCP_CLIENT_H_
 #define _TCP_CLIENT_H_
 
-#include "CCORE.h"
+#include "core/core.h"
 
 /*****************************************************************************************************************************/
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct TCPClient_s TCPClient;
 
@@ -26,6 +30,10 @@ bool        TCPClient_Disconnect(TCPClient *instance);
 
 TCPClient   *TCPClient_Create(void);
 void        TCPClient_Free(TCPClient *instance);
+
+#ifdef __cplusplus
+}
+#endif
 
 /*****************************************************************************************************************************/
 

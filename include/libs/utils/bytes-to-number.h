@@ -1,7 +1,7 @@
 #ifndef _BYTES_TO_NUMBER_H_
 #define _BYTES_TO_NUMBER_H_
 
-#include "CCORE.h"
+#include "core/core.h"
 
 int IsLittleEndian(void);
 

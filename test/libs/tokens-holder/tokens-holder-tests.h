@@ -1,56 +1,45 @@
-#include "libs/tokens-holder/tokens-holder.h"
+#include <map>
+#include "libs/token-record.h"
 
 static void _TokensHolderWorksCorrectly(void)
 {
-    const TokensHolderRecord *record    = NULL;
-    const uint max_size                 = 10;
-    TokensHolder *tokens_holder         = TokensHolder_Create(max_size);
+    std::map<const PlayerToken, TokenRecord> tokens_holder;
 
-    uint8  token1[PLAYER_TOKEN_SIZE];
-    uint32 token1_value = 0xBADBEE;
-    CORE_MemZero(token1, sizeof(token1));
-    CORE_MemCpy(token1, &token1_value, sizeof(token1_value));
-
-    CORE_Assert(TokensHolder_Exist(tokens_holder, token1) == false);
-    CORE_Assert(TokensHolder_Find(tokens_holder, token1) == NULL);
+    PlayerToken token1 = { 0xBA, 0xDB, 0xEE };
+    CORE_Assert(tokens_holder.count(token1) == 0);
 
     // add token 1
-    TokensHolderRecord token1_record = {
-        .IOStream       = (void *) 0xAABBCCDD,
-        .PlayerId       = 1,
-        .SessionIndex   = 0,
+    TokenRecord token1_record = {
+                  token1,           // Token
+         (void *) 0xAABBCCDD,       // IOStream
+                  1,                // PlayerId
+                  0,                // SessionIndex
     };
-    CORE_MemCpy(token1_record.Token, token1, sizeof(token1_record.Token));
 
-    TokensHolder_Add(tokens_holder, &token1_record);
-    CORE_Assert(TokensHolder_Exist(tokens_holder, token1) == true);
-    record = TokensHolder_Find(tokens_holder, token1);
-    CORE_Assert(record->IOStream == token1_record.IOStream);
-    CORE_AssertIntEqual(record->PlayerId, token1_record.PlayerId);
-    CORE_AssertIntEqual(record->SessionIndex, token1_record.SessionIndex);
+    tokens_holder[token1] = token1_record;
+    CORE_Assert(tokens_holder.count(token1) == 1);
+    auto& record = tokens_holder[token1];
+    CORE_Assert(record.IOStream == token1_record.IOStream);
+    CORE_AssertIntEqual(record.PlayerId, token1_record.PlayerId);
+    CORE_AssertIntEqual(record.SessionIndex, token1_record.SessionIndex);
 
     // add token 2
-    uint8  token2[PLAYER_TOKEN_SIZE];
-    uint32 token2_value = 0xDEADBEE;
-    CORE_MemZero(token2, sizeof(token2));
-    CORE_MemCpy(token2, &token2_value, sizeof(token2_value));
+    PlayerToken token2 = { 0xDE, 0xAD, 0xBE, 0x0E };
 
-    TokensHolderRecord token2_record = {
-        .IOStream       = (void *) 0xDDCCBBAA,
-        .PlayerId       = 2,
-        .SessionIndex   = 1,
+    TokenRecord token2_record = {
+                  token2,           // Token
+         (void *) 0xDDCCBBAA,       // IOStream
+                  2,                // PlayerId
+                  1,                // SessionIndex
     };
-    CORE_MemCpy(token2_record.Token, token2, sizeof(token2_record.Token));
 
-    TokensHolder_Add(tokens_holder, &token2_record);
-    CORE_Assert(TokensHolder_Exist(tokens_holder, token2) == true);
-    CORE_Assert(TokensHolder_Exist(tokens_holder, token1) == true);
-    record = TokensHolder_Find(tokens_holder, token2);
-    CORE_Assert(record->IOStream == token2_record.IOStream);
-    CORE_AssertIntEqual(record->PlayerId, token2_record.PlayerId);
-    CORE_AssertIntEqual(record->SessionIndex, token2_record.SessionIndex);
-
-    TokensHolder_Free(tokens_holder);
+    tokens_holder[token2] = token2_record;
+    CORE_Assert(tokens_holder.count(token1) == 1);
+    CORE_Assert(tokens_holder.count(token2) == 1);
+    auto& record2 = tokens_holder[token2];
+    CORE_Assert(record2.IOStream == token2_record.IOStream);
+    CORE_AssertIntEqual(record2.PlayerId, token2_record.PlayerId);
+    CORE_AssertIntEqual(record2.SessionIndex, token2_record.SessionIndex);
 }
 
 void TokensHolder_TestsRun(void)

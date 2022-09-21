@@ -1,13 +1,12 @@
 #ifndef _MOVE_DIRECTION_H_
 #define _MOVE_DIRECTION_H_
 
-
-typedef enum MoveDirection
+enum class MoveDirection
 {
-    kMoveDirection_Top = 1,
-    kMoveDirection_Right,
-    kMoveDirection_Bottom,
-    kMoveDirection_Left,
-} MoveDirection;
+    Top = 1,
+    Right,
+    Bottom,
+    Left,
+};
 
 #endif
