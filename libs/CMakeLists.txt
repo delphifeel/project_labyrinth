@@ -13,14 +13,6 @@ target_link_libraries(TCP PRIVATE
 	uv
 )
 
-# TokensHolder
-# add_library(TokensHolder 
-# 	tokens-holder/tokens-holder.c
-# )
-# target_include_directories(TokensHolder PUBLIC
-# 	${COMMON_INCLUDE}
-# )
-
 # Utils
 add_library(Utils 
 	utils/bytes-to-number.cpp

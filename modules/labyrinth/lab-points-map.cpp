@@ -2,18 +2,14 @@
 #include "include/config.h"
 #include "lab-points-map.h"
 
-std::optional<const LabPoint *> 
-LabPointsMap::GetPointByID(uint id) const
+std::pair<LabPoint *, bool>
+LabPointsMap::GetPointByID(uint id)
 {
-    if (m_points_map.count(id) > 0) {
-        return &m_points_map.at(id);
-    }
-    return std::nullopt;
-}
+    CORE_Assert(m_points_map != std::nullopt);
 
-void 
-LabPointsMap::ChangePoint(const LabPoint &point)
-{
-    m_points_map[point.GetId()] = point;
+    if (m_points_map->count(id) > 0) {
+        return { &m_points_map->at(id), true };
+    }
+    return { nullptr, false };
 }
 

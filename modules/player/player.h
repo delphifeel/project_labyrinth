@@ -1,26 +1,28 @@
 #ifndef _PLAYER_H_
 #define _PLAYER_H_
 
+#include <optional>
 #include "libs/core/core.h"
 
 class LabPoint;
 
-struct Player
+class Player
 {
 public:
-    uint                GetId()             const { return m_id; }
-    const LabPoint*     GetAssignedPoint()  const { return m_assigned_point; }
+    uint                              GetId()             const { CORE_Assert(m_id != 0); return m_id; }
+    std::optional<const LabPoint *>   GetAssignedPoint()  const { return m_assigned_point; }
 
-    void AssignPoint(const LabPoint* point);
+    void                              SetId(uint id)            { m_id = id; };
 
-    explicit Player(uint id) : 
-        m_id(id),
-        m_assigned_point(nullptr) {}
+    void AssignPoint(const LabPoint& point);
+
+    explicit Player() : 
+        m_id(0),
+        m_assigned_point(std::nullopt) {}
 
 private:
-    uint                m_id;
-    // TODO: change to std::optional
-    const LabPoint*     m_assigned_point;
+    uint                              m_id;
+    std::optional<const LabPoint *>   m_assigned_point;
 };
 
 #endif

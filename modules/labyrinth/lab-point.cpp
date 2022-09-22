@@ -3,6 +3,8 @@
 
 uint LabPoint::GetId() const
 {
+    CORE_Assert(m_id != 0);
+    
     return m_id;
 }
 

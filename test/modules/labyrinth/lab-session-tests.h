@@ -1,30 +1,22 @@
-#include "core/core.h"
+#include "libs/core/core.h"
 #include "modules/labyrinth/lab-session.h"
 
 static void Test_LabSessionAddPlayers(void)
 {
-    LabSession       *instance;
-    uint              player1_id;
-    uint              player2_id;  
-    Player           *player1;
-    Player           *player2;
+    LabSession session;
+    session.Setup(2);
 
-    instance = LabSession_Create();
-    LabSession_Setup(instance, 2);
+    auto [ player1_id, ok_1 ] = session.AddPlayer();
+    auto [ player2_id, ok_2 ] = session.AddPlayer();
 
-    LabSession_AddPlayer(instance, &player1_id);
-    LabSession_AddPlayer(instance, &player2_id);
+    CORE_AssertIntEqual(player1_id, 1);
+    CORE_AssertIntEqual(player2_id, 2);
 
-    CORE_Assert(player1_id == 1);
-    CORE_Assert(player2_id == 2);
+    auto [ player1, player1_ok ] = session.FindPlayer(player1_id);
+    auto [ player2, player2_ok ] = session.FindPlayer(player2_id);
 
-    player1 = LabSession_FindPlayer(instance, player1_id);
-    player2 = LabSession_FindPlayer(instance, player2_id);
-
-    CORE_Assert(Player_GetId(player1) == player1_id);
-    CORE_Assert(Player_GetId(player2) == player2_id);
-
-    LabSession_Free(instance);
+    CORE_AssertIntEqual(player1->GetId(), player1_id);
+    CORE_AssertIntEqual(player2->GetId(), player2_id);
 }
 
 void LabSession_TestsRun(void)

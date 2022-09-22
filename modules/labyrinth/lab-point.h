@@ -15,18 +15,21 @@ struct PointConnections
 class LabPoint
 {
 public:
+
+
     uint                        GetId() const;
     bool                        IsExit() const;
     bool                        IsSpawn() const;
     const PointConnections&     GetConnections() const;
 
+
     void SetId(uint id);
     void SetConnections(const PointConnections &connections);
     void SetAsExit(bool value);
     void SetAsSpawn(bool value);
-
     void Copy(const LabPoint &point);
     void AssignPlayer(const Player& player);
+
 
     explicit LabPoint() :
         m_id(0), 
@@ -40,6 +43,8 @@ public:
         m_is_spawn(false) {};
 
 private:
+
+    
     uint                m_id; 
     PointConnections    m_connections;
     bool                m_is_exit; 

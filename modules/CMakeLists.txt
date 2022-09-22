@@ -34,7 +34,7 @@ add_library(Labyrinth
 	labyrinth/lab-generation.cpp
 	labyrinth/lab-points-map.cpp
 	labyrinth/lab-point.cpp
-	# labyrinth/lab-session.c
+	labyrinth/lab-session.cpp
 )
 target_include_directories(Labyrinth PUBLIC
 	${COMMON_INCLUDE}
