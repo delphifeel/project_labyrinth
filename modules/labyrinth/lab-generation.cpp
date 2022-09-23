@@ -30,18 +30,15 @@ static void _BuildLab(std::map<uint, LabPoint> &fully_connected_map, std::vector
     // create all points(rooms)
     constexpr uint p = MATRIX_SIZE * MATRIX_SIZE;
     for (uint i = 0; i < p; i++) {
-        const PointConnections  connections = { 0, 0, 0, 0 };
-        uint                    id = i + 1;
-        LabPoint                lab_point(id, connections);
-
-        fully_connected_map[id].Copy(lab_point);
+        uint        id = i + 1;
+        fully_connected_map.emplace(id, LabPoint{id});
     }
 
 
     // set exit point
 
     CORE_DebugInfo("Set %u as exit\n", p / 2 + 1);
-    fully_connected_map[p / 2 + 1].SetAsExit(true);
+    fully_connected_map.at(p / 2 + 1).SetAsExit(true);
 
 
 
@@ -90,7 +87,7 @@ static void _BuildLab(std::map<uint, LabPoint> &fully_connected_map, std::vector
             continue;
         }
 
-        fully_connected_map[possible_spawn_points[i]].SetAsSpawn(true);
+        fully_connected_map.at(possible_spawn_points[i]).SetAsSpawn(true);
 
         spawn_points.push_back(possible_spawn_points[i]);
         added_points++;
@@ -108,7 +105,7 @@ static void _BuildLab(std::map<uint, LabPoint> &fully_connected_map, std::vector
     for (uint i = 0; i < p; i++)
     {
         uint id = i + 1;
-        PointConnections connections = fully_connected_map[id].GetConnections();
+        PointConnections connections = fully_connected_map.at(id).GetConnections();
 
         int connection_id;
         // top connection
@@ -135,7 +132,7 @@ static void _BuildLab(std::map<uint, LabPoint> &fully_connected_map, std::vector
             connections.Left = connection_id; 
         }
 
-        fully_connected_map[id].SetConnections(connections);
+        fully_connected_map.at(id).SetConnections(connections);
     }
 }
 
@@ -166,13 +163,13 @@ static int _SortEdgesRandomly(const void *unused1, const void *unused2)
     return 0;
 }
 
-static void _CopyConnectionsAccordingToEdge(std::map<uint, LabPoint>    &fully_connected_map, 
-                                            std::map<uint, LabPoint>    &result_lab_points_map_handle, 
-                                            uint                         lab_point_id, 
-                                            uint                         connection_lab_point_id)
+static void _CopyConnectionsAccordingToEdge(const std::map<uint, LabPoint>    &fully_connected_map, 
+                                            std::map<uint, LabPoint>          &result_lab_points_map_handle, 
+                                            uint                               lab_point_id, 
+                                            uint                               connection_lab_point_id)
 {
-    PointConnections source_point_conn = fully_connected_map[lab_point_id].GetConnections();
-    PointConnections result_point_conn = result_lab_points_map_handle[lab_point_id].GetConnections();
+    PointConnections source_point_conn = fully_connected_map.at(lab_point_id).GetConnections();
+    PointConnections result_point_conn = result_lab_points_map_handle.at(lab_point_id).GetConnections();
 
     if (source_point_conn.Top == connection_lab_point_id)
     {
@@ -191,7 +188,7 @@ static void _CopyConnectionsAccordingToEdge(std::map<uint, LabPoint>    &fully_c
         result_point_conn.Left = connection_lab_point_id;
     }
 
-    result_lab_points_map_handle[lab_point_id].SetConnections(result_point_conn);
+    result_lab_points_map_handle.at(lab_point_id).SetConnections(result_point_conn);
 }
 
 static bool _GenerateRandomDataToBuffer(uint8 buffer[], uint32 buffer_size)
@@ -223,8 +220,8 @@ static bool _GenerateRandomDataToBuffer(uint8 buffer[], uint32 buffer_size)
  * @param[in]  fully_connected_map    Fully connected map (rectengular net)
  * @param[in]  mst_points_map_handle  result MST map
  */
-static void _BuildMSTFrom(std::map<uint, LabPoint>  &fully_connected_map, 
-                          std::map<uint, LabPoint>  &mst_points_map_handle)
+static void _BuildMSTFrom(const std::map<uint, LabPoint>  &fully_connected_map, 
+                          std::map<uint, LabPoint>        &mst_points_map_handle)
 {
     uint                vertex_count;
     Edge                *sorted_edges;
@@ -242,7 +239,7 @@ static void _BuildMSTFrom(std::map<uint, LabPoint>  &fully_connected_map,
     for (uint i = 0; i < vertex_count; i++)
     {
         uint id = i + 1;
-        auto connections = fully_connected_map[id].GetConnections();
+        auto connections = fully_connected_map.at(id).GetConnections();
 
         if (connections.Top != 0)
         {
@@ -302,14 +299,12 @@ static void _BuildMSTFrom(std::map<uint, LabPoint>  &fully_connected_map,
     for (uint i = 0; i < vertex_count; i++)
     {
         uint id = i + 1;
-        const PointConnections  connections = { 0, 0, 0, 0 };
-        LabPoint                lab_point(id, connections); 
-        const LabPoint          &temp_lab_point_handle = fully_connected_map[id];
+        mst_points_map_handle.emplace(id, LabPoint {id});
+        LabPoint& lab_point = mst_points_map_handle.at(id);
+        const LabPoint&     temp_lab_point_handle   = fully_connected_map.at(id);
 
         lab_point.SetAsExit(temp_lab_point_handle.IsExit());
         lab_point.SetAsSpawn(temp_lab_point_handle.IsSpawn());
-
-        mst_points_map_handle[id] = lab_point;
     }
 
     for (uint i = 0; i < mst_edges_size; i++)

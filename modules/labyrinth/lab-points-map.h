@@ -14,14 +14,11 @@ class LabPointsMap
 {
 public:
     void                            ToJSON(char **json)                 const;
-    std::pair<LabPoint *, bool>     GetPointByID(uint id);
-    void                            SetMap(const std::map<uint, LabPoint> &points_map) { m_points_map = points_map; };
-
-    explicit LabPointsMap() :
-        m_points_map(std::nullopt) {};
+    LabPoint*                       GetPointByID(uint id);
+    void                            Generate(std::vector<uint> &spawn_points);
 
 private:
-    std::optional< std::map<uint, LabPoint> >    m_points_map;
+    std::map<uint, LabPoint>    m_points_map;
 };
 
 

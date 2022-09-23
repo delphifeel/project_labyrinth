@@ -1,5 +1,5 @@
 #include <map>
-#include "modules/player/player-token.h"
+#include "modules/labyrinth/player/player-token.h"
 
 static void _TokensHolderWorksCorrectly(void)
 {

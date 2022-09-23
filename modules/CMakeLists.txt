@@ -21,24 +21,15 @@ target_link_libraries(IOSystem PUBLIC
 	TCP
 )
 
-# Player
-add_library(Player 
-	player/player.cpp
-)
-target_include_directories(Player PUBLIC
-	${COMMON_INCLUDE}
-)
-
 # Labyrinth
 add_library(Labyrinth 
 	labyrinth/lab-generation.cpp
 	labyrinth/lab-points-map.cpp
 	labyrinth/lab-point.cpp
 	labyrinth/lab-session.cpp
+
+	labyrinth/player/player.cpp
 )
 target_include_directories(Labyrinth PUBLIC
 	${COMMON_INCLUDE}
-)
-target_link_libraries(Labyrinth PUBLIC
-	Player
 )

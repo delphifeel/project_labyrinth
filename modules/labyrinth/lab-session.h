@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "libs/core/core.h"
-#include "modules/player/player.h"
+#include "player/player.h"
 
 #include "lab-points-map.h"
 
@@ -24,7 +24,7 @@ public:
     void                                Setup(uint players_count);
     LabPointsMap&                       GetLabMap();
 
-
+    explicit LabSession() {};
 private:
     bool _NoMoreSpawnPoints() const;
     bool _IsFull() const;

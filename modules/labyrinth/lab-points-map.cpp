@@ -1,15 +1,17 @@
 #include "libs/core/core.h"
 #include "include/config.h"
 #include "lab-points-map.h"
+#include "lab-generation.h"
 
-std::pair<LabPoint *, bool>
-LabPointsMap::GetPointByID(uint id)
+LabPoint* LabPointsMap::GetPointByID(uint id)
 {
-    CORE_Assert(m_points_map != std::nullopt);
-
-    if (m_points_map->count(id) > 0) {
-        return { &m_points_map->at(id), true };
+    if (m_points_map.count(id) > 0) {
+        return &m_points_map.at(id);
     }
-    return { nullptr, false };
+    return nullptr;
 }
 
+void LabPointsMap::Generate(std::vector<uint> &spawn_points)
+{
+    lab::Generate(m_points_map, spawn_points);
+}

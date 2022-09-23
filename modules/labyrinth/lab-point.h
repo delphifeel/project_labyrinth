@@ -2,7 +2,7 @@
 #define _LAB_POINT_H_
 
 #include <vector>
-#include "modules/player/player.h"
+#include "player/player.h"
 
 struct PointConnections
 {
@@ -23,22 +23,15 @@ public:
     const PointConnections&     GetConnections() const;
 
 
-    void SetId(uint id);
-    void SetConnections(const PointConnections &connections);
+    void SetConnections(const PointConnections& connections);
     void SetAsExit(bool value);
     void SetAsSpawn(bool value);
-    void Copy(const LabPoint &point);
     void AssignPlayer(const Player& player);
 
 
-    explicit LabPoint() :
-        m_id(0), 
-        m_is_exit(false), 
-        m_is_spawn(false) {};
-
-    explicit LabPoint(uint id, const PointConnections connections) :
+    explicit LabPoint(uint id) :
         m_id(id), 
-        m_connections(connections), 
+        m_connections({0, 0, 0, 0}),
         m_is_exit(false), 
         m_is_spawn(false) {};
 

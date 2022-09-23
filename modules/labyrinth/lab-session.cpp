@@ -53,15 +53,15 @@ LabSession::AddPlayer()
     }
 
     uint player_spawn_point_id = m_spawn_points[m_assigned_spawn_points_count++];
-    auto [ point, point_ok ] = m_lab_map.GetPointByID(player_spawn_point_id);
-    if (!point_ok) {
+    auto point = m_lab_map.GetPointByID(player_spawn_point_id);
+    if (!point) {
         CORE_DebugError("Point not found\n");
         return { 0, false };
     }
 
     uint added_player_id = m_players_map.size() + 1;
-    Player new_player;
-    new_player.SetId(added_player_id);
+    m_players_map.emplace(added_player_id, Player { added_player_id });
+    Player& new_player = m_players_map.at(added_player_id);
     new_player.AssignPoint(*point);
     point->AssignPlayer(new_player);
 
@@ -70,7 +70,6 @@ LabSession::AddPlayer()
         added_player_id,
         player_spawn_point_id
     );
-    m_players_map[added_player_id] = new_player;
     return { added_player_id, true };
 }
 
@@ -92,8 +91,5 @@ void LabSession::Setup(uint players_count)
     m_max_players = players_count;
     m_session_started = false;
     m_assigned_spawn_points_count = 0;
-
-    std::map<uint, LabPoint> points_map;
-    lab::Generate(points_map, m_spawn_points);
-    m_lab_map.SetMap(points_map);
+    m_lab_map.Generate(m_spawn_points);
 }

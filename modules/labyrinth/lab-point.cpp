@@ -24,14 +24,9 @@ const PointConnections& LabPoint::GetConnections() const
 }
 
 
-void LabPoint::SetConnections(const PointConnections &connections)
+void LabPoint::SetConnections(const PointConnections& connections)
 {
     m_connections = connections;
-}
-
-void LabPoint::SetId(uint id)
-{
-    m_id = id;
 }
 
 void LabPoint::SetAsExit(bool value)
@@ -42,14 +37,6 @@ void LabPoint::SetAsExit(bool value)
 void LabPoint::SetAsSpawn(bool value)
 {
     m_is_spawn = value;
-}
-
-void LabPoint::Copy(const LabPoint &point)
-{
-    m_id = point.GetId();
-    m_connections = point.GetConnections();
-    m_is_spawn = point.IsSpawn();
-    m_is_exit = point.IsExit();
 }
 
 void LabPoint::AssignPlayer(const Player& player)

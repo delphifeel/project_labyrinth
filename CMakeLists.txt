@@ -17,7 +17,7 @@ set(COMMON_INCLUDE
 
 set(THIRD_PARTY ${PROJECT_SOURCE_DIR}/third-party-libraries)
 set(LOCAL_COMPLILE_OPTIONS
-	-Werror -Wall -Wextra 
+	-Werror -Wall -Wextra
 	$<$<NOT:$<CONFIG:RELEASE>>:
     	-ggdb3 
     	-O0 
