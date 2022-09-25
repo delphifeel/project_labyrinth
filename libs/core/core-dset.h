@@ -59,7 +59,7 @@ public:
 
    ~DisjointSet()
    {
-      delete m_child_to_parent;
+      delete[] m_child_to_parent;
    }
 
 private:

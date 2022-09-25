@@ -4,21 +4,22 @@
 #include "lab-session.h"
 
 
-bool LabSession::_NoMoreSpawnPoints() const
+inline bool LabSession::_NoMoreSpawnPoints() const
 {
     return m_assigned_spawn_points_count == m_spawn_points.size();
 }
 
-bool LabSession::_IsFull() const
+
+
+bool LabSession::IsReadyForStart() const
+{
+    return IsFull();
+}
+
+bool LabSession::IsFull() const
 {
     return m_players_map.size() == m_max_players;
 }
-
-bool LabSession::_IsReadyForStart() const
-{
-    return _IsFull();
-}
-
 
 LabPointsMap& LabSession::GetLabMap()
 {
@@ -42,7 +43,7 @@ LabSession::AddPlayer()
 {
     CORE_Assert(m_session_started == false);
 
-    if (_IsFull()) {
+    if (IsFull()) {
         CORE_DebugError("No more free spots - session is FULL\n");
         return { 0, false };
     }
@@ -75,7 +76,7 @@ LabSession::AddPlayer()
 
 void LabSession::Start()
 {
-    CORE_Assert(_IsReadyForStart());
+    CORE_Assert(IsReadyForStart());
     CORE_Assert(m_session_started == false);
 
     m_session_started = true;

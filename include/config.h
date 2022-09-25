@@ -13,7 +13,7 @@
  *      Max players per session
  */
 // #define SESSION_PLAYERS_COUNT    (40)
-#define SESSION_PLAYERS_COUNT       (2)
+#define SESSION_PLAYERS_COUNT       (1)
 
 #define IOSYSTEM_DEFAULT_PORT       (7000)
 

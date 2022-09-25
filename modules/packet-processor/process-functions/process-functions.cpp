@@ -1,4 +1,4 @@
-#include "modules/packet-processor/packet-type.h"
+#include "../packet-type.h"
 #include "process-functions.h"
 
 #define _DEFINE_FUNC(name) \
@@ -8,7 +8,7 @@ extern bool name(const LabSession *session, const Packet *packet_in, Packet *pac
 _DEFINE_FUNC(Process_JoinLobby);
 
 static bool                  _inited = false;
-static ProcessPacketFunction _process_functions[PACKETTYPE_COUNT] = {NULL};
+static ProcessPacketFunction _process_functions[ PacketType::END ] = {NULL};
 
 void ProcessFunctions_Init(void)
 {
@@ -16,7 +16,7 @@ void ProcessFunctions_Init(void)
     _inited = true;
 
     // PROCESS FUNCTIONS HERE
-    _process_functions[kPacket_JoinLobby] = Process_JoinLobby;
+    _process_functions[PacketType::JoinLobby] = Process_JoinLobby;
 }
 
 ProcessPacketFunction ProcessFunctions_Get(uint type)

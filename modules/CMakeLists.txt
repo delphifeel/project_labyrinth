@@ -1,14 +1,14 @@
 
 # PacketProcessor
-# add_library(PacketProcessor 
-# 	packet-processor/packet-processor.c
-# 	packet-processor/process-functions/process-functions.c
-# 	# All process functions
-# 	packet-processor/process-functions/process-join-lobby.c
-# )
-# target_include_directories(PacketProcessor PUBLIC
-# 	${COMMON_INCLUDE}
-# )
+add_library(PacketProcessor 
+	packet-processor/packet-processor.cpp
+	packet-processor/process-functions/process-functions.cpp
+	# All process functions
+	packet-processor/process-functions/process-join-lobby.cpp
+)
+target_include_directories(PacketProcessor PUBLIC
+	${COMMON_INCLUDE}
+)
 
 # IOSystem
 add_library(IOSystem 
@@ -32,4 +32,18 @@ add_library(Labyrinth
 )
 target_include_directories(Labyrinth PUBLIC
 	${COMMON_INCLUDE}
+)
+
+# Gameserver
+add_library(Gameserver 
+	gameserver/gameserver.cpp
+)
+target_include_directories(Gameserver PUBLIC
+	${COMMON_INCLUDE}
+)
+target_link_libraries(Gameserver PUBLIC
+	Labyrinth
+	IOSystem
+	PacketProcessor
+	Utils
 )

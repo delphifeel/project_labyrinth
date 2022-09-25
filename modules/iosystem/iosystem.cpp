@@ -74,6 +74,7 @@ IOSystem::IOSystem(uint32 data_start_flag, OnReadFunc on_read)
     TCPServer_OnError(m_tcp_server, _TCPServerOnError);
     TCPServer_OnNewConnection(m_tcp_server, _TCPServerOnNewConnection);
     TCPServer_OnCloseConnection(m_tcp_server, _TCPServerOnCloseConnection);
+    TCPServer_SetContext(m_tcp_server, this);
     TCPServer_OnRead(m_tcp_server, _OnRead);
     TCPServer_Setup(m_tcp_server, IOSYSTEM_DEFAULT_PORT);
 }

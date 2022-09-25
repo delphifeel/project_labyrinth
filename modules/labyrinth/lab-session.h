@@ -17,18 +17,14 @@ class LabSession
 {
 public:
     std::pair<const Player *, bool>     FindPlayer(uint player_id) const;
-
-
     std::pair<uint, bool>               AddPlayer();
     void                                Start();
     void                                Setup(uint players_count);
+    bool                                IsFull() const;
+    bool                                IsReadyForStart() const;
     LabPointsMap&                       GetLabMap();
-
-    explicit LabSession() {};
 private:
-    bool _NoMoreSpawnPoints() const;
-    bool _IsFull() const;
-    bool _IsReadyForStart() const;
+    inline bool _NoMoreSpawnPoints() const;
 
 
     LabPointsMap            m_lab_map;

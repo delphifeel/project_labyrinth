@@ -54,17 +54,13 @@ target_link_libraries(ProjectLabyrinthTest PRIVATE
 
 
 # Gameserver
-# add_executable(GameServer modules/gameserver/gameserver.c)
-# target_compile_options(GameServer PRIVATE 
-# 	${LOCAL_COMPLILE_OPTIONS}
-# )
-# target_include_directories(GameServer PUBLIC
-# 	"${COMMON_INCLUDE}"
-# )
-# target_link_libraries(GameServer PRIVATE
-# 	IOSystem
-# 	PacketProcessor
-# 	Utils
-# 	Labyrinth
-# 	TokensHolder
-# )
+add_executable(GameService modules/gameserver/main.cpp)
+target_compile_options(GameService PRIVATE 
+	${LOCAL_COMPLILE_OPTIONS}
+)
+target_include_directories(GameService PUBLIC
+	${COMMON_INCLUDE}
+)
+target_link_libraries(GameService PRIVATE
+	Gameserver
+)

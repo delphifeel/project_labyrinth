@@ -9,6 +9,6 @@ try_create_dir()
 
 try_create_dir $BUILD_DIR
 cd $BUILD_DIR
-export CXX="gcc-9"
-cmake ..
+export CXX="g++-9"
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=On -DCMAKE_BUILD_TYPE="Debug" ..
 make -j 8
