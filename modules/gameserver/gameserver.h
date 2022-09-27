@@ -23,8 +23,8 @@ private:
     friend void _ProcessJoinLobby(GameServer *gameserver, PlayerToken &token_arr, IOSystem::Stream io_stream);
 
     std::array<LabSession *, SESSIONS_CAPACITY> m_sessions;
-    std::unique_ptr<IOSystem>                   m_io_system;
-    std::unique_ptr<PacketProcessor>            m_packet_processor;
+    IOSystem                                    m_io_system;
+    PacketProcessor                             m_packet_processor;
     std::map<const PlayerToken, TokenRecord>    m_tokens_holder;
 };
 

@@ -21,18 +21,17 @@ public:
         BadInput,
     };
 
-    explicit PacketProcessor(const std::array<LabSession *, SESSIONS_CAPACITY>  &sessions,
-                             const IOSystem                                     &io_system) :
-            m_sessions(sessions), 
-            m_io_system(io_system) 
-    {
-        ProcessFunctions_Init();
-    };
+    explicit PacketProcessor() :
+            m_sessions(nullptr), 
+            m_io_system(nullptr) {};
+
+    void Setup(const std::array<LabSession *, SESSIONS_CAPACITY>  &sessions,
+               const IOSystem                                     &io_system);
 
     PacketProcessor::Status  Process(const Packet& packet_in, Packet* packet_out) const;
 private:
-    const std::array<LabSession *, SESSIONS_CAPACITY>       &m_sessions;
-    const IOSystem                                          &m_io_system;
+    const std::array<LabSession *, SESSIONS_CAPACITY>       *m_sessions;
+    const IOSystem                                          *m_io_system;
 };
 
 

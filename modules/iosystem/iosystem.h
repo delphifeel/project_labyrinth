@@ -13,10 +13,15 @@ public:
     using Stream = void *;
     using OnReadFunc = std::function< void(IOSystem::Stream ioStream, const uint8 data[], uint data_len) >;
 
+    explicit IOSystem() :
+        m_data_start_flag(0),
+        m_on_read(nullptr),
+        m_tcp_server(nullptr) {};
+
+    void Setup(uint32 data_start_flag, OnReadFunc on_read);
     void Start() const;
     void Write(IOSystem::Stream ioStream, const uint8 data[], uint data_len) const;
 
-    IOSystem(uint32 data_start_flag, OnReadFunc on_read);
     ~IOSystem();
 private:
     friend void _OnRead(TCPServer                      *tcp_server, 

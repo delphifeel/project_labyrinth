@@ -181,7 +181,7 @@ void _ProcessJoinLobby(GameServer *gameserver, PlayerToken &token_arr, IOSystem:
             uint8 data_out[1024];
             uint  data_out_len = 0;
             _PacketToBuffer(&packet, Status::Ok, token_arr.data(), data_out, sizeof(data_out), &data_out_len);
-            gameserver->m_io_system->Write( i_record.IOStream, data_out, data_out_len );
+            gameserver->m_io_system.Write( i_record.IOStream, data_out, data_out_len );
         }
     }
 }
@@ -225,7 +225,7 @@ void _OnInputRead(GameServer *gameserver, IOSystem::Stream io_stream, const uint
 
     Packet packet_out;
     Status status = Status::Ok;
-    switch ( gameserver->m_packet_processor->Process(packet_in, &packet_out) )
+    switch ( gameserver->m_packet_processor.Process(packet_in, &packet_out) )
     {
     case PacketProcessor::BadInput :
         CORE_DebugError("Packet %u process error\n", packet_in.Type);
@@ -245,19 +245,19 @@ void _OnInputRead(GameServer *gameserver, IOSystem::Stream io_stream, const uint
     uint8 data_out[1024];
     uint  data_out_len = 0;
     _PacketToBuffer(&packet_out, status, token_ptr, data_out, sizeof(data_out), &data_out_len);
-    gameserver->m_io_system->Write(io_stream, data_out, data_len);
+    gameserver->m_io_system.Write(io_stream, data_out, data_len);
 }
 
 void GameServer::Start()
 {
-    m_io_system = std::make_unique<IOSystem>(
+    m_io_system.Setup(
         _VALIDATION_HEADER, 
         [this](IOSystem::Stream io_stream, const uint8 data[], uint data_len) {
             _OnInputRead(this, io_stream, data, data_len);
         }
     );
     _PrepareSessions();
-    m_packet_processor = std::make_unique<PacketProcessor>(m_sessions, *m_io_system);
+    m_packet_processor.Setup(m_sessions, m_io_system);
 
-    m_io_system->Start();
+    m_io_system.Start();
 }

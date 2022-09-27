@@ -5,9 +5,20 @@
 
 /*****************************************************************************************************************************/
 
+void PacketProcessor::Setup(const std::array<LabSession *, SESSIONS_CAPACITY>  &sessions,
+                            const IOSystem                                     &io_system)
+{
+    m_sessions  = &sessions;
+    m_io_system = &io_system;
+
+    ProcessFunctions_Init();
+}
+
 PacketProcessor::Status 
 PacketProcessor::Process(const Packet& packet_in, Packet* packet_out) const
 {
+    CORE_AssertPointer(m_sessions);
+    CORE_AssertPointer(m_io_system);
     CORE_AssertPointer(packet_out);
 
     if ( packet_in.Type > PacketType::END - 1 ) {
@@ -15,11 +26,11 @@ PacketProcessor::Process(const Packet& packet_in, Packet* packet_out) const
         return Status::BadInput;
     }
 
-    if ( packet_in.SessionIndex > m_sessions.size() - 1 ) {
+    if ( packet_in.SessionIndex > m_sessions->size() - 1 ) {
         CORE_DebugError("Invalid session index\n");
         return Status::BadInput;
     }
-    auto session = m_sessions.at(packet_in.SessionIndex);
+    auto& session = m_sessions->at(packet_in.SessionIndex);
     packet_out->PayloadSize = 0;
 
     if ( !ProcessFunctions_Get(packet_in.Type)(session, &packet_in, packet_out) ) {

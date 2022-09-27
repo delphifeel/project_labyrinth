@@ -62,10 +62,13 @@ IOSystem::Write(IOSystem::Stream ioStream, const uint8 data[], uint data_len) co
 
 void IOSystem::Start() const
 {
+    CORE_AssertPointer(m_tcp_server);
+    CORE_AssertPointer(m_on_read);
+
     TCPServer_Start(m_tcp_server);
 }
 
-IOSystem::IOSystem(uint32 data_start_flag, OnReadFunc on_read)
+void IOSystem::Setup(uint32 data_start_flag, OnReadFunc on_read)
 {
     m_data_start_flag   = data_start_flag;
     m_on_read           = on_read;
