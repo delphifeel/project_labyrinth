@@ -250,14 +250,14 @@ void _OnInputRead(GameServer *gameserver, IOSystem::Stream io_stream, const uint
 
 void GameServer::Start()
 {
+    _PrepareSessions();
+    m_packet_processor.Setup(m_sessions);
+
     m_io_system.Setup(
         _VALIDATION_HEADER, 
         [this](IOSystem::Stream io_stream, const uint8 data[], uint data_len) {
             _OnInputRead(this, io_stream, data, data_len);
         }
     );
-    _PrepareSessions();
-    m_packet_processor.Setup(m_sessions, m_io_system);
-
     m_io_system.Start();
 }

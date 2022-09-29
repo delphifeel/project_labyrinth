@@ -22,16 +22,13 @@ public:
     };
 
     explicit PacketProcessor() :
-            m_sessions(nullptr), 
-            m_io_system(nullptr) {};
+            m_sessions(nullptr) {};
 
-    void Setup(const std::array<LabSession *, SESSIONS_CAPACITY>  &sessions,
-               const IOSystem                                     &io_system);
+    void Setup(const std::array<LabSession *, SESSIONS_CAPACITY>  &sessions);
 
     PacketProcessor::Status  Process(const Packet& packet_in, Packet* packet_out) const;
 private:
     const std::array<LabSession *, SESSIONS_CAPACITY>       *m_sessions;
-    const IOSystem                                          *m_io_system;
 };
 
 

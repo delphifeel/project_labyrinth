@@ -5,11 +5,9 @@
 
 /*****************************************************************************************************************************/
 
-void PacketProcessor::Setup(const std::array<LabSession *, SESSIONS_CAPACITY>  &sessions,
-                            const IOSystem                                     &io_system)
+void PacketProcessor::Setup(const std::array<LabSession *, SESSIONS_CAPACITY>  &sessions)
 {
     m_sessions  = &sessions;
-    m_io_system = &io_system;
 
     ProcessFunctions_Init();
 }
@@ -18,7 +16,6 @@ PacketProcessor::Status
 PacketProcessor::Process(const Packet& packet_in, Packet* packet_out) const
 {
     CORE_AssertPointer(m_sessions);
-    CORE_AssertPointer(m_io_system);
     CORE_AssertPointer(packet_out);
 
     if ( packet_in.Type > PacketType::END - 1 ) {
