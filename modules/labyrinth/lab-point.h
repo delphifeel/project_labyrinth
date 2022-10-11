@@ -35,6 +35,9 @@ public:
         m_is_exit(false), 
         m_is_spawn(false) {};
 
+
+    explicit LabPoint(LabPoint&&) = default;                       
+
 private:
 
     

@@ -4,10 +4,8 @@
 /**
  *      Max sessions count per game server
  *
- *      TODO(delpifeel): bacause of TCP server restrictions 
- *      we can't add more session to single game server instance
  */
-#define SESSIONS_CAPACITY       (2)
+#define SESSIONS_CAPACITY       (1)
 
 /*
  *      Max players per session

@@ -54,13 +54,13 @@ target_link_libraries(ProjectLabyrinthTest PRIVATE
 
 
 # Gameserver
-add_executable(GameService modules/gameserver/main.cpp)
-target_compile_options(GameService PRIVATE 
+add_executable(GameServer modules/gameserver/main.cpp)
+target_compile_options(GameServer PRIVATE 
 	${LOCAL_COMPLILE_OPTIONS}
 )
-target_include_directories(GameService PUBLIC
+target_include_directories(GameServer PUBLIC
 	${COMMON_INCLUDE}
 )
-target_link_libraries(GameService PRIVATE
+target_link_libraries(GameServer PRIVATE
 	Gameserver
 )

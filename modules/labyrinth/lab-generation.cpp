@@ -168,8 +168,8 @@ static void _CopyConnectionsAccordingToEdge(const std::map<uint, LabPoint>    &f
                                             uint                               lab_point_id, 
                                             uint                               connection_lab_point_id)
 {
-    PointConnections source_point_conn = fully_connected_map.at(lab_point_id).GetConnections();
-    PointConnections result_point_conn = result_lab_points_map_handle.at(lab_point_id).GetConnections();
+    const PointConnections& source_point_conn = fully_connected_map.at(lab_point_id).GetConnections();
+    PointConnections        result_point_conn = result_lab_points_map_handle.at(lab_point_id).GetConnections();
 
     if (source_point_conn.Top == connection_lab_point_id)
     {
@@ -239,7 +239,7 @@ static void _BuildMSTFrom(const std::map<uint, LabPoint>  &fully_connected_map,
     for (uint i = 0; i < vertex_count; i++)
     {
         uint id = i + 1;
-        auto connections = fully_connected_map.at(id).GetConnections();
+        const auto& connections = fully_connected_map.at(id).GetConnections();
 
         if (connections.Top != 0)
         {

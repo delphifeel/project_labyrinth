@@ -17,11 +17,10 @@ public:
     void     Start();
 private:
     inline void _PrepareSessions();
+    void _ProcessJoinLobby(PlayerToken &token_arr, IOSystem::Stream io_stream);
 
     friend void _OnInputRead(GameServer *gameserver, IOSystem::Stream io_stream, const uint8 data[], uint data_len);
-    friend bool _ProcessNewPlayerJoined(GameServer *gameserver, uint *player_id, uint *session_index, bool *session_ready);
-    friend void _ProcessJoinLobby(GameServer *gameserver, PlayerToken &token_arr, IOSystem::Stream io_stream);
-
+private:
     std::array<LabSession *, SESSIONS_CAPACITY> m_sessions;
     IOSystem                                    m_io_system;
     PacketProcessor                             m_packet_processor;

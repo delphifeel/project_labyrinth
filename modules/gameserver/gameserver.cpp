@@ -119,71 +119,49 @@ static void _PacketToBuffer(const Packet *packet,
     CORE_Assert(*buffer_len <= buffer_size);
 }
 
-bool _ProcessNewPlayerJoined(GameServer *gameserver, uint *player_id, uint *session_index, bool *session_ready)
+void GameServer::_ProcessJoinLobby(PlayerToken &token_arr, IOSystem::Stream io_stream)
 {
-    LabSession *session = nullptr;
-    for ( uint i = 0; i < gameserver->m_sessions.size(); i++ ) {
-        if ( gameserver->m_sessions[i] == nullptr ) {
-            gameserver->m_sessions[i] = new LabSession();
-            session = gameserver->m_sessions[i];
-            session->Setup(SESSION_PLAYERS_COUNT);
-            *session_index = i;
-            CORE_DebugInfo("Found free session (index %u)\n", i);
-            break;
-        }
-        if ( (gameserver->m_sessions[i]) && (!gameserver->m_sessions[i]->IsFull()) ) {
-            break;
-        }
-    }
-
-    if (session == nullptr) {
-        CORE_DebugError("No free session.\n");
-        return false;
-    }
-
-    const auto [ id, player_added ] = session->AddPlayer();
-    if (!player_added) {
-        CORE_DebugError("Can't add new player\n");
-        return false;
-    }
-    *player_id = id;
-    if ( session->IsReadyForStart() ) {
-        *session_ready = true;
-        session->Start();
-    }
-    return true;
-}
-
-void _ProcessJoinLobby(GameServer *gameserver, PlayerToken &token_arr, IOSystem::Stream io_stream)
-{
-    if ( gameserver->m_tokens_holder.count(token_arr) > 0 ) {
+    if ( m_tokens_holder.count(token_arr) > 0 ) {
         CORE_DebugError("Token already registered\n");
         return;
     }
 
-    TokenRecord record;
-    record.IOStream = io_stream;
-    bool session_ready = false;
-    if ( !_ProcessNewPlayerJoined(gameserver, &record.PlayerId, &record.SessionIndex, &session_ready) ) {
+    // new session
+    m_sessions[0] = new LabSession();
+    LabSession *session = m_sessions[0];
+    session->Setup(1);
+    const auto [ player_id, player_added ] = session->AddPlayer();
+    if (!player_added) {
+        CORE_DebugError("Can't add new player\n");
         return;
     }
-    record.Token = token_arr;
-    const auto [ _, token_added ] = gameserver->m_tokens_holder.insert( { token_arr, record } );
+    if ( session->IsReadyForStart() ) {
+        CORE_DebugError("Session is not ready idk why\n");
+        return;
+    }
+    session->Start();
+
+    // save token record
+    TokenRecord record;
+    record.IOStream     = io_stream;
+    record.PlayerId     = player_id;
+    record.SessionIndex = 0;
+    record.Token        = token_arr;
+
+    const auto [ _, token_added ] = m_tokens_holder.insert( { token_arr, record } );
     if ( !token_added ) {
         CORE_DebugError("Add token error\n");
+        return;
     }
 
-    if ( session_ready ) {
-        for ( const auto& [ _, i_record ] : gameserver->m_tokens_holder ) {
-            Packet packet;
-            packet.PayloadSize = 0;
-            packet.Type = PacketType::JoinLobby;
-            uint8 data_out[1024];
-            uint  data_out_len = 0;
-            _PacketToBuffer(&packet, Status::Ok, token_arr.data(), data_out, sizeof(data_out), &data_out_len);
-            gameserver->m_io_system.Write( i_record.IOStream, data_out, data_out_len );
-        }
-    }
+    // send packet to client
+    Packet packet;
+    packet.PayloadSize = 0;
+    packet.Type = PacketType::JoinLobby;
+    uint8 data_out[1024];
+    uint  data_out_len = 0;
+    _PacketToBuffer(&packet, Status::Ok, token_arr.data(), data_out, sizeof(data_out), &data_out_len);
+    m_io_system.Write( io_stream, data_out, data_out_len );
 }
 
 void _TokenPtrToArr(const uint8 token_ptr[], PlayerToken &arr)
@@ -195,7 +173,6 @@ void _TokenPtrToArr(const uint8 token_ptr[], PlayerToken &arr)
 
 void _OnInputRead(GameServer *gameserver, IOSystem::Stream io_stream, const uint8 data[], uint data_len)
 {
-    uint32          type               = 0;
     const uint8    *token_ptr          = NULL;
     Packet          packet_in;
 
@@ -208,8 +185,9 @@ void _OnInputRead(GameServer *gameserver, IOSystem::Stream io_stream, const uint
     PlayerToken token_as_arr;
     _TokenPtrToArr(token_ptr, token_as_arr);
 
-    if (type == PacketType::JoinLobby) {
-        _ProcessJoinLobby(gameserver, token_as_arr, io_stream);
+    // FOR NOW, we adding just 1 player and start game
+    if (packet_in.Type == PacketType::JoinLobby) {
+        gameserver->_ProcessJoinLobby(token_as_arr, io_stream);
         return;
     }
 
@@ -228,7 +206,7 @@ void _OnInputRead(GameServer *gameserver, IOSystem::Stream io_stream, const uint
     switch ( gameserver->m_packet_processor.Process(packet_in, &packet_out) )
     {
     case PacketProcessor::BadInput :
-        CORE_DebugError("Packet %u process error\n", packet_in.Type);
+        CORE_DebugError("Packet %u is bad\n", packet_in.Type);
         return;
     case PacketProcessor::Error :
         status = Status::Error;

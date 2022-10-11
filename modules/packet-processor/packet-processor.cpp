@@ -7,7 +7,7 @@
 
 void PacketProcessor::Setup(const std::array<LabSession *, SESSIONS_CAPACITY>  &sessions)
 {
-    m_sessions  = &sessions;
+    m_sessions = &sessions;
 
     ProcessFunctions_Init();
 }
