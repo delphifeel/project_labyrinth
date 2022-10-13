@@ -1,8 +1,5 @@
 #include <cstring>
-#include "modules/packet-processor/packet-processor.h"
-#include "modules/packet-processor/packet-type.h"
-#include "libs/packet/packet.h"
-#include "libs/utils/bytes-to-number.h"
+#include "packet/packet.h"
 #include "gameserver.h"
 
 /*****************************************************************************************************************************/
@@ -24,102 +21,66 @@ inline void GameServer::_PrepareSessions()
     }
 }
 
-constexpr uint _BUFFER_MIN_SIZE = 40;
-constexpr auto PLAYER_TOKEN_SIZE = kPlayerTokenSize;
-
-static bool _BufferToPacket(const uint8    buffer[], 
-                            uint           buffer_len, 
-                            const uint8  **token_ptr,
-                            Packet        *packet)
+bool GameServer::_NewPayloadFromTurnInfo(uint player_id, uint session_index, uint8 payload[], uint *payload_size)
 {
-    CORE_AssertPointer(buffer);
-    CORE_AssertPointer(packet);
-    CORE_AssertPointer(token_ptr);
-
-    if (buffer_len < _BUFFER_MIN_SIZE) {
-        CORE_DebugError("Buffer is too small\n");
+    if (session_index >= SESSIONS_CAPACITY) {
+        CORE_DebugError("Session index out of bounds\n");
+        return false;
+    }
+    LabSession *session = m_sessions[session_index];
+    if (!session) {
+        CORE_DebugError("Session is nullptr\n");
+        return false;
+    }
+    const Player *player = session->FindPlayer(player_id);
+    if (!player) {
+        CORE_DebugError("Player not found\n");
+        return false;
+    }
+    const LabPoint *point = player->GetAssignedPoint();
+    if (!point) {
+        CORE_DebugError("No point assigned to player\n");
         return false;
     }
 
-    const uint8 *buffer_ptr = buffer;
+    // max bytes possible
+    uint8 *payload_ptr = payload;
+    uint32 value_u32;
 
-    // 0...4   (4 bytes)  - validation header
-    uint32 header_value = 0;
-    BytesToNumber(buffer_ptr, sizeof(header_value), header_value);
-    if (header_value != _VALIDATION_HEADER) {
-        CORE_DebugError("Wrong validation header\n");
-        return false;
-    }
-    buffer_ptr += 4;
+    // is exit
+    value_u32 = (uint32) point->IsExit();
+    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
+    payload_ptr += sizeof(value_u32);
 
-    // 4...8   (4 bytes)  - type
-    uint32 type_value = 0;
-    BytesToNumber(buffer_ptr, sizeof(type_value), type_value);
-    packet->Type = type_value;
-    buffer_ptr += 4;
+    // is spawn
+    value_u32 = (uint32) point->IsSpawn();
+    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
+    payload_ptr += sizeof(value_u32);
 
-    // 4...40   (32 bytes) - player token
-    *token_ptr = buffer_ptr;
-    buffer_ptr += PLAYER_TOKEN_SIZE;
+    // connections
+    const auto& connections = point->GetConnections();
 
-    // 40...44   (4 bytes) - payload size
-    uint32 payload_size_value = 0;
-    BytesToNumber(buffer_ptr, sizeof(payload_size_value), payload_size_value);
-    packet->PayloadSize = payload_size_value;
-    buffer_ptr += 4;
+    value_u32 = connections.Top > 0;
+    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
+    payload_ptr += sizeof(value_u32);
 
-    // 44...~   (~ bytes) - payload
-    packet->Payload = buffer_ptr;
-    buffer_ptr += payload_size_value;
+    value_u32 = connections.Right > 0;
+    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
+    payload_ptr += sizeof(value_u32);
+
+    value_u32 = connections.Bottom > 0;
+    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
+    payload_ptr += sizeof(value_u32);
+
+    value_u32 = connections.Left > 0;
+    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
+    payload_ptr += sizeof(value_u32);
+
+    *payload_size = payload_ptr - payload;
     return true;
 }
 
-static void _PacketToBuffer(const Packet *packet, 
-                            Status        status,
-                            const uint8   token[PLAYER_TOKEN_SIZE],
-                            uint8         buffer[], 
-                            uint          buffer_size, 
-                            uint         *buffer_len)
-{
-    CORE_AssertPointer(packet);
-    CORE_AssertPointer(buffer);
-    CORE_AssertPointer(buffer_len);
-
-    uint8       *buffer_ptr = buffer;
-
-    // 0...4   (4 bytes)  - validation header
-    const uint32 validation_header_temp = _VALIDATION_HEADER;
-    memcpy(buffer_ptr, &validation_header_temp, 4);
-    buffer_ptr += 4;
-
-    // 4...8   (4 bytes)  - status
-    uint32 status_uint = (uint32) status;
-    memcpy(buffer_ptr, &status_uint, 4);
-    buffer_ptr += 4;
-
-    // 8...12   (4 bytes)  - type
-    memcpy(buffer_ptr, &packet->Type, 4);
-    buffer_ptr += 4;
-
-    // 12...44   (32 bytes) - player token
-    memcpy(buffer_ptr, token, PLAYER_TOKEN_SIZE);
-    buffer_ptr += 32;
-
-    // 44...48   (4 bytes) - payload size
-    memcpy(buffer_ptr, &packet->PayloadSize, 4);
-    buffer_ptr += 4;
-
-    // 48...~   (~ bytes) - payload
-    if (packet->PayloadSize > 0) {
-        memcpy(buffer_ptr, packet->Payload, packet->PayloadSize);
-        buffer_ptr += packet->PayloadSize;
-    }
-
-    *buffer_len = buffer_ptr - buffer;
-    CORE_Assert(*buffer_len <= buffer_size);
-}
-
-void GameServer::_ProcessJoinLobby(PlayerToken &token_arr, IOSystem::Stream io_stream)
+void GameServer::_StartGame(const PlayerToken &token_arr, IOSystem::Stream io_stream)
 {
     if ( m_tokens_holder.count(token_arr) > 0 ) {
         CORE_DebugError("Token already registered\n");
@@ -135,7 +96,7 @@ void GameServer::_ProcessJoinLobby(PlayerToken &token_arr, IOSystem::Stream io_s
         CORE_DebugError("Can't add new player\n");
         return;
     }
-    if ( session->IsReadyForStart() ) {
+    if ( !session->IsReadyForStart() ) {
         CORE_DebugError("Session is not ready idk why\n");
         return;
     }
@@ -146,7 +107,6 @@ void GameServer::_ProcessJoinLobby(PlayerToken &token_arr, IOSystem::Stream io_s
     record.IOStream     = io_stream;
     record.PlayerId     = player_id;
     record.SessionIndex = 0;
-    record.Token        = token_arr;
 
     const auto [ _, token_added ] = m_tokens_holder.insert( { token_arr, record } );
     if ( !token_added ) {
@@ -154,87 +114,72 @@ void GameServer::_ProcessJoinLobby(PlayerToken &token_arr, IOSystem::Stream io_s
         return;
     }
 
-    // send packet to client
-    Packet packet;
-    packet.PayloadSize = 0;
-    packet.Type = PacketType::JoinLobby;
-    uint8 data_out[1024];
-    uint  data_out_len = 0;
-    _PacketToBuffer(&packet, Status::Ok, token_arr.data(), data_out, sizeof(data_out), &data_out_len);
-    m_io_system.Write( io_stream, data_out, data_out_len );
-}
+    // send start game with turn info
+    {
+        PacketOut packet;
+        packet.ValidationHeader = _VALIDATION_HEADER;
+        packet.Status = (uint) Status::Ok;
+        packet.Type = PacketType::StartGame;
+        packet.Token = token_arr;
+        uint8 payload[900];
+        uint payload_len = 0;
+        if ( !_NewPayloadFromTurnInfo(record.PlayerId, record.SessionIndex, payload, &payload_len) ) {
+            CORE_DebugError("Error creating payload from turn info\n");
+            return;
+        }
+        CORE_Assert(payload_len <= sizeof(payload));
+        packet.PayloadSize = payload_len;
+        packet.Payload = payload;
 
-void _TokenPtrToArr(const uint8 token_ptr[], PlayerToken &arr)
-{
-    for (uint i = 0; i < PLAYER_TOKEN_SIZE; i++) {
-        arr[i] = token_ptr[i];
+        uint8 data_out[1024];
+        uint data_out_len = packet.ToBuffer(data_out, sizeof(data_out));
+        
+        m_io_system.Write( io_stream, data_out, data_out_len );
     }
 }
 
-void _OnInputRead(GameServer *gameserver, IOSystem::Stream io_stream, const uint8 data[], uint data_len)
+void GameServer::_OnInputRead(IOSystem::Stream io_stream, const uint8 data[], uint data_len)
 {
     const uint8    *token_ptr          = NULL;
-    Packet          packet_in;
+    PacketIn        packet_in;
 
     // parsing data buffer for token and Packet
-    if ( !_BufferToPacket(data, data_len, &token_ptr, &packet_in) ) {
+    if ( !packet_in.FromBuffer(data, data_len) ) {
         CORE_DebugError("data is not valid buffer\n");
         return;
     }
-
-    PlayerToken token_as_arr;
-    _TokenPtrToArr(token_ptr, token_as_arr);
+    if ( packet_in.ValidationHeader != _VALIDATION_HEADER ) {
+        CORE_DebugError("Wrong validation header\n");
+        return;
+    }
 
     // FOR NOW, we adding just 1 player and start game
-    if (packet_in.Type == PacketType::JoinLobby) {
-        gameserver->_ProcessJoinLobby(token_as_arr, io_stream);
+    if (packet_in.Type == PacketType::StartGame) {
+        _StartGame(packet_in.Token, io_stream);
         return;
     }
 
     // looking for SessionIndex, PlayerId
-    const auto& it_record = gameserver->m_tokens_holder.find(token_as_arr);
-    if ( it_record == gameserver->m_tokens_holder.end() ) {
+    const auto& it_record = m_tokens_holder.find(packet_in.Token);
+    if ( it_record == m_tokens_holder.end() ) {
         CORE_DebugError("Can't find registered token\n");
         return;
     }
-    const auto& record = it_record->second;
-    packet_in.SessionIndex  = record.SessionIndex;
-    packet_in.PlayerId      = record.PlayerId;
+    // const auto& record      = it_record->second;
+    // packet_in.SessionIndex  = record.SessionIndex;
+    // packet_in.PlayerId      = record.PlayerId;
 
-    Packet packet_out;
-    Status status = Status::Ok;
-    switch ( gameserver->m_packet_processor.Process(packet_in, &packet_out) )
-    {
-    case PacketProcessor::BadInput :
-        CORE_DebugError("Packet %u is bad\n", packet_in.Type);
-        return;
-    case PacketProcessor::Error :
-        status = Status::Error;
-        break;
-    case PacketProcessor::Ok :
-        status = Status::Ok;
-        break;
-    default:
-        CORE_DebugError("Unknown packet process status code\n");
-        return;
-    }
-
-    // converting Packet and token to response data buffer
-    uint8 data_out[1024];
-    uint  data_out_len = 0;
-    _PacketToBuffer(&packet_out, status, token_ptr, data_out, sizeof(data_out), &data_out_len);
-    gameserver->m_io_system.Write(io_stream, data_out, data_len);
+   // 
 }
 
 void GameServer::Start()
 {
     _PrepareSessions();
-    m_packet_processor.Setup(m_sessions);
 
     m_io_system.Setup(
         _VALIDATION_HEADER, 
         [this](IOSystem::Stream io_stream, const uint8 data[], uint data_len) {
-            _OnInputRead(this, io_stream, data, data_len);
+            _OnInputRead(io_stream, data, data_len);
         }
     );
     m_io_system.Start();

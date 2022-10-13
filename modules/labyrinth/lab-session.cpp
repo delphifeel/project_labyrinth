@@ -28,14 +28,14 @@ LabPointsMap& LabSession::GetLabMap()
     return m_lab_map;
 }
 
-std::pair<const Player *, bool>
+const Player*
 LabSession::FindPlayer(uint player_id) const
 {
     if ( m_players_map.count(player_id) == 0 ) {
-        return { nullptr, false };
+        return nullptr;
     }
 
-    return { &m_players_map.at(player_id), true };
+    return &m_players_map.at(player_id);
 }
 
 std::pair<uint, bool>

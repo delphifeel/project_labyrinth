@@ -16,7 +16,7 @@
 class LabSession
 {
 public:
-    std::pair<const Player *, bool>     FindPlayer(uint player_id) const;
+    const Player*                       FindPlayer(uint player_id) const;
     std::pair<uint, bool>               AddPlayer();
     void                                Start();
     void                                Setup(uint players_count);

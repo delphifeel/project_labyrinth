@@ -12,8 +12,10 @@ static void Test_LabSessionAddPlayers(void)
     CORE_AssertIntEqual(player1_id, 1);
     CORE_AssertIntEqual(player2_id, 2);
 
-    auto [ player1, player1_ok ] = session.FindPlayer(player1_id);
-    auto [ player2, player2_ok ] = session.FindPlayer(player2_id);
+    const auto& player1 = session.FindPlayer(player1_id);
+    const auto& player2 = session.FindPlayer(player2_id);
+    CORE_AssertPointer(player1);
+    CORE_AssertPointer(player2);
 
     CORE_AssertIntEqual(player1->GetId(), player1_id);
     CORE_AssertIntEqual(player2->GetId(), player2_id);

@@ -3,7 +3,6 @@
 
 #include <functional>
 #include "libs/core/core.h"
-#include "libs/packet/packet.h"
 #include "libs/tcp/tcp-server.h"
 
 

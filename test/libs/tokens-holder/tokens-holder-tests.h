@@ -1,5 +1,5 @@
 #include <map>
-#include "modules/labyrinth/player/player-token.h"
+#include "modules/gameserver/player-token.h"
 
 static void _TokensHolderWorksCorrectly(void)
 {
@@ -10,7 +10,6 @@ static void _TokensHolderWorksCorrectly(void)
 
     // add token 1
     TokenRecord token1_record = {
-                  token1,           // Token
          (void *) 0xAABBCCDD,       // IOStream
                   1,                // PlayerId
                   0,                // SessionIndex
@@ -27,7 +26,6 @@ static void _TokensHolderWorksCorrectly(void)
     PlayerToken token2 = { 0xDE, 0xAD, 0xBE, 0x0E };
 
     TokenRecord token2_record = {
-                  token2,           // Token
          (void *) 0xDDCCBBAA,       // IOStream
                   2,                // PlayerId
                   1,                // SessionIndex

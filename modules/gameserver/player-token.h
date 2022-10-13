@@ -9,7 +9,6 @@ using PlayerToken = std::array<uint8, kPlayerTokenSize>;
 
 struct TokenRecord
 {
-    PlayerToken   Token;
     void         *IOStream;
     uint          PlayerId;
     uint          SessionIndex;

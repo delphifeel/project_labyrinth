@@ -47,7 +47,6 @@ target_include_directories(ProjectLabyrinthTest PUBLIC
 )
 target_link_libraries(ProjectLabyrinthTest PRIVATE
 	IOSystem
-	# PacketProcessor
 	Utils
 	Labyrinth
 )
