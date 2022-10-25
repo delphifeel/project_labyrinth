@@ -23,21 +23,17 @@ inline void GameServer::_PrepareSessions()
 
 bool GameServer::_NewPayloadFromTurnInfo(uint player_id, uint session_index, uint8 payload[], uint *payload_size)
 {
-    if (session_index >= SESSIONS_CAPACITY) {
-        CORE_DebugError("Session index out of bounds\n");
-        return false;
-    }
-    LabSession *session = m_sessions[session_index];
+    auto session = _GetSessionByIndex(session_index);
     if (!session) {
         CORE_DebugError("Session is nullptr\n");
         return false;
     }
-    const Player *player = session->FindPlayer(player_id);
+    const auto player = session->FindPlayer(player_id);
     if (!player) {
         CORE_DebugError("Player not found\n");
         return false;
     }
-    const LabPoint *point = player->GetAssignedPoint();
+    const auto point = player->GetAssignedPoint();
     if (!point) {
         CORE_DebugError("No point assigned to player\n");
         return false;
@@ -86,9 +82,30 @@ bool GameServer::_NewPayloadFromTurnInfo(uint player_id, uint session_index, uin
     return true;
 }
 
-void GameServer::_StartGame(const PlayerToken &token_arr, IOSystem::Stream io_stream)
+void GameServer::_SendTurnInfo(const PlayerToken& token, const PlayerTokenRecord& record, bool as_start_game)
 {
-    if ( m_tokens_holder.count(token_arr) > 0 ) {
+    PacketOut packet;
+    packet.ValidationHeader = _VALIDATION_HEADER;
+    packet.Status = (uint) Status::Ok;
+    packet.Type = as_start_game ? PacketType::StartGame : PacketType::TurnInfo;
+    packet.Token = token;
+    uint8 payload[900];
+    uint payload_len = 0;
+    if ( !_NewPayloadFromTurnInfo(record.PlayerId, record.SessionIndex, payload, &payload_len) ) {
+        CORE_DebugError("Error creating payload from turn info\n");
+        return;
+    }
+    CORE_Assert(payload_len <= sizeof(payload));
+    packet.PayloadSize = payload_len;
+    packet.Payload = payload;
+    uint8 data_out[1024];
+    uint data_out_len = packet.ToBuffer(data_out, sizeof(data_out));
+    m_io_system.Write( record.IOStream, data_out, data_out_len );
+}
+
+void GameServer::_StartGame(const PlayerToken &token, IOSystem::Stream io_stream)
+{
+    if ( m_tokens_holder.count(token) > 0 ) {
         CORE_DebugError("Token already registered\n");
         return;
     }
@@ -114,34 +131,13 @@ void GameServer::_StartGame(const PlayerToken &token_arr, IOSystem::Stream io_st
     record.PlayerId     = player_id;
     record.SessionIndex = 0;
 
-    const auto [ _, token_added ] = m_tokens_holder.insert( { token_arr, record } );
+    const auto [ _, token_added ] = m_tokens_holder.insert( { token, record } );
     if ( !token_added ) {
         CORE_DebugError("Add token error\n");
         return;
     }
-
-    // send start game with turn info
     
-    PacketOut packet;
-    packet.ValidationHeader = _VALIDATION_HEADER;
-    packet.Status = (uint) Status::Ok;
-    packet.Type = PacketType::StartGame;
-    packet.Token = token_arr;
-    uint8 payload[900];
-    uint payload_len = 0;
-    if ( !_NewPayloadFromTurnInfo(record.PlayerId, record.SessionIndex, payload, &payload_len) ) {
-        CORE_DebugError("Error creating payload from turn info\n");
-        return;
-    }
-    CORE_Assert(payload_len <= sizeof(payload));
-    packet.PayloadSize = payload_len;
-    packet.Payload = payload;
-
-    uint8 data_out[1024];
-    uint data_out_len = packet.ToBuffer(data_out, sizeof(data_out));
-
-    m_io_system.Write( io_stream, data_out, data_out_len );
-    
+    _SendTurnInfo(token, record, true);
 }
 
 bool GameServer::_RegisterPlayerTurn(const PacketIn& packet_in, IOSystem::Stream io_stream)
@@ -218,22 +214,17 @@ bool GameServer::_ProcessSpecificTurn(const PlayerTokenRecord& record, const Tur
         return true;
     }
 
-    // TODO: duplicate from _NewPayloadFromTurnInfo
-    if (record.SessionIndex >= SESSIONS_CAPACITY) {
-        CORE_DebugError("Session index out of bounds\n");
-        return false;
-    }
-    LabSession *session = m_sessions[record.SessionIndex];
+    auto session = _GetSessionByIndex(record.SessionIndex);
     if (!session) {
         CORE_DebugError("Session is nullptr\n");
         return false;
     }
-    Player *player = session->FindPlayer(record.PlayerId);
+    auto player = session->FindPlayer(record.PlayerId);
     if (!player) {
         CORE_DebugError("Player not found\n");
         return false;
     }
-    const LabPoint *point = player->GetAssignedPoint();
+    const auto point = player->GetAssignedPoint();
     if (!point) {
         CORE_DebugError("No point assigned to player\n");
         return false;
@@ -257,7 +248,7 @@ bool GameServer::_ProcessSpecificTurn(const PlayerTokenRecord& record, const Tur
     }
 
     auto& lab_map = session->GetLabMap();
-    LabPoint* new_point = lab_map.GetPointByID(new_point_id);
+    const auto new_point = lab_map.GetPointByID(new_point_id);
     if ( !new_point ) {
         CORE_DebugError("Point is nullptr\n");
         return false;
@@ -282,24 +273,17 @@ void GameServer::_ProcessRegisteredTurns()
     m_registered_turns.clear();
 
     for (const auto & [token, record] : m_tokens_holder) {
-        PacketOut packet;
-        packet.ValidationHeader = _VALIDATION_HEADER;
-        packet.Status = (uint) Status::Ok;
-        packet.Type = PacketType::TurnInfo;
-        packet.Token = token;
-        uint8 payload[900];
-        uint payload_len = 0;
-        if ( !_NewPayloadFromTurnInfo(record.PlayerId, record.SessionIndex, payload, &payload_len) ) {
-            CORE_DebugError("Error creating payload from turn info\n");
-            continue;
-        }
-        CORE_Assert(payload_len <= sizeof(payload));
-        packet.PayloadSize = payload_len;
-        packet.Payload = payload;
-        uint8 data_out[1024];
-        uint data_out_len = packet.ToBuffer(data_out, sizeof(data_out));
-        m_io_system.Write( record.IOStream, data_out, data_out_len );
+        _SendTurnInfo(token, record, false);
     }
+}
+
+LabSession* GameServer::_GetSessionByIndex(uint index) const
+{
+    if (index >= SESSIONS_CAPACITY) {
+        CORE_DebugError("Session index out of bounds\n");
+        return nullptr;
+    }
+    return m_sessions[index];
 }
 
 void GameServer::Start()
