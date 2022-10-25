@@ -7,7 +7,7 @@
 constexpr uint kPlayerTokenSize = 32;
 using PlayerToken = std::array<uint8, kPlayerTokenSize>;
 
-struct TokenRecord
+struct PlayerTokenRecord
 {
     void         *IOStream;
     uint          PlayerId;

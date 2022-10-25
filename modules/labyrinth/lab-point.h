@@ -27,6 +27,7 @@ public:
     void SetAsExit(bool value);
     void SetAsSpawn(bool value);
     void AssignPlayer(const Player& player);
+    void RemovePlayer(const Player& player);
 
 
     explicit LabPoint(uint id) :

@@ -47,4 +47,15 @@ void LabPoint::AssignPlayer(const Player& player)
     }
 
     m_players.push_back(&player);
+}    
+
+void LabPoint::RemovePlayer(const Player& player)
+{
+    const auto& iter = std::find(m_players.begin(), m_players.end(), &player);
+    if (iter == m_players.end()) {
+        CORE_DebugError("Can't remove: player not in vector\n");
+        return;
+    }
+
+    m_players.erase(iter);
 }

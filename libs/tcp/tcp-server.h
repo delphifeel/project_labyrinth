@@ -19,6 +19,7 @@ typedef void *TCPServer_ClientConnection;
 
 typedef struct TCPServer_s TCPServer;
 
+typedef void (*OnTimerFunc)(void *context);
 typedef void (*OnReadFunc)(TCPServer *instance, void *context, TCPServer_ClientConnection client_connection, 
                             const uint8 data[], uint32 data_size);
 typedef void (*OnNewConnectionFunc)(TCPServer *instance, void *context, TCPServer_ClientConnection client_connection);
@@ -26,6 +27,8 @@ typedef void (*OnCloseConnectionFunc)(TCPServer *instance, void *context, TCPSer
 typedef void (*OnErrorFunc)(TCPServer *instance, void *context, const char *error_message);
 
 /*****************************************************************************************************************************/
+
+void    TCPServer_EnableTimer(TCPServer *instance, OnTimerFunc callback, uint64 time_ms);
 
 void    TCPServer_OnRead(TCPServer *instance, OnReadFunc on_read);
 void    TCPServer_OnError(TCPServer *instance, OnErrorFunc on_error);

@@ -10,6 +10,11 @@ typedef struct TCPServer_s
 {
     void                    *context;
 
+    uv_timer_t              *uv_timer;
+    bool                    timer_enabled;
+    OnTimerFunc             timer_callback;
+    uint64                  timer_ms;
+
     /*
      *      libuv specific data types
      */
@@ -110,6 +115,13 @@ static void _OnReadBuffer(uv_stream_t *client, ssize_t nread, const uv_buf_t *bu
     free(buf->base);
 }
 
+static void _OnTimer(uv_timer_t *timer_handle)
+{
+    TCPServer *instance;
+    _UVHandleGetContext((uv_handle_t *) timer_handle, &instance);
+    instance->timer_callback(instance->context);
+}
+
 static void _OnNewConnection(uv_stream_t *server, int status)
 {
     TCPServer                      *instance;
@@ -182,6 +194,17 @@ void TCPServer_CloseConnection(TCPServer *instance, TCPServer_ClientConnection c
 
 /*****************************************************************************************************************************/
 
+void TCPServer_EnableTimer(TCPServer *instance, OnTimerFunc callback, uint64 time_ms)
+{
+    CORE_Assert(instance->uv_timer == NULL);
+    CORE_AssertPointer(callback);
+    CORE_Assert(time_ms > 0);
+
+    instance->timer_ms = time_ms;
+    instance->timer_callback = callback;
+    instance->timer_enabled = true;
+}
+
 void TCPServer_OnRead(TCPServer *instance, OnReadFunc on_read)
 {
     CORE_AssertPointer(on_read);
@@ -223,9 +246,14 @@ void TCPServer_Setup(TCPServer *instance, uint32 port)
 {
     CORE_AssertPointer(instance->on_read);
 
-
     instance->port = port;
     instance->uv_loop = uv_default_loop();
+
+    if (instance->timer_enabled) {
+        instance->uv_timer = (uv_timer_t *) malloc(sizeof(uv_timer_t));
+        uv_timer_init(instance->uv_loop, instance->uv_timer);
+        _UVHandleSetContext((uv_handle_t *) instance->uv_timer, instance);
+    }
 
     uv_tcp_init(instance->uv_loop, &instance->uv_tcp_server);
     _UVHandleSetContext((uv_handle_t *) &instance->uv_tcp_server, instance);
@@ -236,10 +264,11 @@ void TCPServer_Setup(TCPServer *instance, uint32 port)
 
 void TCPServer_Start(TCPServer *instance)
 {
-    int32 error;
+    if (instance->timer_enabled) {
+        uv_timer_start(instance->uv_timer, _OnTimer, instance->timer_ms, instance->timer_ms);
+    }
 
-
-    error = uv_listen((uv_stream_t *) &instance->uv_tcp_server, TCPSERVER_DEFAULT_BACKLOG, _OnNewConnection);
+    int32 error = uv_listen((uv_stream_t *) &instance->uv_tcp_server, TCPSERVER_DEFAULT_BACKLOG, _OnNewConnection);
     if (error) 
     {
         if (instance->on_error != NULL)
@@ -264,11 +293,19 @@ TCPServer *TCPServer_Create(void)
     instance->on_close_connection = NULL;
     instance->on_error = NULL;
     instance->context = NULL;
+    instance->uv_timer = NULL;
+    instance->timer_enabled = false;
+    instance->timer_callback = NULL;
     return instance;
 }
 
 void TCPServer_Free(TCPServer *instance)
 {
+    if (instance->uv_timer != NULL) {
+        uv_timer_stop(instance->uv_timer);
+        free(instance->uv_timer);
+    }
+
     uv_loop_close(instance->uv_loop);
     free(instance);
 }

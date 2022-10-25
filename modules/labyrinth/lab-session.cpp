@@ -28,8 +28,8 @@ LabPointsMap& LabSession::GetLabMap()
     return m_lab_map;
 }
 
-const Player*
-LabSession::FindPlayer(uint player_id) const
+Player*
+LabSession::FindPlayer(uint player_id) 
 {
     if ( m_players_map.count(player_id) == 0 ) {
         return nullptr;
@@ -63,8 +63,7 @@ LabSession::AddPlayer()
     uint added_player_id = m_players_map.size() + 1;
     m_players_map.emplace(added_player_id, Player { added_player_id });
     Player& new_player = m_players_map.at(added_player_id);
-    new_player.AssignPoint(*point);
-    point->AssignPlayer(new_player);
+    new_player.MoveTo(*point);
 
     CORE_DebugInfo(
         "Player #%u added. Spawn point id: %u\n", 

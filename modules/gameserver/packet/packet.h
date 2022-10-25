@@ -8,6 +8,8 @@ enum PacketType : unsigned int
 {
     // TODO: command for testing will be removed
     StartGame = 0,
+    TurnInfo,
+    RegisterTurn,
 };
 
 

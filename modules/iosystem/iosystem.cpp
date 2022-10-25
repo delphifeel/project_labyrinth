@@ -49,6 +49,12 @@ void _OnRead(TCPServer                      *tcp_server,
     }
 }
 
+void _OnTimer(void *context)
+{
+    IOSystem *iosystem = (IOSystem *) context;
+    iosystem->m_on_timer();
+}
+
 void 
 IOSystem::Write(IOSystem::Stream ioStream, const uint8 data[], uint data_len) const
 {
@@ -67,10 +73,11 @@ void IOSystem::Start() const
     TCPServer_Start(m_tcp_server);
 }
 
-void IOSystem::Setup(uint32 data_start_flag, OnReadFunc on_read)
+void IOSystem::Setup(uint32 data_start_flag, OnReadFunc on_read, TimerFunc on_timer, uint timer_ms)
 {
     m_data_start_flag   = data_start_flag;
     m_on_read           = on_read;
+    m_on_timer          = on_timer;
 
     m_tcp_server        = TCPServer_Create();
     TCPServer_OnError(m_tcp_server, _TCPServerOnError);
@@ -78,6 +85,7 @@ void IOSystem::Setup(uint32 data_start_flag, OnReadFunc on_read)
     TCPServer_OnCloseConnection(m_tcp_server, _TCPServerOnCloseConnection);
     TCPServer_SetContext(m_tcp_server, this);
     TCPServer_OnRead(m_tcp_server, _OnRead);
+    TCPServer_EnableTimer(m_tcp_server, _OnTimer, timer_ms);
     TCPServer_Setup(m_tcp_server, IOSYSTEM_DEFAULT_PORT);
 }
 

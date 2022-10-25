@@ -7,10 +7,11 @@
 
 /*****************************************************************************************************************************/
 
-#define MIN_MATRIX_SIZE     (7)
+// #define MIN_MATRIX_SIZE     (7)
+#define MIN_MATRIX_SIZE     (1)
 
-#define MATRIX_SIZE         (63)
-#define SPAWN_POINTS_COUNT  (16)
+#define MATRIX_SIZE         (3)
+#define SPAWN_POINTS_COUNT  (1)
 
 struct Edge
 {
