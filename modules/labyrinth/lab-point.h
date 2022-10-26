@@ -15,7 +15,8 @@ struct PointConnections
 class LabPoint
 {
 public:
-
+    explicit LabPoint(LabPoint&) = delete;
+    explicit LabPoint(LabPoint&&) = default;                       
 
     uint                        GetId() const;
     bool                        IsExit() const;
@@ -35,10 +36,6 @@ public:
         m_connections({0, 0, 0, 0}),
         m_is_exit(false), 
         m_is_spawn(false) {};
-
-
-    explicit LabPoint(LabPoint&&) = default;                       
-
 private:
 
     

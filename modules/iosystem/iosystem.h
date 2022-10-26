@@ -9,6 +9,8 @@
 class IOSystem
 {
 public:
+    explicit IOSystem(IOSystem&) = delete;
+
     using Stream = void *;
     using OnReadFunc = std::function< void(IOSystem::Stream ioStream, const uint8 data[], uint data_len) >;
     using TimerFunc = std::function< void() >;

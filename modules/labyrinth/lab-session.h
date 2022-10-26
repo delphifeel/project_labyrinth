@@ -16,6 +16,9 @@
 class LabSession
 {
 public:
+    explicit LabSession() {};
+    explicit LabSession(LabSession&) = delete;
+
     Player*                             FindPlayer(uint player_id);
     std::pair<uint, bool>               AddPlayer();
     void                                Start();

@@ -13,6 +13,9 @@
 class LabPointsMap
 {
 public:
+    explicit LabPointsMap() {};
+    explicit LabPointsMap(LabPointsMap&) = delete;
+
     void                            ToJSON(char **json)                 const;
     LabPoint*                       GetPointByID(uint id);
     void                            Generate(std::vector<uint> &spawn_points);

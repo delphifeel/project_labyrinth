@@ -9,6 +9,9 @@ class LabPoint;
 class Player
 {
 public:
+    Player(Player&) = delete;
+    Player(Player&&) = default;
+
     uint                              GetId()             const { return m_id; }
     const LabPoint*                   GetAssignedPoint()  const { return m_assigned_point; }
 

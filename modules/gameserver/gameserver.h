@@ -16,6 +16,9 @@
 class GameServer
 {
 public:
+    explicit GameServer(GameServer&) = delete;
+    explicit GameServer() {};
+
     void     Start();
 private:
     inline void _PrepareSessions();
