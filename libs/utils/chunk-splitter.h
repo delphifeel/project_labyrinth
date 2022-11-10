@@ -7,6 +7,6 @@ bool GetNextChunk(const uint8   buffer[],
                   uint32        buffer_len,
                   const uint8   **chunk_ptr,
                   uint32        *chunk_size,
-                  uint32        chunk_start_flag);
+                  uint8         chunk_end_flag);
 
 #endif

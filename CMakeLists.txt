@@ -35,6 +35,7 @@ add_subdirectory(modules)
 
 # third-party libraries 
 add_subdirectory(third-party-libraries/libuv)
+add_subdirectory(third-party-libraries/json)
 
 # Tests
 

@@ -5,7 +5,7 @@ static void _TokensHolderWorksCorrectly(void)
 {
     std::map<const PlayerToken, PlayerTokenRecord> tokens_holder;
 
-    PlayerToken token1 = { 0xBA, 0xDB, 0xEE };
+    PlayerToken token1 = "BADBEE";
     CORE_Assert(tokens_holder.count(token1) == 0);
 
     // add token 1
@@ -23,7 +23,7 @@ static void _TokensHolderWorksCorrectly(void)
     CORE_AssertIntEqual(record.SessionIndex, token1_record.SessionIndex);
 
     // add token 2
-    PlayerToken token2 = { 0xDE, 0xAD, 0xBE, 0x0E };
+    PlayerToken token2 = "DEADBEE";
 
     PlayerTokenRecord token2_record = {
          (void *) 0xDDCCBBAA,       // IOStream

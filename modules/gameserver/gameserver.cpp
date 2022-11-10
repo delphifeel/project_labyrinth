@@ -1,9 +1,10 @@
 #include <cstring>
 #include "gameserver.h"
 
+
 /*****************************************************************************************************************************/
 
-constexpr uint _VALIDATION_HEADER = 0xDEADBEE;
+const std::string _VALIDATION_HEADER = "DEADBEE";
 constexpr uint kTurnTimeMs = 1 * 1000;
 
 enum class Status
@@ -21,7 +22,12 @@ inline void GameServer::_PrepareSessions()
     }
 }
 
-bool GameServer::_NewPayloadFromTurnInfo(uint player_id, uint session_index, uint8 payload[], uint *payload_size)
+static uint _connectionAsBoolNumber(uint connection)
+{
+    return connection > 0 ? 1 : 0;
+}
+
+bool GameServer::_NewPayloadFromTurnInfo(uint player_id, uint session_index, json& json_data_out)
 {
     auto session = _GetSessionByIndex(session_index);
     if (!session) {
@@ -39,68 +45,34 @@ bool GameServer::_NewPayloadFromTurnInfo(uint player_id, uint session_index, uin
         return false;
     }
 
-    // max bytes possible
-    uint8 *payload_ptr = payload;
-    uint32 value_u32;
+    auto& payload = json_data_out["Payload"];
+    payload["TurnTimeMS"]  = (uint) kTurnTimeMs;
+    payload["IsExit"]      = point->IsExit();
+    payload["IsSpawn"]     = point->IsSpawn();
 
-    // is exit
-    value_u32 = (uint32) point->IsExit();
-    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
-    payload_ptr += sizeof(value_u32);
-
-    // is spawn
-    value_u32 = (uint32) point->IsSpawn();
-    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
-    payload_ptr += sizeof(value_u32);
-
-    // connections
     const auto& connections = point->GetConnections();
+    payload["Connections"]["Top"]      = connections.Top > 0;
+    payload["Connections"]["Right"]    = connections.Right > 0;
+    payload["Connections"]["Bottom"]   = connections.Bottom > 0;
+    payload["Connections"]["Left"]     = connections.Left > 0;
 
-    value_u32 = connections.Top > 0;
-    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
-    payload_ptr += sizeof(value_u32);
-
-    value_u32 = connections.Right > 0;
-    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
-    payload_ptr += sizeof(value_u32);
-
-    value_u32 = connections.Bottom > 0;
-    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
-    payload_ptr += sizeof(value_u32);
-
-    value_u32 = connections.Left > 0;
-    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
-    payload_ptr += sizeof(value_u32);
-
-    // turn time ms
-    value_u32 = (uint32) kTurnTimeMs;
-    memcpy(payload_ptr, &value_u32, sizeof(value_u32));
-    payload_ptr += sizeof(value_u32);
-
-
-    *payload_size = payload_ptr - payload;
     return true;
 }
 
 void GameServer::_SendTurnInfo(const PlayerToken& token, const PlayerTokenRecord& record, bool as_start_game)
 {
-    PacketOut packet;
-    packet.ValidationHeader = _VALIDATION_HEADER;
-    packet.Status = (uint) Status::Ok;
-    packet.Type = as_start_game ? PacketType::StartGame : PacketType::TurnInfo;
-    packet.Token = token;
-    uint8 payload[900];
-    uint payload_len = 0;
-    if ( !_NewPayloadFromTurnInfo(record.PlayerId, record.SessionIndex, payload, &payload_len) ) {
+    json json_data_out = json({});
+    json_data_out["ValidationHeader"] = _VALIDATION_HEADER;
+    json_data_out["Status"] = Status::Ok;
+    json_data_out["Type"] = as_start_game ? PacketType::StartGame : PacketType::TurnInfo;
+    json_data_out["Token"] = token;
+
+    if ( !_NewPayloadFromTurnInfo(record.PlayerId, record.SessionIndex, json_data_out) ) {
         CORE_DebugError("Error creating payload from turn info\n");
         return;
     }
-    CORE_Assert(payload_len <= sizeof(payload));
-    packet.PayloadSize = payload_len;
-    packet.Payload = payload;
-    uint8 data_out[1024];
-    uint data_out_len = packet.ToBuffer(data_out, sizeof(data_out));
-    m_io_system.Write( record.IOStream, data_out, data_out_len );
+    const auto& json_str = json_data_out.dump();
+    m_io_system.Write( record.IOStream, (const uint8*) json_str.c_str(), json_str.size() );
 }
 
 void GameServer::_StartGame(const PlayerToken &token, IOSystem::Stream io_stream)
@@ -140,68 +112,56 @@ void GameServer::_StartGame(const PlayerToken &token, IOSystem::Stream io_stream
     _SendTurnInfo(token, record, true);
 }
 
-bool GameServer::_RegisterPlayerTurn(const PacketIn& packet_in, IOSystem::Stream io_stream)
+bool GameServer::_RegisterPlayerTurn(const json& json_data_in, IOSystem::Stream io_stream)
 {
-    const uint32 *payload_u32_ptr = (uint32 *) packet_in.Payload;
     TurnState   turn_state;
+    turn_state.IsPlayerMoving       = (bool)            json_data_in["Payload"]["IsPlayerMoving"];
+    turn_state.PlayerMoveDirection  = (MoveDirection)   json_data_in["Payload"]["PlayerMoveDirection"];
+    const auto& token               =                   json_data_in["Token"];
 
-    turn_state.IsPlayerMoving = (bool) *payload_u32_ptr;
-    payload_u32_ptr++;
+    m_registered_turns.insert_or_assign(token, turn_state);
 
-    turn_state.PlayerMoveDirection = (MoveDirection) *payload_u32_ptr;
-    payload_u32_ptr++;
+    auto json_data_out = json({});
+    json_data_out["ValidationHeader"]   = _VALIDATION_HEADER;
+    json_data_out["Status"]             = (uint) Status::Ok;
+    json_data_out["Type"]               = PacketType::RegisterTurn;
+    json_data_out["Token"]              = token;
 
-    uint expected_size = (const uint8 *) payload_u32_ptr - packet_in.Payload;
-    if ( packet_in.PayloadSize < expected_size ) {
-        CORE_DebugError("packet_in payload size < then expected (%d vs %d)\n", packet_in.PayloadSize, expected_size);
-        return false;
-    }
-    m_registered_turns.insert_or_assign(packet_in.Token, turn_state);
-
-    PacketOut packet;
-    packet.ValidationHeader = _VALIDATION_HEADER;
-    packet.Status = (uint) Status::Ok;
-    packet.Type = PacketType::RegisterTurn;
-    packet.Token = packet_in.Token;
-    packet.PayloadSize = 0;
-    packet.Payload = nullptr;
-    uint8 data_out[1024];
-    uint data_out_len = packet.ToBuffer(data_out, sizeof(data_out));
-    m_io_system.Write( io_stream, data_out, data_out_len );
+    const auto& json_str = json_data_out.dump();
+    m_io_system.Write( io_stream, (const uint8*) json_str.c_str(), json_str.size() );
 
     return true;
 }
 
 void GameServer::_OnInputRead(IOSystem::Stream io_stream, const uint8 data[], uint data_len)
 {
-    const uint8    *token_ptr          = NULL;
-    PacketIn        packet_in;
+    CORE_DebugInfo("data: %s\n", data);
 
-    // parsing data buffer for token and Packet
-    if ( !packet_in.FromBuffer(data, data_len) ) {
-        CORE_DebugError("data is not valid buffer\n");
-        return;
-    }
-    if ( packet_in.ValidationHeader != _VALIDATION_HEADER ) {
+    json json_data_in = json::parse(data);
+
+    if ( json_data_in["ValidationHeader"] != _VALIDATION_HEADER ) {
         CORE_DebugError("Wrong validation header\n");
         return;
     }
 
+    const auto& token       = json_data_in["Token"];
+    const auto& packetType  = json_data_in["Type"];
+
     // FOR NOW, we adding just 1 player and start game
-    if (packet_in.Type == PacketType::StartGame) {
-        _StartGame(packet_in.Token, io_stream);
+    if (packetType == PacketType::StartGame) {
+        _StartGame(token, io_stream);
         return;
     }
 
     // looking for SessionIndex, PlayerId
-    const auto& it_record = m_tokens_holder.find(packet_in.Token);
+    const auto& it_record = m_tokens_holder.find(token);
     if ( it_record == m_tokens_holder.end() ) {
         CORE_DebugError("Can't find registered token\n");
         return;
     }
 
-    if ( ( packet_in.Type == PacketType::RegisterTurn ) &&
-         ( !_RegisterPlayerTurn(packet_in, io_stream) ) ) 
+    if ( ( packetType == PacketType::RegisterTurn ) &&
+         ( !_RegisterPlayerTurn(json_data_in, io_stream) ) ) 
     {
         CORE_DebugError("Register turn error\n");
         return;
@@ -291,7 +251,7 @@ void GameServer::Start()
     _PrepareSessions();
 
     m_io_system.Setup(
-        _VALIDATION_HEADER, 
+        0, 
         [this](IOSystem::Stream io_stream, const uint8 data[], uint data_len) {
             _OnInputRead(io_stream, data, data_len);
         },

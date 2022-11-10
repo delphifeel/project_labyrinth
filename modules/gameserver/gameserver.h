@@ -4,6 +4,7 @@
 #include <array>
 #include <map>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include "libs/core/core.h"
 #include "modules/labyrinth/lab-session.h"
 #include "modules/iosystem/iosystem.h"
@@ -12,6 +13,7 @@
 #include "player-token.h"
 #include "turn-state.h"
 
+using json = nlohmann::json;
 
 class GameServer
 {
@@ -25,10 +27,10 @@ private:
     void _StartGame(const PlayerToken &token_arr, IOSystem::Stream io_stream);
     void _OnInputRead(IOSystem::Stream io_stream, const uint8 data[], uint data_len);
 
-    bool _NewPayloadFromTurnInfo(uint player_id, uint session_index, uint8 payload[], uint *payload_size);
+    bool _NewPayloadFromTurnInfo(uint player_id, uint session_index, json& json_data_out);
     void _SendTurnInfo(const PlayerToken& token, const PlayerTokenRecord& record, bool as_start_game);
 
-    bool _RegisterPlayerTurn(const PacketIn& packet_in, IOSystem::Stream io_stream);
+    bool _RegisterPlayerTurn(const json& json_data_in, IOSystem::Stream io_stream);
     bool _ProcessSpecificTurn(const PlayerTokenRecord& record, const TurnState &turn_state);
     void _ProcessRegisteredTurns();
 

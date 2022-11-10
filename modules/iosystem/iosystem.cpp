@@ -34,19 +34,13 @@ void _OnRead(TCPServer                      *tcp_server,
              uint32                          data_len) 
 
 {
-    uint32       chunk_size             = 0;
-    const uint8 *data_ptr               = data;
-    const uint8 *data_end               = data + data_len;
-    const uint8 *chunk                  = NULL;
-    uint32       data_bytes_left        = data_len;
+    // uint32       chunk_size             = 0;
+    // const uint8 *data_ptr               = data;
+    // const uint8 *data_end               = data + data_len;
     IOSystem    *iosystem               = (IOSystem *) context;
 
-    while (GetNextChunk(data_ptr, data_bytes_left, &chunk, &chunk_size, iosystem->m_data_start_flag)) {
-        data_ptr = chunk + chunk_size;
-        data_bytes_left = data_end - data_ptr;
-
-        iosystem->m_on_read((IOSystem::Stream) client_connection, chunk, chunk_size);
-    }
+    // TODO: split chunks if needed
+    iosystem->m_on_read((IOSystem::Stream) client_connection, data, data_len);
 }
 
 void _OnTimer(void *context)
@@ -73,7 +67,7 @@ void IOSystem::Start() const
     TCPServer_Start(m_tcp_server);
 }
 
-void IOSystem::Setup(uint32 data_start_flag, OnReadFunc on_read, TimerFunc on_timer, uint timer_ms)
+void IOSystem::Setup(uint8 data_start_flag, OnReadFunc on_read, TimerFunc on_timer, uint timer_ms)
 {
     m_data_start_flag   = data_start_flag;
     m_on_read           = on_read;

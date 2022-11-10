@@ -5,7 +5,7 @@
 #include "libs/core/core.h"
 
 constexpr uint kPlayerTokenSize = 32;
-using PlayerToken = std::array<uint8, kPlayerTokenSize>;
+using PlayerToken = std::string;
 
 struct PlayerTokenRecord
 {

@@ -6,39 +6,34 @@ bool GetNextChunk(const uint8   buffer[],
                   uint32        buffer_len,
                   const uint8   **chunk_ptr,
                   uint32        *chunk_size,
-                  uint32        chunk_start_flag)
+                  uint8         chunk_end_flag)
 {
     CORE_AssertPointer(buffer);
     CORE_AssertPointer(chunk_ptr);
 
-    // check min chunk_ptr size
-    if (buffer_len <= sizeof(chunk_start_flag)) {
-        return false;
-    }
-
-    uint32       start_flag;
+    uint8        end_flag;
     const uint8 *buffer_ptr         = buffer;
     uint32       buffer_len_left    = buffer_len;
     uint32       size               = 0;
 
-    *chunk_ptr = NULL;
+    *chunk_ptr = buffer;
 
     while (buffer_len_left > 0) {
-        if (buffer_len_left <= sizeof(start_flag)) {
+        if (buffer_len_left <= sizeof(end_flag)) {
             size += buffer_len_left;
             break;
         }
-        BytesToNumber(buffer_ptr, buffer_len_left, start_flag);
-
-        if (start_flag == chunk_start_flag) {
+        
+        end_flag = *buffer_ptr;
+        if (end_flag == chunk_end_flag) {
             if (*chunk_ptr != NULL) {
                 break;
             }
 
             *chunk_ptr = buffer_ptr;
-            size = sizeof(start_flag);
-            buffer_len_left -= sizeof(start_flag);
-            buffer_ptr += sizeof(start_flag);
+            size = sizeof(end_flag);
+            buffer_len_left -= sizeof(end_flag);
+            buffer_ptr += sizeof(end_flag);
         }
 
         size++;

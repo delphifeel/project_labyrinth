@@ -1,3 +1,6 @@
 [submodule "third-party-libraries/libuv"]
 	path = third-party-libraries/libuv
 	url = https://github.com/libuv/libuv.git
+[submodule "third-party-libraries/json"]
+	path = third-party-libraries/json
+	url = https://github.com/nlohmann/json

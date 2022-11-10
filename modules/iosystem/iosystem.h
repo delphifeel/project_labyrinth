@@ -20,7 +20,7 @@ public:
         m_on_read(nullptr),
         m_tcp_server(nullptr) {};
 
-    void Setup(uint32 data_start_flag, OnReadFunc on_read, TimerFunc on_timer, uint timer_ms);
+    void Setup(uint8 data_start_flag, OnReadFunc on_read, TimerFunc on_timer, uint timer_ms);
     void Start() const;
     void Write(IOSystem::Stream ioStream, const uint8 data[], uint data_len) const;
 
@@ -34,7 +34,7 @@ private:
     friend void _OnTimer(void *context);
     
 private:
-    uint32                 m_data_start_flag;
+    uint8                  m_data_start_flag;
     OnReadFunc             m_on_read;
     TimerFunc              m_on_timer;
     TCPServer             *m_tcp_server;

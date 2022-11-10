@@ -30,6 +30,7 @@ add_library(Gameserver
 )
 target_include_directories(Gameserver PUBLIC
 	${COMMON_INCLUDE}
+	"${THIRD_PARTY}/json/include"
 )
 target_link_libraries(Gameserver PUBLIC
 	Labyrinth
